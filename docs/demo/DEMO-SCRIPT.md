@@ -111,10 +111,12 @@ dense, use the node picker rather than zooming out until labels become unreadabl
 
 ### 4:45–6:00 — Turn observations into compliance evidence
 
-**Show:** [Compliance screenshot](../images/product/compliance.png) and the
-[evidence-lineage diagram](../diagrams/compliance-evidence-lineage.svg). Use the private
-recapture listed in the [product gallery](../PUBLICATION/PRODUCT-GALLERY.md) only after it has
-been regenerated with documentation-range data.
+**Show:** [Compliance screenshot](../images/product/compliance.png), the
+[evidence-lineage screenshot](../images/workflows/compliance-evidence-lineage.png), the
+[advisory AI review](../images/workflows/compliance-ai-review.png), and the
+[evidence-lineage diagram](../diagrams/compliance-evidence-lineage.svg). The supplied lineage
+capture is the documentation-range recapture; the remaining private captures are listed in the
+[product gallery](../PUBLICATION/PRODUCT-GALLERY.md) and must not be published.
 
 **Do:** Show the three framework summary cards. Open a completed run, select a control, inspect
 its status and observed evidence, open lineage, and show the generated report action.
@@ -126,7 +128,9 @@ back to the asset observation. The report is useful because it preserves the evi
 because it replaces an auditor.”
 
 **Focus area:** summary percentages first, then one control result, then the evidence/lineage
-detail. Explain the difference between a posture percentage and assurance.
+detail, and finally the advisory AI review. Explain the difference between a posture percentage,
+an evidence chain, and assurance. Make clear that the AI review is guidance only and does not
+change the stored result.
 
 ### 6:00–6:45 — Self-security and bounded AI assistance
 
