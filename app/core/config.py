@@ -121,6 +121,7 @@ class Settings(BaseSettings):
     AI_TIMEOUT_SEC: int = Field(default=180, ge=5, le=900)
     AI_CONTEXT_LENGTH: int = Field(default=8192, ge=1024, le=131072)
     AI_THINKING: bool = False
+    AI_MAX_CONCURRENCY: int = Field(default=2, ge=1, le=16)
 
     # Legacy cloud provider settings retained for optional provider selection.
     ANTHROPIC_API_KEY: str = ""

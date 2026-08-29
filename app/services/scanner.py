@@ -72,6 +72,7 @@ class NetworkScanner:
         return await self._run(args)
 
     async def _run(self, args: list[str]) -> list[DiscoveredHost]:
+        proc = None
         try:
             proc = await asyncio.create_subprocess_exec(
                 *args,
@@ -92,6 +93,18 @@ class NetworkScanner:
         except FileNotFoundError:
             logger.error("nmap binary not found — install in worker container")
             raise ScanExecutionError("nmap binary not found") from None
+        finally:
+            # wait_for() cancels communicate(), but it does not terminate the
+            # child process. Always kill and reap a still-running nmap process
+            # so repeated timeouts cannot exhaust the worker.
+            if proc is not None and proc.returncode is None:
+                try:
+                    proc.kill()
+                except ProcessLookupError:
+                    # The child may exit between the return-code check and
+                    # kill(); wait below still reaps the process state.
+                    pass
+                await proc.wait()
 
     def _parse_xml(self, xml: str) -> list[DiscoveredHost]:
         hosts = []

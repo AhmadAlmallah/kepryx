@@ -79,6 +79,7 @@ clearly labeled local benchmark.
 
 For the engineering review behind this preview, see the [technical architecture](docs/TECHNICAL-ARCHITECTURE.md),
 [QA report](docs/QA-REPORT-2026-08-28.md), [security review](docs/SECURITY-REVIEW-2026-08-28.md),
+[latest security remediation record](docs/SECURITY-REMEDIATION-2026-08-29.md),
 and [SAST/supply-chain report](docs/SAST-REPORT-2026-08-28.md). The [Medium article draft](docs/PUBLICATION/KEPRYX-MEDIUM-ARTICLE.md)
 and [publishing checklist](docs/PUBLICATION/MEDIUM-PUBLISHING-CHECKLIST.md) explain the project in
 plain language and identify which visuals need to be uploaded manually. The [GitHub repository setup

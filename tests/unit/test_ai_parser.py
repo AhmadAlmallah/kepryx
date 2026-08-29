@@ -1,7 +1,10 @@
 """Regression tests for provider-neutral AI parsing and authoritative CVE boundaries."""
 
+import asyncio
+
 import pytest
 
+from app.core.config import settings
 from app.services.ai_parser import AIParserError, parse_assets_from_text
 
 
@@ -35,4 +38,17 @@ async def test_parser_reports_provider_failure_as_actionable_error(monkeypatch):
     monkeypatch.setattr("app.services.ai_parser.complete_json", fake_complete_json)
 
     with pytest.raises(AIParserError, match="AI provider failed"):
+        await parse_assets_from_text("asset input")
+
+
+@pytest.mark.asyncio
+async def test_parser_times_out_expensive_provider_call(monkeypatch):
+    async def slow_complete(*_args, **_kwargs):
+        await asyncio.sleep(0.05)
+        return '{"assets": []}'
+
+    monkeypatch.setattr("app.services.ai_parser.complete_json", slow_complete)
+    monkeypatch.setattr(settings, "AI_TIMEOUT_SEC", 0.001)
+
+    with pytest.raises(AIParserError, match="timed out"):
         await parse_assets_from_text("asset input")

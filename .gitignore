@@ -84,6 +84,7 @@ backups/
 # Build / deploy artifacts
 *.tar.gz
 *.zip
+docs/security-artifacts/sbom-*/
 .terraform/
 *.tfstate
 *.tfstate.backup

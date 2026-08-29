@@ -26,7 +26,7 @@ _SCHEMAS = {
     },
     "ad_ldap": {
         "required": {"server", "base_dn", "bind_dn", "bind_password"},
-        "optional": {"filter"},
+        "optional": {"ca_certs_file", "filter"},
         "secret": {"bind_password"},
         "urls": {"server"},
     },

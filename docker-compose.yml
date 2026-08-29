@@ -31,6 +31,7 @@ x-common-env: &common-env
   AI_TIMEOUT_SEC: ${AI_TIMEOUT_SEC:-180}
   AI_CONTEXT_LENGTH: ${AI_CONTEXT_LENGTH:-8192}
   AI_THINKING: ${AI_THINKING:-false}
+  AI_MAX_CONCURRENCY: ${AI_MAX_CONCURRENCY:-2}
   NVD_API_KEY: ${NVD_API_KEY:-}
   NVD_BASE_URL: ${NVD_BASE_URL:-https://services.nvd.nist.gov/rest/json/cves/2.0}
   EPSS_BASE_URL: ${EPSS_BASE_URL:-https://api.first.org/data/v1/epss}

@@ -5,14 +5,17 @@ from the response and are populated later by the authoritative NVD/EPSS/KEV enri
 OSV remains authoritative for the platform dependency scanner.
 """
 
+import asyncio
 import json
 import logging
 
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
+from app.core.config import settings
 from app.services.ai_client import AIClientError, complete_json
 
 logger = logging.getLogger(__name__)
+_AI_CONCURRENCY = asyncio.Semaphore(settings.AI_MAX_CONCURRENCY)
 
 ALLOWED_CRITICALITY = {"low", "medium", "high", "critical", "tier-1"}
 ALLOWED_CONTROL = {"full", "partial", "none"}
@@ -105,11 +108,17 @@ async def parse_assets_from_text(raw: str) -> list[dict]:
     if not raw or len(raw) > 200000:
         raise AIParserError("Input too short or too long")
     try:
-        text = await complete_json(
-            PROMPT + raw,
-            ParsedAssetBatch.model_json_schema(),
-            max_tokens=8000,
-        )
+        async with _AI_CONCURRENCY:
+            text = await asyncio.wait_for(
+                complete_json(
+                    PROMPT + raw,
+                    ParsedAssetBatch.model_json_schema(),
+                    max_tokens=8000,
+                ),
+                timeout=settings.AI_TIMEOUT_SEC,
+            )
+    except TimeoutError as exc:
+        raise AIParserError("AI provider timed out") from exc
     except AIClientError as exc:
         raise AIParserError(str(exc)) from exc
     except Exception as e:

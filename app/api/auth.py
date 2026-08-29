@@ -3,7 +3,7 @@
 from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -53,6 +53,15 @@ class PasswordChange(BaseModel):
 
 class RefreshRequest(BaseModel):
     refresh_token: str
+
+
+class MFAEnrollRequest(BaseModel):
+    current_password: str = Field(min_length=1)
+
+
+class MFAConfirmRequest(BaseModel):
+    current_password: str = Field(min_length=1)
+    code: str = Field(pattern=r"^\d{6}$")
 
 
 @router.post(
@@ -162,12 +171,17 @@ async def refresh(body: RefreshRequest, db: AsyncSession = Depends(get_db)):
 
 @router.post("/mfa/enroll")
 async def mfa_enroll(
+    body: MFAEnrollRequest,
     request: Request,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     if user.mfa_enabled:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "MFA already enabled")
+    if not verify_password(body.current_password, user.password_hash):
+        await audit(request, "mfa_enroll_failed", user, db, severity="warning")
+        await db.commit()
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Current password is incorrect")
     secret = generate_mfa_secret()
     user.mfa_secret = protect_mfa_secret(secret)
     await audit(request, "mfa_enrolled", user, db)
@@ -180,14 +194,18 @@ async def mfa_enroll(
 
 @router.post("/mfa/confirm")
 async def mfa_confirm(
-    code: str,
+    body: MFAConfirmRequest,
     request: Request,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     if not user.mfa_secret:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Run mfa/enroll first")
-    if not verify_mfa(user.mfa_secret, code):
+    if not verify_password(body.current_password, user.password_hash):
+        await audit(request, "mfa_confirm_failed", user, db, severity="warning")
+        await db.commit()
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Current password is incorrect")
+    if not verify_mfa(user.mfa_secret, body.code):
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid MFA code")
     user.mfa_enabled = True
     await audit(request, "mfa_confirmed", user, db)

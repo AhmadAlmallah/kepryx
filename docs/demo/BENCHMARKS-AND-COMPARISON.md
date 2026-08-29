@@ -1,6 +1,6 @@
 # Benchmarks, comparison, and critical review
 
-Evidence snapshot: 2026-08-28. Environment: local Windows Docker Desktop, Kepryx v0.9.0 preview
+Evidence snapshot: 2026-08-29. Environment: local Windows Docker Desktop, Kepryx v0.9.0 preview
 candidate, current staged branch, synthetic/reserved data. These are engineering observations,
 not a capacity certification or a competitive product benchmark.
 
@@ -12,11 +12,11 @@ one frame.
 
 | Measure | Observed result | What it demonstrates | What it does not demonstrate |
 |---|---:|---|---|
-| Automated test suite | 120 passed; 54% application coverage | Core regressions plus API mutation, scanner, CVE, reconciliation, connector, and worker-policy contracts pass | Broad production coverage; browser mutation, load, and failover evidence remain limited. |
+| Automated test suite | 137 passed; 55.68% application coverage | Core regressions plus API mutation, scanner, CVE, reconciliation, connector, worker-policy, and remediation contracts pass | Broad production coverage; browser mutation, load, and failover evidence remain limited. |
 | Static typing | 69 application files, no mypy errors | Typed application surface is internally consistent | Runtime correctness for every path. |
-| Bandit | No medium/high findings across 9,845 lines | No gated SAST findings in the scanned scope | Complete vulnerability discovery; SAST is one control. |
+| Bandit | No medium/high findings across 10,008 lines | No gated SAST findings in the scanned scope | Complete vulnerability discovery; SAST is one control. |
 | Python dependency gate | `pip-audit --strict` clean for the hash-locked runtime set | Known runtime package CVEs are gated for this candidate | Base-image or future provider dependency risk. |
-| First-party image gate | 0 HIGH/CRITICAL findings in all nine rebuilt images with unfixed advisories visible | Image findings are blocked before release and upstream drift is scheduled for rescanning | A point-in-time scan is not a permanent CVE-free guarantee. |
+| First-party image gate | 0 HIGH/CRITICAL findings in all ten rebuilt images with unfixed advisories visible | Image findings are blocked before release and upstream drift is scheduled for rescanning | A point-in-time scan is not a permanent CVE-free guarantee. |
 | Caddy image review | Custom 2.11.4 build; 0 HIGH/CRITICAL findings | Fixed Go/module pins are verified by raw Trivy | Future upstream source/module changes still require a rescan. |
 | Compliance acceptance | 3 catalogs, 13 controls, 34 assets, 442 results | Evidence-backed graduated control assessment works in the preview | Certification, full framework coverage, or auditor judgment. |
 | Graph acceptance | 185 nodes, 218 relationships | The dashboard can render and operate on bounded evidence topology | Neo4j/BloodHound attack-path analysis or large-scale graph capacity. |
@@ -78,7 +78,7 @@ enterprise platform has identical behavior.
 
 ### Highest-value improvement after publication
 
-1. Raise coverage beyond 54% with browser mutation, DB-backed edge cases, and worker idempotency tests.
+1. Raise coverage beyond 56% with browser mutation, DB-backed edge cases, and worker idempotency tests.
 2. Add one independently reviewed provider connector with a documented failure contract.
 3. Produce load/soak and restore/upgrade evidence using a defined test dataset.
 4. Add real deployment HTTPS evidence and a signed release tag.

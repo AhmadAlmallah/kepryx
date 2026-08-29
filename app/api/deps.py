@@ -19,6 +19,26 @@ from app.core.token_blocklist import TokenBlocklistUnavailableError, is_token_re
 from app.models import APIToken, AuditLog, User
 
 logger = logging.getLogger(__name__)
+
+# These scopes can expose sensitive operational data or trigger control-plane
+# actions.  They must remain inside the same management-network boundary as
+# administrator JWTs, including when a scoped service token is used.
+MANAGEMENT_SCOPES = frozenset(
+    {
+        "scans:trigger",
+        "alerts:resolve",
+        "audit:read",
+        "integrations:read",
+        "*",
+    }
+)
+
+
+def scope_requires_management(scope: str) -> bool:
+    """Return whether a service-token scope requires the management network."""
+    return scope in MANAGEMENT_SCOPES
+
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_PREFIX}/auth/login")
 oauth2_optional = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_PREFIX}/auth/login",
@@ -84,7 +104,7 @@ def require_scope(scope: str, *user_roles: str):
                 raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid API token")
             if "*" not in token.scopes and scope not in token.scopes:
                 raise HTTPException(status.HTTP_403_FORBIDDEN, f"Missing scope: {scope}")
-            if "*" in token.scopes:
+            if "*" in token.scopes or scope_requires_management(scope):
                 ensure_management_network(request)
             return APIPrincipal(
                 username=f"api_token:{token.name}",

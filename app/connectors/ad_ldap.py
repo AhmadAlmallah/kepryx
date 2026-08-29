@@ -1,12 +1,26 @@
 """Active Directory / LDAP connector — pulls domain-joined endpoints."""
 
 import logging
+import ssl
 
-from ldap3 import ALL, SUBTREE, Connection, Server
+from ldap3 import ALL, SUBTREE, Connection, Server, Tls
 
 from app.connectors import BaseConnector, register_connector
 
 logger = logging.getLogger(__name__)
+
+
+def _tls_config(config: dict) -> Tls:
+    """Build an explicitly validating LDAPS configuration.
+
+    ldap3's implicit default TLS object does not validate the server
+    certificate. Use the system trust store by default, or an operator-
+    supplied CA bundle for private enterprise PKI.
+    """
+    ca_certs_file = config.get("ca_certs_file")
+    if ca_certs_file is not None and (not isinstance(ca_certs_file, str) or not ca_certs_file):
+        raise ValueError("ca_certs_file must be a non-empty path when supplied")
+    return Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=ca_certs_file)
 
 
 @register_connector("ad_ldap")
@@ -14,6 +28,7 @@ class ADLDAPConnector(BaseConnector):
     """
     Config:
       server: ldaps://dc.example.local:636
+      ca_certs_file: /run/secrets/ad-ca.pem (optional; system trust store otherwise)
       base_dn: DC=example,DC=local
       bind_dn: CN=svc-kepryx,OU=Service Accounts,DC=example,DC=local
       bind_password: <encrypted by the integration service>
@@ -21,7 +36,12 @@ class ADLDAPConnector(BaseConnector):
     """
 
     async def fetch_inventory(self) -> list[dict]:
-        server = Server(self.config["server"], get_info=ALL, use_ssl=True)
+        server = Server(
+            self.config["server"],
+            get_info=ALL,
+            use_ssl=True,
+            tls=_tls_config(self.config),
+        )
         conn = Connection(
             server,
             user=self.config["bind_dn"],
@@ -80,7 +100,11 @@ class ADLDAPConnector(BaseConnector):
 
     async def test_connection(self) -> bool:
         try:
-            server = Server(self.config["server"], use_ssl=True)
+            server = Server(
+                self.config["server"],
+                use_ssl=True,
+                tls=_tls_config(self.config),
+            )
             conn = Connection(
                 server,
                 user=self.config["bind_dn"],
