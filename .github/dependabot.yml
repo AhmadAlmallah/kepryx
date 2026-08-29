@@ -15,6 +15,21 @@ updates:
     directory: /docker
     schedule:
       interval: weekly
+    # Runtime-family upgrades are release migrations, not unattended image refreshes.
+    # Keep Dependabot on the tested Python 3.12, Go 1.26, and PostgreSQL 16 lines;
+    # digest and patch updates within those lines remain enabled.
+    ignore:
+      - dependency-name: python
+        update-types:
+          - version-update:semver-major
+          - version-update:semver-minor
+      - dependency-name: golang
+        update-types:
+          - version-update:semver-major
+          - version-update:semver-minor
+      - dependency-name: postgres
+        update-types:
+          - version-update:semver-major
     labels: [dependencies, docker]
     commit-message:
       prefix: "chore(docker)"
