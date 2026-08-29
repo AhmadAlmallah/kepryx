@@ -172,6 +172,38 @@ jobs:
           docker run --rm -v "$PWD/docker/Caddyfile:/etc/caddy/Caddyfile:ro" \
             kepryx-caddy:ci validate --config /etc/caddy/Caddyfile --adapter caddyfile
 
+      - name: Generate CycloneDX SBOMs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/sbom
+          declare -A images=(
+            [api]=kepryx-api:ci
+            [worker]=kepryx-worker:ci
+            [scanner]=kepryx-scanner:ci
+            [caddy]=kepryx-caddy:ci
+            [postgres]=kepryx-postgres:ci
+            [asset-source-mock]=kepryx-asset-source-mock:ci
+          )
+          for name in "${!images[@]}"; do
+            docker run --rm \
+              -v /var/run/docker.sock:/var/run/docker.sock \
+              -v "$PWD:/workspace" \
+              aquasec/trivy:0.67.2 image \
+              --quiet \
+              --skip-version-check \
+              --format cyclonedx \
+              --output "/workspace/artifacts/sbom/${name}.cdx.json" \
+              "${images[$name]}"
+          done
+
+      - name: Upload SBOM artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: kepryx-cyclonedx-sboms
+          path: artifacts/sbom/
+          if-no-files-found: error
+
       - name: Scan API image
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # 0.36.0
         with:

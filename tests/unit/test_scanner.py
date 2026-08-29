@@ -94,6 +94,20 @@ class _Process:
         return await self.stdout.read(), await self.stderr.read()
 
 
+class _RunningProcess(_Process):
+    def __init__(self):
+        super().__init__(returncode=None)
+        self.killed = False
+        self.waited = False
+
+    def kill(self):
+        self.killed = True
+        self.returncode = -9
+
+    async def wait(self):
+        self.waited = True
+
+
 @pytest.mark.asyncio
 async def test_run_reports_nonzero_missing_binary_and_timeout(monkeypatch):
     scanner = NetworkScanner()
@@ -124,3 +138,25 @@ async def test_run_reports_nonzero_missing_binary_and_timeout(monkeypatch):
     monkeypatch.setattr("app.services.scanner.asyncio.wait_for", timeout)
     with pytest.raises(ScanExecutionError, match="timed out"):
         await scanner._run(["nmap"])
+
+
+@pytest.mark.asyncio
+async def test_run_kills_and_reaps_process_after_timeout(monkeypatch):
+    process = _RunningProcess()
+
+    async def running_process(*_args, **_kwargs):
+        return process
+
+    async def timeout(awaitable, timeout):
+        del timeout
+        awaitable.close()
+        raise TimeoutError
+
+    monkeypatch.setattr("app.services.scanner.asyncio.create_subprocess_exec", running_process)
+    monkeypatch.setattr("app.services.scanner.asyncio.wait_for", timeout)
+
+    with pytest.raises(ScanExecutionError, match="timed out"):
+        await NetworkScanner()._run(["nmap"])
+
+    assert process.killed
+    assert process.waited

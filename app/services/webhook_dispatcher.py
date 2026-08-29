@@ -27,27 +27,83 @@ from app.models import Webhook
 logger = logging.getLogger(__name__)
 
 
-def _resolve_and_check(hostname: str) -> tuple[bool, str]:
-    """H-03 fix: Resolve hostname and verify it's not a private IP.
+def _resolve_public_ip(hostname: str) -> tuple[str | None, str]:
+    """Resolve a hostname once and return one verified global address.
 
-    Prevents DNS rebinding attacks where a hostname initially resolves
-    to a public IP at registration but to a private IP at dispatch time.
+    The returned address is later used for the actual socket connection. This
+    prevents a DNS answer from changing between validation and HTTPX's own
+    resolver lookup (DNS-rebinding/TOCTOU SSRF).
     """
     try:
         # getaddrinfo returns list of (family, type, proto, canonname, sockaddr)
-        results = socket.getaddrinfo(hostname, None)
+        results = socket.getaddrinfo(hostname, None, type=socket.SOCK_STREAM)
     except socket.gaierror as e:
-        return False, f"DNS resolution failed: {e}"
+        return None, f"DNS resolution failed: {e}"
 
+    resolved_ip = None
     for _family, _, _, _, sockaddr in results:
-        ip_str = sockaddr[0]
+        ip_str = str(sockaddr[0])
         try:
             ip = ipaddress.ip_address(ip_str)
             if not is_public_ip(ip):
-                return False, f"Hostname resolves to non-routable IP: {ip_str}"
+                return None, f"Hostname resolves to non-routable IP: {ip_str}"
+            resolved_ip = resolved_ip or ip_str
         except ValueError:
             continue
-    return True, ""
+    if not resolved_ip:
+        return None, "Hostname did not resolve to a usable IP address"
+    return resolved_ip, ""
+
+
+def _resolve_and_check(hostname: str) -> tuple[bool, str]:
+    """Resolve hostname and verify every address is globally routable."""
+    resolved_ip, reason = _resolve_public_ip(hostname)
+    return resolved_ip is not None, reason
+
+
+def _host_header(hostname: str, scheme: str, port: int | None) -> str:
+    """Format the original authority for a request sent to a pinned IP."""
+    host = f"[{hostname}]" if ":" in hostname and not hostname.startswith("[") else hostname
+    default_port = 443 if scheme == "https" else 80
+    return f"{host}:{port}" if port and port != default_port else host
+
+
+class _PinnedIPTransport(httpx.AsyncBaseTransport):
+    """Send a request to a previously verified IP while preserving host/SNI."""
+
+    def __init__(
+        self,
+        hostname: str,
+        resolved_ip: str,
+        transport: httpx.AsyncBaseTransport | None = None,
+    ):
+        self.hostname = hostname
+        self.resolved_ip = resolved_ip
+        self._transport = transport or httpx.AsyncHTTPTransport(verify=True, trust_env=False)
+
+    async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
+        headers = request.headers.copy()
+        headers["Host"] = _host_header(request.url.host, request.url.scheme, request.url.port)
+        extensions = dict(request.extensions)
+        if request.url.scheme == "https":
+            # httpcore honors this extension for TLS SNI while connecting to
+            # the pinned IP in the rewritten URL.
+            extensions["sni_hostname"] = self.hostname
+        # HTTPX request streams are transport-specific. Read the already
+        # constructed JSON body before rebuilding the request so the pinned
+        # transport works consistently with both real and mock transports.
+        body = await request.aread()
+        pinned_request = httpx.Request(
+            request.method,
+            request.url.copy_with(host=self.resolved_ip),
+            headers=headers,
+            content=body,
+            extensions=extensions,
+        )
+        return await self._transport.handle_async_request(pinned_request)
+
+    async def aclose(self) -> None:
+        await self._transport.aclose()
 
 
 def _sign_payload(secret: str, payload: dict) -> tuple[str, str]:
@@ -64,9 +120,22 @@ def _sign_payload(secret: str, payload: dict) -> tuple[str, str]:
     retry=retry_if_exception_type((httpx.HTTPError, httpx.TimeoutException)),
     reraise=False,
 )
-async def _post_with_retry(url: str, payload: dict, headers: dict) -> dict:
-    # H-03 fix: disable follow_redirects to prevent redirect-based SSRF
-    async with httpx.AsyncClient(timeout=15.0, follow_redirects=False) as client:
+async def _post_with_retry(
+    url: str,
+    hostname: str,
+    resolved_ip: str,
+    payload: dict,
+    headers: dict,
+) -> dict:
+    # H-03: disable redirects and pin the connection to the address verified
+    # immediately before dispatch. The original host remains in Host/SNI.
+    transport = _PinnedIPTransport(hostname, resolved_ip)
+    async with httpx.AsyncClient(
+        timeout=15.0,
+        follow_redirects=False,
+        trust_env=False,
+        transport=transport,
+    ) as client:
         r = await client.post(url, json=payload, headers=headers)
         # Reject 3xx redirects explicitly
         if 300 <= r.status_code < 400:
@@ -83,6 +152,10 @@ async def dispatch_one(webhook: Webhook, event_type: str, data: dict) -> dict:
         webhook.last_status = "invalid_url"
         return {"delivered": False, "error": "missing hostname"}
 
+    if parsed.scheme not in ("http", "https") or parsed.username or parsed.password:
+        webhook.last_status = "invalid_url"
+        return {"delivered": False, "error": "invalid webhook URL"}
+
     # Validate IP literals again at dispatch time for legacy records and defense
     # in depth. Registration validation is not sufficient because records can
     # predate the policy or be written by an external migration.
@@ -94,10 +167,11 @@ async def dispatch_one(webhook: Webhook, event_type: str, data: dict) -> dict:
                 "delivered": False,
                 "error": f"Webhook URL resolves to non-routable IP: {address}",
             }
+        resolved_ip = str(address)
     except ValueError:
-        # Hostname - verify it doesn't resolve to a private IP
-        safe, reason = _resolve_and_check(parsed.hostname)
-        if not safe:
+        # Hostname - verify and pin the resolved address for the request.
+        resolved_ip, reason = _resolve_public_ip(parsed.hostname)
+        if not resolved_ip:
             webhook.last_status = "ssrf_blocked"
             logger.warning(f"Webhook {webhook.id} blocked: {reason}")
             return {"delivered": False, "error": reason}
@@ -123,7 +197,7 @@ async def dispatch_one(webhook: Webhook, event_type: str, data: dict) -> dict:
         "User-Agent": "Kepryx-Webhook/1.0",
     }
     try:
-        result = await _post_with_retry(webhook.url, payload, headers)
+        result = await _post_with_retry(webhook.url, parsed.hostname, resolved_ip, payload, headers)
         webhook.last_delivery = datetime.now(UTC)
         webhook.delivery_count += 1
         webhook.last_status = f"success_{result['status_code']}"

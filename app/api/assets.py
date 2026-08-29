@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import audit, require_scope
 from app.core.database import get_db
+from app.core.rate_limit import per_user_rate_limit
 from app.models import CVE, Asset, AssetCVE
 from app.services.risk_engine import compute_risk
 from app.workers.enrichment_tasks import enrich_asset as enrich_task
@@ -265,6 +266,7 @@ async def ai_ingest(
     request: Request,
     db: AsyncSession = Depends(get_db),
     user=Depends(require_scope("assets:write", "analyst")),
+    _rate_check: None = Depends(per_user_rate_limit("ai_ingest", 5, 60)),
 ):
     """Parse arbitrary input via Claude, then enrich via NVD/EPSS/KEV."""
     from app.services.ai_parser import AIParserError, parse_assets_from_text

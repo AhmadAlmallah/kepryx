@@ -8,6 +8,7 @@ Fixes applied:
 
 import csv
 import io
+import tempfile
 from typing import Any, NotRequired, TypedDict
 from uuid import uuid4
 
@@ -84,64 +85,75 @@ async def import_assets_csv(
     if not file.filename or not file.filename.lower().endswith(".csv"):
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "File must be .csv")
 
-    # C-02 fix: streaming read with bounded buffer
-    chunks = []
+    # C-02 fix: spool uploads to disk after a small in-memory threshold.  The
+    # old implementation kept both the complete byte buffer and list(reader)
+    # in memory, allowing concurrent near-limit uploads to amplify worker use.
+    results: ImportResults = {"created": 0, "errors": [], "preview": []}
     total_bytes = 0
+    spool = tempfile.SpooledTemporaryFile(max_size=1024 * 1024, mode="w+b")
     while True:
         chunk = await file.read(1024 * 1024)  # 1MB chunks
         if not chunk:
             break
         total_bytes += len(chunk)
         if total_bytes > MAX_UPLOAD_BYTES:
+            spool.close()
             raise HTTPException(
                 status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
                 f"File exceeds {MAX_UPLOAD_BYTES // (1024 * 1024)}MB limit",
             )
-        chunks.append(chunk)
-    content = b"".join(chunks)
+        spool.write(chunk)
+    await file.close()
 
+    def open_csv_reader() -> io.TextIOWrapper:
+        spool.seek(0)
+        return io.TextIOWrapper(spool, encoding="utf-8-sig", newline="")
+
+    # H-04 fix: pre-scan for duplicates within CSV without materializing rows.
+    text_stream = open_csv_reader()
     try:
-        text = content.decode("utf-8-sig")
+        reader = csv.DictReader(text_stream)
+        if not reader.fieldnames:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Empty CSV")
+
+        headers = {h.strip().lower() for h in reader.fieldnames}
+        missing = REQUIRED_FIELDS - headers
+        if missing:
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST,
+                f"Missing required CSV columns: {sorted(missing)}",
+            )
+
+        seen_names: dict[str, int] = {}
+        duplicates: list[dict[str, Any]] = []
+        row_count = 0
+        for row_num, row in enumerate(reader, start=2):
+            row_count += 1
+            if row_count > MAX_ROWS_PER_IMPORT:
+                raise HTTPException(
+                    status.HTTP_400_BAD_REQUEST,
+                    f"CSV has more than {MAX_ROWS_PER_IMPORT} rows, max allowed is "
+                    f"{MAX_ROWS_PER_IMPORT}",
+                )
+            name = (row.get("name") or row.get("Name") or "").strip()
+            if not name:
+                continue
+            if name in seen_names:
+                duplicates.append({"row": row_num, "name": name, "first_seen": seen_names[name]})
+            else:
+                seen_names[name] = row_num
     except UnicodeDecodeError as exc:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "File must be UTF-8 encoded") from exc
+    finally:
+        text_stream.detach()
 
-    reader = csv.DictReader(io.StringIO(text))
-    if not reader.fieldnames:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Empty CSV")
-
-    headers = set(h.strip().lower() for h in reader.fieldnames)
-    missing = REQUIRED_FIELDS - headers
-    if missing:
-        raise HTTPException(
-            status.HTTP_400_BAD_REQUEST,
-            f"Missing required CSV columns: {sorted(missing)}",
-        )
-
-    # H-04 fix: pre-scan for duplicates within CSV
-    all_rows = list(reader)
-    if len(all_rows) > MAX_ROWS_PER_IMPORT:
-        raise HTTPException(
-            status.HTTP_400_BAD_REQUEST,
-            f"CSV has {len(all_rows)} rows, max allowed is {MAX_ROWS_PER_IMPORT}",
-        )
-
-    seen_names: dict[str, int] = {}
-    duplicates: list[dict[str, Any]] = []
-    for row_num, row in enumerate(all_rows, start=2):
-        name = (row.get("name") or row.get("Name") or "").strip()
-        if not name:
-            continue
-        if name in seen_names:
-            duplicates.append({"row": row_num, "name": name, "first_seen": seen_names[name]})
-        else:
-            seen_names[name] = row_num
     if duplicates:
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST,
             {"error": "Duplicate asset names in CSV", "duplicates": duplicates[:10]},
         )
 
-    # H-04 continued: also check against existing assets in DB
+    # H-04 continued: also check against existing assets in DB.
     if not dry_run:
         from app.models import Asset
 
@@ -162,93 +174,103 @@ async def import_assets_csv(
     from app.models import Asset
     from app.services.risk_engine import compute_risk
 
-    results: ImportResults = {"created": 0, "errors": [], "preview": []}
-    for row_num, row in enumerate(all_rows, start=2):
-        try:
-            data: dict[str, Any] = {k.strip().lower(): (v or "").strip() for k, v in row.items()}
-            if not data.get("name"):
-                results["errors"].append({"row": row_num, "error": "name is required"})
-                continue
+    # Second pass performs the import while retaining only the bounded result
+    # preview and the duplicate-name set from the validation pass.
+    text_stream = open_csv_reader()
+    try:
+        reader = csv.DictReader(text_stream)
+        for row_num, row in enumerate(reader, start=2):
+            try:
+                data: dict[str, Any] = {
+                    k.strip().lower(): (v or "").strip() for k, v in row.items()
+                }
+                if not data.get("name"):
+                    results["errors"].append({"row": row_num, "error": "name is required"})
+                    continue
 
-            for field, default in DEFAULTS.items():
-                if not data.get(field):
-                    data[field] = default
+                for field, default in DEFAULTS.items():
+                    if not data.get(field):
+                        data[field] = default
 
-            for list_field in ("software_stack", "cpe", "dependencies", "tags"):
-                if data.get(list_field):
-                    data[list_field] = [s.strip() for s in data[list_field].split(";") if s.strip()]
-                else:
-                    data[list_field] = []
+                for list_field in ("software_stack", "cpe", "dependencies", "tags"):
+                    if data.get(list_field):
+                        data[list_field] = [
+                            s.strip() for s in data[list_field].split(";") if s.strip()
+                        ]
+                    else:
+                        data[list_field] = []
 
-            eol = (data.get("eol_status") or "").lower()
-            data["eol_status"] = eol in ("true", "1", "yes", "y")
+                eol = (data.get("eol_status") or "").lower()
+                data["eol_status"] = eol in ("true", "1", "yes", "y")
 
-            for nullable in ("ip", "mac"):
-                if data.get(nullable) in ("N/A", "DHCP", "Unknown", "", None):
-                    data[nullable] = None
+                for nullable in ("ip", "mac"):
+                    if data.get(nullable) in ("N/A", "DHCP", "Unknown", "", None):
+                        data[nullable] = None
 
-            risk = compute_risk(
-                {
+                risk = compute_risk(
+                    {
+                        "control_coverage": data["control_coverage"],
+                        "network_exposure": data["network_exposure"],
+                        "auth_method": data["auth_method"],
+                        "criticality": data["criticality"],
+                        "data_classification": data["data_classification"],
+                        "eol_status": data["eol_status"],
+                        "cves": [],
+                    }
+                )
+
+                # F-06 fix: OR instead of AND for shadow IT detection
+                is_shadow = (data.get("edr_status") in ("None", "", None)) or (
+                    data["control_coverage"] == "none"
+                )
+
+                asset_data: dict[str, Any] = {
+                    "id": uuid4(),
+                    "name": data["name"],
+                    "type": data.get("type", "Unknown"),
+                    "os": data.get("os") or None,
+                    "ip": data.get("ip"),
+                    "mac": data.get("mac"),
+                    "segment": data["segment"],
+                    "edr_status": data.get("edr_status", "None"),
                     "control_coverage": data["control_coverage"],
                     "network_exposure": data["network_exposure"],
                     "auth_method": data["auth_method"],
                     "criticality": data["criticality"],
                     "data_classification": data["data_classification"],
+                    "last_patch": data.get("last_patch") or None,
                     "eol_status": data["eol_status"],
-                    "cves": [],
+                    "software_stack": data["software_stack"],
+                    "cpe": data["cpe"],
+                    "dependencies": data["dependencies"],
+                    "sources": ["csv_import"],
+                    "is_shadow": is_shadow,
+                    "tags": data["tags"],
+                    "risk_score": risk.score,
+                    "risk_tier": risk.tier,
+                    "risk_breakdown": risk.breakdown,
+                    "attrs": {},
                 }
-            )
 
-            # F-06 fix: OR instead of AND for shadow IT detection
-            is_shadow = (data.get("edr_status") in ("None", "", None)) or (
-                data["control_coverage"] == "none"
-            )
+                if dry_run:
+                    if len(results["preview"]) < 10:
+                        results["preview"].append(
+                            {
+                                "name": asset_data["name"],
+                                "type": asset_data["type"],
+                                "risk_tier": asset_data["risk_tier"],
+                                "risk_score": asset_data["risk_score"],
+                            }
+                        )
+                else:
+                    asset = Asset(**asset_data)
+                    db.add(asset)
 
-            asset_data: dict[str, Any] = {
-                "id": uuid4(),
-                "name": data["name"],
-                "type": data.get("type", "Unknown"),
-                "os": data.get("os") or None,
-                "ip": data.get("ip"),
-                "mac": data.get("mac"),
-                "segment": data["segment"],
-                "edr_status": data.get("edr_status", "None"),
-                "control_coverage": data["control_coverage"],
-                "network_exposure": data["network_exposure"],
-                "auth_method": data["auth_method"],
-                "criticality": data["criticality"],
-                "data_classification": data["data_classification"],
-                "last_patch": data.get("last_patch") or None,
-                "eol_status": data["eol_status"],
-                "software_stack": data["software_stack"],
-                "cpe": data["cpe"],
-                "dependencies": data["dependencies"],
-                "sources": ["csv_import"],
-                "is_shadow": is_shadow,
-                "tags": data["tags"],
-                "risk_score": risk.score,
-                "risk_tier": risk.tier,
-                "risk_breakdown": risk.breakdown,
-                "attrs": {},
-            }
-
-            if dry_run:
-                if len(results["preview"]) < 10:
-                    results["preview"].append(
-                        {
-                            "name": asset_data["name"],
-                            "type": asset_data["type"],
-                            "risk_tier": asset_data["risk_tier"],
-                            "risk_score": asset_data["risk_score"],
-                        }
-                    )
-            else:
-                asset = Asset(**asset_data)
-                db.add(asset)
-
-            results["created"] += 1
-        except Exception as e:
-            results["errors"].append({"row": row_num, "error": str(e)[:200]})
+                results["created"] += 1
+            except Exception as e:
+                results["errors"].append({"row": row_num, "error": str(e)[:200]})
+    finally:
+        text_stream.detach()
 
     if not dry_run:
         await audit(
@@ -268,4 +290,5 @@ async def import_assets_csv(
         await db.commit()
 
     results["dry_run"] = dry_run
+    spool.close()
     return results

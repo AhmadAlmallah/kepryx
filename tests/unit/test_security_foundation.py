@@ -1,10 +1,14 @@
 """Regression tests for the security foundation."""
 
+import ssl
+from types import SimpleNamespace
+
 import pytest
 from fastapi import HTTPException
+from slowapi.middleware import SlowAPIMiddleware
 from starlette.requests import Request
 
-from app.api.deps import ensure_management_network
+from app.api.deps import ensure_management_network, require_scope, scope_requires_management
 from app.api.exports import _csv_safe
 from app.core.config import _parse_list_setting, settings
 from app.core.connector_secrets import (
@@ -12,12 +16,16 @@ from app.core.connector_secrets import (
     resolve_connector_config,
     validate_connector_config,
 )
+from app.core.rate_limit import per_user_rate_limit
 from app.core.security import (
     create_access_token,
     decode_token,
     protect_mfa_secret,
     reveal_mfa_secret,
 )
+from app.main import app
+from tests.support import FakeDB
+from tests.support import request as support_request
 
 
 def _request(client_host: str, headers: dict[str, str] | None = None) -> Request:
@@ -113,6 +121,72 @@ def test_management_network_uses_real_ip_from_trusted_proxy(monkeypatch):
     monkeypatch.setattr(settings, "MANAGEMENT_CIDRS", ["192.0.2.0/24"])
     request = _request("172.29.0.2", {"X-Real-IP": "192.0.2.10"})
     ensure_management_network(request)
+
+
+@pytest.mark.parametrize(
+    "scope",
+    ["scans:trigger", "alerts:resolve", "audit:read", "integrations:read", "*"],
+)
+def test_privileged_api_token_scopes_require_management_network(scope):
+    assert scope_requires_management(scope)
+
+
+@pytest.mark.asyncio
+async def test_scoped_privileged_api_token_enforces_management_network(monkeypatch):
+    token = SimpleNamespace(scopes=["scans:trigger"], id="token-id", name="scanner")
+    called = False
+
+    async def fake_verify(_api_key, _db):
+        return token
+
+    def fake_management(_request):
+        nonlocal called
+        called = True
+
+    checker = require_scope("scans:trigger", "admin")
+    monkeypatch.setattr("app.api.deps.verify_api_token", fake_verify)
+    monkeypatch.setattr("app.api.deps.ensure_management_network", fake_management)
+
+    principal = await checker(support_request(), bearer=None, api_key="scoped-token", db=FakeDB())
+
+    assert principal.token_id == "token-id"
+    assert called
+
+
+@pytest.mark.asyncio
+async def test_user_rate_limit_fails_closed_when_redis_unavailable(monkeypatch):
+    async def unavailable_redis():
+        raise RuntimeError("redis offline")
+
+    monkeypatch.setattr("app.core.rate_limit._get_redis", unavailable_redis)
+
+    with pytest.raises(HTTPException) as exc_info:
+        await per_user_rate_limit("expensive", 1, 60)(support_request())
+
+    assert exc_info.value.status_code == 503
+    assert exc_info.value.detail["error"] == "rate_limit_service_unavailable"
+
+
+def test_ldaps_tls_requires_certificate_validation(monkeypatch):
+    captured = {}
+
+    class FakeTls:
+        def __init__(self, **kwargs):
+            captured.update(kwargs)
+
+    from app.connectors import ad_ldap
+
+    monkeypatch.setattr(ad_ldap, "Tls", FakeTls)
+    ad_ldap._tls_config({"ca_certs_file": "/run/secrets/ad-ca.pem"})
+
+    assert captured == {
+        "validate": ssl.CERT_REQUIRED,
+        "ca_certs_file": "/run/secrets/ad-ca.pem",
+    }
+
+
+def test_global_slowapi_middleware_is_enabled():
+    assert any(middleware.cls is SlowAPIMiddleware for middleware in app.user_middleware)
 
 
 def test_connector_resolution_rejects_plaintext_legacy_secret():

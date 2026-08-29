@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 from slowapi.util import get_remote_address
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
@@ -68,6 +69,7 @@ app.add_exception_handler(
     RateLimitExceeded,
     cast(Any, _rate_limit_exceeded_handler),
 )
+app.add_middleware(SlowAPIMiddleware)
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.ALLOWED_HOSTS)
 app.add_middleware(GZipMiddleware, minimum_size=1024)
 app.add_middleware(

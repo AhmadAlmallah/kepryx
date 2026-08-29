@@ -1,9 +1,14 @@
 from types import SimpleNamespace
 
+import httpx
 import pytest
 
 from app.api.webhooks import _is_safe_webhook_url
-from app.services.webhook_dispatcher import _resolve_and_check, dispatch_one
+from app.services.webhook_dispatcher import (
+    _PinnedIPTransport,
+    _resolve_and_check,
+    dispatch_one,
+)
 
 
 @pytest.mark.parametrize(
@@ -45,3 +50,33 @@ async def test_dispatch_rechecks_legacy_non_global_ip_literal():
     assert result["delivered"] is False
     assert "non-routable" in result["error"]
     assert webhook.last_status == "ssrf_blocked"
+
+
+@pytest.mark.asyncio
+async def test_pinned_transport_preserves_authority_and_sni():
+    captured = {}
+
+    async def handler(request):
+        captured["url"] = str(request.url)
+        captured["host"] = request.headers["host"]
+        captured["sni"] = request.extensions.get("sni_hostname")
+        return httpx.Response(202, request=request)
+
+    mock_transport = httpx.MockTransport(handler)
+    transport = _PinnedIPTransport(
+        "hooks.example.test",
+        "93.184.216.34",
+        transport=mock_transport,
+    )
+    async with httpx.AsyncClient(transport=transport) as client:
+        response = await client.post(
+            "https://hooks.example.test:8443/events",
+            json={"event": "test"},
+        )
+
+    assert response.status_code == 202
+    assert captured == {
+        "url": "https://93.184.216.34:8443/events",
+        "host": "hooks.example.test:8443",
+        "sni": "hooks.example.test",
+    }

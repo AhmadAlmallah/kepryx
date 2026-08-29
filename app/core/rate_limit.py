@@ -63,9 +63,9 @@ def per_user_rate_limit(key: str, limit: int, window_seconds: int):
             # Fall back to IP
             user_id = get_request_ip(request)
 
-        r = await _get_redis()
-        bucket_key = f"ratelimit:{key}:{user_id}"
         try:
+            r = await _get_redis()
+            bucket_key = f"ratelimit:{key}:{user_id}"
             count = await r.incr(bucket_key)
             if count == 1:
                 await r.expire(bucket_key, window_seconds)
@@ -85,8 +85,14 @@ def per_user_rate_limit(key: str, limit: int, window_seconds: int):
         except HTTPException:
             raise
         except Exception as e:
-            # If Redis is unreachable, fail open (allow request) but log
-            logger.warning(f"Rate limit check failed (allowing): {e}")
+            # Rate limits protect expensive and security-sensitive operations.
+            # If Redis is unavailable, fail closed instead of silently removing
+            # the control.
+            logger.error("Rate limit service unavailable: %s", e)
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail={"error": "rate_limit_service_unavailable"},
+            ) from e
 
     return dependency
 
@@ -97,9 +103,9 @@ def per_ip_rate_limit(key: str, limit: int, window_seconds: int):
     async def dependency(request: Request):
         ip = get_request_ip(request)
 
-        r = await _get_redis()
-        bucket_key = f"ratelimit:ip:{key}:{ip}"
         try:
+            r = await _get_redis()
+            bucket_key = f"ratelimit:ip:{key}:{ip}"
             count = await r.incr(bucket_key)
             if count == 1:
                 await r.expire(bucket_key, window_seconds)

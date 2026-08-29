@@ -1956,19 +1956,31 @@ function showChangePasswordModal() {
 
 async function showMfaEnrollModal() {
   try {
-    const result = await api("/api/v1/auth/mfa/enroll", { method: "POST" });
     const form = el("form", {}, [
-      el("div", { className: "notice mb", text: "Add this account to an authenticator app, then enter the six-digit code to confirm MFA." }),
-      el("div", { className: "mono code-block mb", text: `Secret: ${result.secret}\n\nProvisioning URI:\n${result.provisioning_uri}` }),
-      inputField("Authenticator code", "mfa-confirm-code", { placeholder: "123456", attrs: { inputmode: "numeric", pattern: "[0-9]{6}" } }),
-      el("div", { className: "flex" }, [button("Cancel", closeModal, "btn ghost"), el("button", { className: "btn", type: "submit", text: "Confirm MFA" })]),
+      inputField("Current password (step-up verification)", "mfa-current-password", { type: "password" }),
+      el("div", { className: "notice mb", text: "Step 1: enter your password to generate a new factor. Step 2: add the factor to your authenticator app, then enter the six-digit code." }),
+      el("div", { className: "flex" }, [button("Cancel", closeModal, "btn ghost"), el("button", { className: "btn", type: "submit", text: "Generate factor" })]),
     ]);
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       try {
-        await api(`/api/v1/auth/mfa/confirm?code=${encodeURIComponent(formValue(form, "mfa-confirm-code"))}`, { method: "POST" });
-        state.user.mfa_enabled = true;
-        closeModal(); showToast("MFA enabled"); await loadView();
+        const result = await api("/api/v1/auth/mfa/enroll", { method: "POST", body: JSON.stringify({ current_password: formValue(form, "mfa-current-password") }) });
+        const confirmForm = el("form", {}, [
+          el("div", { className: "notice mb", text: "Add this account to an authenticator app, then enter the six-digit code to confirm MFA." }),
+          el("div", { className: "mono code-block mb", text: `Secret: ${result.secret}\n\nProvisioning URI:\n${result.provisioning_uri}` }),
+          inputField("Current password (step-up verification)", "mfa-confirm-password", { type: "password" }),
+          inputField("Authenticator code", "mfa-confirm-code-final", { placeholder: "123456", attrs: { inputmode: "numeric", pattern: "[0-9]{6}" } }),
+          el("div", { className: "flex" }, [button("Cancel", closeModal, "btn ghost"), el("button", { className: "btn", type: "submit", text: "Confirm MFA" })]),
+        ]);
+        confirmForm.addEventListener("submit", async (confirmEvent) => {
+          confirmEvent.preventDefault();
+          try {
+            await api("/api/v1/auth/mfa/confirm", { method: "POST", body: JSON.stringify({ current_password: formValue(confirmForm, "mfa-confirm-password"), code: formValue(confirmForm, "mfa-confirm-code-final") }) });
+            state.user.mfa_enabled = true;
+            closeModal(); showToast("MFA enabled"); await loadView();
+          } catch (error) { showToast(error.message, "error"); }
+        });
+        openModal("Enable MFA — confirm authenticator", confirmForm);
       } catch (error) { showToast(error.message, "error"); }
     });
     openModal("Enable MFA", form);
