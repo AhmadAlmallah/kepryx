@@ -79,6 +79,23 @@ audit activity in one place. This capture shows 34 assets, 5 critical assets, 7 
 control-evidence table shows the asset, control, status, observed values, and assessment timing that
 an engineer needs to review the result. These numbers are local preview data, not a certification.*
 
+![Actual Kepryx Assistant screen explaining bounded live evidence](../images/product/assistant.png)
+
+*Screenshot — The Kepryx Assistant is read-only and evidence-bound. It can summarize the current
+inventory, alert, scan, compliance, and vulnerability posture, but it cannot execute actions,
+change records, or create vulnerability truth.*
+
+![Actual Kepryx relationship map with operator controls](../images/workflows/relationship-map.png)
+
+*Screenshot — The relationship map is an operator tool, not a static picture. Engineers can filter
+relationships, select a node, focus its neighborhood, move nodes in X/Y, adjust Z-depth, pin useful
+nodes, zoom, reset the layout, and scrub the captured timeline.*
+
+Every screenshot in this article uses synthetic local QA data. Accounts, email addresses, IPs,
+identifiers, counts, and placeholder URLs are fixtures. Older captures containing the previous
+vendor-specific inventory fixture are intentionally not part of the public gallery. The [complete
+product gallery](PRODUCT-GALLERY.md) contains the rest of the safe operator and workflow views.
+
 The screenshots are intentionally branded with the Kepryx dark operator-console style. In the
 publication version, I keep the raw product view visible first and use the [complete product
 gallery](PRODUCT-GALLERY.md) to select the workflow capture that supports each explanation. That
@@ -106,9 +123,15 @@ Kepryx connects the asset story into one workflow:
 The key idea is not “AI will decide security.” The key idea is that the engineer should have a
 better evidence path before making a decision.
 
+![Kepryx risk assessment and remediation queue](../images/product/risk-assessment.png)
+
+*Screenshot — Risk Assessment shows the weighted evidence formula and the remediation queue. The
+ score is a bounded posture signal with visible inputs; it is not a probability of breach and it
+ does not replace analyst judgment.*
+
 ![Kepryx system context](../diagrams/kepryx-system-context.svg)
 
-*Figure 3 — The system context. Inputs are normalized before risk and compliance outputs are shown to operators.*
+*Diagram — The system context. Inputs are normalized before risk and compliance outputs are shown to operators.*
 
 ## From a breach condition to an evidence trail
 
@@ -116,7 +139,7 @@ The following is the problem I am trying to reduce:
 
 ![From breach conditions to Kepryx evidence](../diagrams/kepryx-breach-to-evidence-loop.svg)
 
-*Figure 4 — A practical breach-enablement story: visibility gaps make it easier for the weakest or forgotten asset to remain unseen. Kepryx connects the observation to a decision and response trail.*
+*Diagram — A practical breach-enablement story: visibility gaps make it easier for the weakest or forgotten asset to remain unseen. Kepryx connects the observation to a decision and response trail.*
 
 The platform is not a magic prevention layer. It does not stop phishing by itself. It does not
 replace a firewall, EDR, SIEM, IAM, or a human incident responder.
@@ -160,7 +183,13 @@ engineer also needs to know what produced it.
 
 ![Kepryx compliance evidence lineage](../diagrams/compliance-evidence-lineage.svg)
 
-*Figure 5 — Compliance is represented as a lineage path from framework control to asset observation, evidence snapshot, result, and report.*
+*Diagram — Compliance is represented as a lineage path from framework control to asset observation, evidence snapshot, result, and report.*
+
+![Kepryx compliance evidence lineage in the running console](../images/workflows/compliance-evidence-lineage.png)
+
+*Screenshot — The lineage view lets an engineer move from a control result to the assessment run,
+ observed asset fields, rationale, timestamp, and evidence hash. The AI review is advisory and does
+ not modify the deterministic result.*
 
 Kepryx evaluates a licensed-safe subset of control metadata. For each asset/control pair, it stores
 the status, score, rationale, framework version, assessment run, observed values, and a SHA-256 hash
@@ -199,6 +228,17 @@ as non-root containers with read-only defaults and dropped capabilities where th
 The scanner receives only the capabilities it needs. Scan ranges are disabled until an operator
 explicitly authorizes them, and the worker checks the authorization again.
 
+![Kepryx authorized scan configuration](../images/workflows/authorized-scan-network.png)
+
+*Screenshot — Network discovery is shown as an explicit allowlist operation. The capture uses a
+ localhost/lab proof network and blocked default ranges; it is not permission to scan any real
+ environment.*
+
+![Kepryx self-security dependency view](../images/product/self-security.png)
+
+*Screenshot — Self-Security presents the dependency inventory and the application’s own findings.
+ Update proposals remain policy-controlled and require the configured approval boundary.*
+
 ## What I tested before calling it a preview
 
 I did not want to rely on “the containers are running” as the only QA result.
@@ -213,12 +253,18 @@ I did not want to rely on “the containers are running” as the only QA result
 | Secret detection | No findings in the staged tracked candidate |
 | Database | Migration head `0007_evidence_compliance`; no model drift |
 | Image security | Nine rebuilt first-party images; zero HIGH/CRITICAL Trivy findings |
-| SBOM | Ten CycloneDX image SBOMs generated |
+| SBOM | Nine local release-image CycloneDX SBOMs generated; CI also publishes scan artifacts |
 | Live acceptance | Auth, inventory, risk, enrichment, compliance, alerts, scans, self-security, Assistant, webhooks, and graph interactions tested locally |
 
-The live platform currently demonstrated 34 assets, 115 open alerts, 1,675 KEV-linked CVE records,
+The live platform currently demonstrated 34 assets, 120 open alerts, 1,675 KEV-linked CVE records,
 76 dependency packages scanned, 185 graph nodes, and 218 relationships. These are local preview
 data points, not a benchmark against a customer environment.
+
+![Kepryx alert triage queue](../images/product/alerts.png)
+
+*Screenshot — Alerts connect generated findings to severity, status, asset context, and operator
+ resolution. The values shown here are synthetic preview events and are not incident evidence from a
+ customer environment.*
 
 ## The part I will not hide
 
@@ -267,7 +313,7 @@ tools that already exist.
 
 ## Next step: a practical deployment and integration demo
 
-The next article or thread will be practical. It will show how to deploy the community preview,
+The next demo thread will be practical. It will show how to deploy the community preview,
 load the vendor-neutral data source, authorize a lab CIDR, run a scan, enrich a test asset, inspect
 the risk explanation, review a compliance gap, resolve an alert, and connect a webhook.
 
