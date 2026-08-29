@@ -169,7 +169,7 @@ relationships, select a node, focus its neighborhood, move nodes in X/Y, adjust 
 nodes, zoom, reset the layout, and scrub the captured timeline.*
 
 Every screenshot in this article uses synthetic local QA data. Accounts, email addresses, IPs,
-identifiers, counts, and placeholder URLs are fixtures. The [complete product gallery](PRODUCT-GALLERY.md)
+identifiers, counts, and placeholder URLs are fixtures. The [complete product gallery](https://github.com/AhmadAlmallah/kepryx/blob/main/docs/PUBLICATION/PRODUCT-GALLERY.md)
 contains the rest of the safe operator and workflow views.
 
 ## From scattered observations to one asset record
