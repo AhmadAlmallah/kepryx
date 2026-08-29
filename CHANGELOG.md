@@ -3,10 +3,10 @@
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic
 versioning.
 
-## [Unreleased]
+## [0.9.0] - 2026-08-29
 
 - Added GitHub publication metadata and maintainer guidance: `CITATION.cff`, `.gitattributes`, issue
-  configuration, a release template, and the private-first repository/security-settings runbook.
+  configuration, a release template, and repository security workflow metadata.
 - Added versioned compliance catalogs, auditable assessment runs, graduated control statuses,
   SHA-256 evidence snapshots, result-to-evidence lineage APIs, enhanced compliance drill-down,
   and evidence-traceable PDF reporting. Added a review-only AI compliance suggestion endpoint;
@@ -21,8 +21,8 @@ versioning.
 - Added configurable HTTP/HTTPS host ports and corrected the local API hostname allowlist so the
   Windows HTTPS edge can be tested on `https://kepryx.local:8443` without changing production's
   default 80/443 mapping.
-- Added release planning, scorecard, open-source launch, roadmap, and Obsidian-compatible
-  knowledge-network documentation.
+- Added the release scorecard, roadmap, demo evidence pack, diagrams, product gallery, and
+  publication materials.
 - Added targeted live acceptance evidence for asset create/update, NVD/EPSS/KEV enrichment,
   compliance mappings, alert resolution, authorized lab-CIDR scans, self-security scanning,
   scoped API-token use/revocation, and signed webhook delivery.
@@ -45,17 +45,18 @@ versioning.
   dispatch-time revalidation for legacy records, and clean-host Caddy guards for `/metrics` and
   documentation paths.
 - Added a professional demo evidence pack with timed speaker notes, an evidence matrix,
-  benchmark/positioning review, technical system and evidence-lineage diagrams, focused dashboard
-  and compliance screenshot overlays, and a repeatable health/readiness smoke benchmark.
-- Expanded executable verification to 120 tests and 54% measured application coverage, including
-  API mutation, scanner authorization/parsing, CVE enrichment, reconciliation, connector contracts,
-  and worker retry-policy paths; CI now enforces a 50% coverage floor.
+  benchmark/positioning review, technical system and evidence-lineage diagrams, and a repeatable
+  health/readiness smoke benchmark.
+- Expanded executable verification to 154 tests and 63.54% measured application coverage,
+  including API mutation, read models, exports, token lifecycle, scanner authorization/parsing,
+  CVE enrichment, reconciliation, connector contracts, retention, and worker retry-policy paths;
+  CI now enforces a 60% coverage floor.
 - Rebuilt Python service images on pinned Alpine layers and rebuilt Caddy with fixed Go/module
   pins; the stale Caddy vulnerability allowlist was removed after a raw HIGH/CRITICAL scan passed.
 - Added a scheduled weekly rebuild and raw container rescan so upstream base-image and module drift
   is detected before it becomes a release claim.
 
-## [0.9.0] - 2026-08-25
+## [Foundation baseline] - 2026-08-25
 
 ### Added
 
@@ -64,7 +65,7 @@ versioning.
 - Celery workers for scanning, reconciliation, enrichment, notifications, retention, and
   self-security processing.
 - NVD, EPSS, CISA KEV, OSV, CrowdStrike, Nessus, LDAP, AWS, and DHCP/DNS integration foundations.
-- PostgreSQL migrations through `0006_schema_alignment` and an automatic migration startup gate.
+- PostgreSQL migrations through `0007_evidence_compliance` and an automatic migration startup gate.
 - Hash-locked production and development dependency sets.
 - CI gates for Ruff, mypy, pytest, migration drift, Bandit, pip-audit, secret detection, image
   privilege checks, and Trivy.
@@ -103,4 +104,4 @@ versioning.
 - The current image scan is a point-in-time result; upstream base and module changes require the
   scheduled and pre-release raw Trivy scans to be rerun.
 
-Release links will be added after the canonical GitHub repository exists.
+The repository is maintained in a private-first review state before the signed public release.

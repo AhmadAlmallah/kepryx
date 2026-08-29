@@ -11,12 +11,12 @@ The review was performed against the running Docker Compose stack. It was not an
 No unauthenticated critical or high-severity path was demonstrated in the scoped review. Authentication, refresh-token rotation and replay rejection, MFA enforcement, role separation, scan authorization, metadata-endpoint blocking, webhook loopback blocking, hidden production API documentation, and direct API-port isolation passed the live checks.
 
 The initial review identified two defense-in-depth findings. RT-01 and the literal-IP portion of
-RT-02 are remediated in the current staged candidate; deployment firewall, VPN, and connector
+RT-02 are remediated in the current release candidate; deployment firewall, VPN, and connector
 egress controls remain required for real exposure.
 
 ## Remediation update
 
-The staged candidate now enforces `MANAGEMENT_CIDRS` for privileged admin operations, honors
+The release candidate now enforces `MANAGEMENT_CIDRS` for privileged admin operations, honors
 `X-Real-IP` only from a configured trusted proxy, blocks non-global connector IP literals unless
 their CIDR is explicitly listed in `CONNECTOR_ALLOWED_CIDRS`, and validates all configured CIDR
 settings at startup. The original findings below are retained as historical evidence; RT-01 and
@@ -55,11 +55,15 @@ environments still require network-level egress restrictions.
 
 **Severity:** Release-process gap (not an application vulnerability)
 
-**Evidence:** Repository-local Git identity is configured as Ahmad Almallah / `ahmad.almallah.consulting@hotmail.com`. No GPG installation or SSH signing key was available on the machine, and no signing key is configured.
+**Evidence:** Cryptographic commit/tag signing was not validated as part of this application
+review. This is a release-provenance control, not an application behavior finding.
 
-**Impact:** Source attribution is present, but commits and release tags cannot yet be cryptographically verified as Ahmad's.
+**Impact:** Reviewers cannot independently verify release provenance from the repository metadata
+alone until a signed tag and the corresponding public signing key are published.
 
-**Recommendation:** Add a personal GPG or SSH signing key, publish its public key/fingerprint through the chosen Git hosting account, then configure signed commits/tags. Do not generate or commit private key material in this repository.
+**Recommendation:** Configure a maintainer-controlled GPG or SSH signing key, publish its public
+key/fingerprint through the chosen Git hosting account, then configure signed commits/tags. Do not
+generate or commit private key material in this repository.
 
 ## Live evidence summary
 
@@ -95,7 +99,7 @@ environments still require network-level egress restrictions.
 The current evidence supports the claim that the local v0.9.0 preview has a materially hardened
 security foundation and no demonstrated unauthenticated critical/high path in this review. It does
 not support a claim of CVE-free, production-certified, or penetration-tested status. RT-01 and the
-literal-IP portion of RT-02 are remediated in the staged candidate; host firewall/VPN policy and
+literal-IP portion of RT-02 are remediated in the release candidate; host firewall/VPN policy and
 hostname egress controls remain deployment responsibilities. The rebuilt release image set also
 passed the raw HIGH/CRITICAL Trivy gate; this remains a point-in-time result rather than a
 permanent CVE-free claim.

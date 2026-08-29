@@ -1,6 +1,6 @@
 # Kepryx security remediation record
 
-Evidence date: 2026-08-29 | Scope: exact working-tree candidate after the Luna audit remediation
+Evidence date: 2026-08-29 | Scope: exact v0.9.0 release candidate after the audit remediation
 
 This record documents the remediation work and executable evidence for the findings raised in the
 release review. It is an engineering record, not a penetration-test report, certification, or
@@ -8,7 +8,7 @@ guarantee that future deployments will be secure.
 
 ## Executive result
 
-The quoted application-level findings were remediated in the candidate source and covered by
+The quoted application-level findings were remediated in the release-candidate source and covered by
 regression tests. The Python test, SAST, dependency, secret, migration, import, Compose, and
 rebuilt-image checks passed locally. The repository remains a v0.9.0 community preview: external
 provider behavior, customer network ownership, public DNS/ACME, high availability, load/soak, and
@@ -46,11 +46,11 @@ GitHub governance are deployment or release controls rather than claims proven b
 | Frontend `node --check` | Passed |
 | Caddy configuration validation | Passed |
 | Rebuilt image boundary checks | API, Caddy, Asset Source UID 10001; runtime API/PostgreSQL images do not include `pip`/`gosu` |
-| Trivy 0.67.2, HIGH/CRITICAL, unfixed findings visible | 0 findings across 10 rebuilt local release images |
-| CycloneDX SBOM generation | 10 local image SBOMs generated; CI generates and uploads six CI-image SBOMs |
+| Trivy 0.67.2, HIGH/CRITICAL, unfixed findings visible | 0 findings across 9 rebuilt local release images |
+| CycloneDX SBOM generation | 9 local image SBOMs generated; CI generates and uploads six CI-image SBOMs |
 
 The CI workflow now generates and uploads CycloneDX SBOMs for the six CI image identities in
-addition to the existing SAST, dependency, secret, migration, and Trivy gates. The local ten-image
+addition to the existing SAST, dependency, secret, migration, and Trivy gates. The local nine-image
 SBOM directory is intentionally ignored from source control because component hashes create
 high-entropy false positives in the repository secret detector; the CI artifact remains available
 for each release run.
@@ -58,7 +58,7 @@ for each release run.
 ## Remaining release controls
 
 - Re-run these gates from the committed/tagged candidate; this document records the local
-  verification used to prepare the remediation commit.
+  verification used to prepare the v0.9.0 release candidate.
 - Confirm the first GitHub Actions run is green. CodeQL is intentionally skipped while the
   repository is private on a personal plan and should be verified after public visibility or an
   organization Advanced Security setup.

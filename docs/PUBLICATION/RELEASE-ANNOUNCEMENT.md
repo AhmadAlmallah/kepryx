@@ -24,7 +24,7 @@ risk operations.
 | Application coverage | 63.54% |
 | Bandit / Ruff / mypy | Passed |
 | pip-audit | No known runtime vulnerabilities |
-| Trivy | 0 HIGH/CRITICAL across ten rebuilt first-party images |
+| Trivy | 0 HIGH/CRITICAL across nine rebuilt first-party images |
 | Release score | 82/100 community-preview confidence |
 
 ## Honest limits

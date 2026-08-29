@@ -212,7 +212,7 @@ I did not want to rely on “the containers are running” as the only QA result
 | pip-audit | No known vulnerabilities in the locked Python runtime set |
 | Secret detection | No findings in the staged tracked candidate |
 | Database | Migration head `0007_evidence_compliance`; no model drift |
-| Image security | Ten rebuilt first-party images; zero HIGH/CRITICAL Trivy findings |
+| Image security | Nine rebuilt first-party images; zero HIGH/CRITICAL Trivy findings |
 | SBOM | Ten CycloneDX image SBOMs generated |
 | Live acceptance | Auth, inventory, risk, enrichment, compliance, alerts, scans, self-security, Assistant, webhooks, and graph interactions tested locally |
 
@@ -233,9 +233,9 @@ remaining work is real:
   tag;
 - customer-owned written authorization before scanning real networks.
 
-The current local stack also has old orphan containers from an earlier Compose project. They are
-outside the canonical release file and are not included in the release image claims. This is the
-kind of detail I want to document instead of giving a clean-looking but misleading picture.
+The evidence is deliberately scoped to the canonical Compose release and synthetic data. Older
+local experiments, disposable recordings, and machine-specific artifacts are not part of the
+release claim.
 
 ## Why open source?
 

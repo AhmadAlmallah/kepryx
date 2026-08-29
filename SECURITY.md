@@ -46,14 +46,14 @@ Kepryx is single tenant and v0.9.0 is not production-certified. See
 ## Current release-image evidence
 
 The v0.9.0 candidate uses pinned Alpine Python layers and a custom Caddy 2.11.4 build with pinned
-Go/module inputs. Sequential raw Trivy 0.67.2 scans on 2026-08-28 reported zero HIGH/CRITICAL
+Go/module inputs. Sequential raw Trivy 0.67.2 scans on 2026-08-29 reported zero HIGH/CRITICAL
 findings for the API, workers, scanner, beat, Caddy, PostgreSQL, and Asset Source images, with
 unfixed findings visible. The release gate does not rely on an image vulnerability allowlist.
 
 Kepryx does not claim to be permanently CVE-free. Image contents and upstream advisories change;
 the weekly rebuild/rescan workflow and the exact-candidate scan are required before every release.
-The full scope, tool versions, SBOM handling, and residual deployment risks are recorded in
-[the SAST report](docs/SAST-REPORT-2026-08-28.md), [the security review](docs/SECURITY-REVIEW-2026-08-28.md),
-and [the remediation evidence](docs/REMEDIATION-EVIDENCE.md).
+The full scope, toolchain gates, current remediation status, and residual deployment risks are
+recorded in the [security remediation record](docs/SECURITY-REMEDIATION-2026-08-29.md),
+[QA notes](docs/QA-NOTES.md), and [technical architecture](docs/TECHNICAL-ARCHITECTURE.md).
 
 Primary maintainer: Ahmad Almallah. Security contact: ahmad.almallah.consulting@hotmail.com.

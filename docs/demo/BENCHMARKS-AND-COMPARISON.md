@@ -16,7 +16,7 @@ one frame.
 | Static typing | 69 application files, no mypy errors | Typed application surface is internally consistent | Runtime correctness for every path. |
 | Bandit | No medium/high findings across 10,008 lines | No gated SAST findings in the scanned scope | Complete vulnerability discovery; SAST is one control. |
 | Python dependency gate | `pip-audit --strict` clean for the hash-locked runtime set | Known runtime package CVEs are gated for this candidate | Base-image or future provider dependency risk. |
-| First-party image gate | 0 HIGH/CRITICAL findings in all ten rebuilt images with unfixed advisories visible | Image findings are blocked before release and upstream drift is scheduled for rescanning | A point-in-time scan is not a permanent CVE-free guarantee. |
+| First-party image gate | 0 HIGH/CRITICAL findings in all nine rebuilt images with unfixed advisories visible | Image findings are blocked before release and upstream drift is scheduled for rescanning | A point-in-time scan is not a permanent CVE-free guarantee. |
 | Caddy image review | Custom 2.11.4 build; 0 HIGH/CRITICAL findings | Fixed Go/module pins are verified by raw Trivy | Future upstream source/module changes still require a rescan. |
 | Compliance acceptance | 3 catalogs, 13 controls, 34 assets, 442 results | Evidence-backed graduated control assessment works in the preview | Certification, full framework coverage, or auditor judgment. |
 | Graph acceptance | 185 nodes, 218 relationships | The dashboard can render and operate on bounded evidence topology | Neo4j/BloodHound attack-path analysis or large-scale graph capacity. |

@@ -7,13 +7,13 @@ record, and every unproven production claim is called out.
 ## Product preview
 
 These are actual operator-console captures from the local preview build using synthetic data. The
-[complete product gallery](../PUBLICATION/PRODUCT-GALLERY.md) contains every product view and
-workflow capture, including the interactive relationship map, evidence lineage, authorized scan
-configuration, Assistant, API tokens, webhooks, privacy, and administration.
+[public product gallery](../PUBLICATION/PRODUCT-GALLERY.md) indexes the captured product views
+and workflow evidence, including the interactive relationship map, evidence lineage, authorized
+scan configuration, Assistant, API tokens, webhooks, privacy, and administration.
 
-| Dashboard | Risk Assessment | Compliance |
+| Dashboard | Kepryx Assistant | Compliance |
 |---|---|---|
-| ![Kepryx dashboard](../images/product/dashboard.png) | ![Kepryx risk assessment](../images/product/risk-assessment.png) | ![Kepryx compliance](../images/product/compliance.png) |
+| ![Kepryx dashboard](../images/product/dashboard.png) | ![Kepryx Assistant](../images/product/assistant.png) | ![Kepryx compliance](../images/product/compliance.png) |
 
 ### Compliance evidence workflow
 
@@ -39,7 +39,7 @@ SSO, high availability, certification, or a permanent CVE-free state.
 3. Use [BENCHMARKS-AND-COMPARISON.md](BENCHMARKS-AND-COMPARISON.md) for measured local evidence
    and a capability-positioning comparison.
 4. Open the architecture and flow diagrams under `docs/diagrams/` while explaining the system.
-5. Use the complete [product gallery](../PUBLICATION/PRODUCT-GALLERY.md) to select the product
+5. Use the public [product gallery](../PUBLICATION/PRODUCT-GALLERY.md) to select the product
    and workflow captures for the article or recording.
 
 ## Visual index
