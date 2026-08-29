@@ -37,6 +37,15 @@ The exact required-check names should be selected from the first successful CI r
 typed from memory. The repository includes `.github/CODEOWNERS` with `@AhmadAlmallah`; update it
 through review if ownership changes.
 
+### Personal-account limitation
+
+GitHub currently reports that branch-protection rules are not enforced for this private repository
+under the personal account plan; enforcement requires moving the repository to a GitHub Team or
+Enterprise organization. Do not treat a saved but unenforced rule as a release control. Before the
+repository becomes public or supports production deployments, move it to an organization and
+verify that pull requests, required CI checks, CODEOWNERS review, conversation resolution, and
+no-force-push/no-deletion rules are actively enforced on `main`.
+
 ## 3. Actions and security features
 
 - Set Actions to allow the repository workflows and reviewed, pinned actions.
