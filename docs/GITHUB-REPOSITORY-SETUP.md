@@ -57,6 +57,12 @@ no-force-push/no-deletion rules are actively enforced on `main`.
 - Enable private vulnerability reporting and confirm it routes to a monitored maintainer contact.
 - Review `SECURITY.md` in the GitHub Security tab before making the repository public.
 
+On the current personal private repository, GitHub reports Code scanning alerts as unavailable
+because Advanced Security is organization-only. The CodeQL workflow is still included and may run
+as a check, while Bandit, pip-audit, secret detection, and the container gates run in CI. Move the
+repository to a Team or Enterprise organization and confirm CodeQL alert ingestion before claiming
+GitHub code-scanning coverage or enforcing those checks as a merge gate.
+
 ## 4. Release identity
 
 1. Verify `pyproject.toml`, `app/main.py`, `CHANGELOG.md`, and the release notes use the same
