@@ -106,6 +106,25 @@ security, QA, SAST, and operational testing to reach a useful starting point.
 It may not be perfect. I am not presenting it as a finished enterprise product. I am presenting it
 as a serious v0.9.0 community preview that people can inspect, run, test, challenge, and improve.
 
+## The architecture behind the idea
+
+Kepryx is designed as an evidence layer between the systems that already exist. The API is the
+authorization and evidence boundary. The workers process scans, reconciliation, enrichment, and
+notifications. The data services stay behind the internal network, while external feeds and
+connectors are limited to approved outbound paths.
+
+![Kepryx system context and trust boundaries](https://raw.githubusercontent.com/AhmadAlmallah/kepryx/main/docs/diagrams/kepryx-system-context.svg)
+
+*Technical diagram — The system context shows how browser traffic reaches the protected API, how
+the API connects to state and workers, and where external intelligence sources and synthetic demo
+sources enter the platform.*
+
+![Kepryx deployment security boundaries](https://raw.githubusercontent.com/AhmadAlmallah/kepryx/main/docs/diagrams/kepryx-deployment-security-boundaries.svg)
+
+*Technical diagram — The deployment view shows the narrow public edge, the internal PostgreSQL and
+Redis services, the isolated worker paths, and the scanner capability boundary. This is a hardened
+single-host baseline for the community preview, not a claim of high availability.*
+
 ## What the running solution looks like
 
 These are screenshots from the actual local Kepryx console, not design mockups. They were captured
@@ -179,6 +198,13 @@ The important point is that Kepryx does not treat every incoming value as truth.
 observation remain visible. Conflicts can be reviewed. The resulting record is useful because the
 engineer can understand where it came from.
 
+![Kepryx ingest to risk and response flow](https://raw.githubusercontent.com/AhmadAlmallah/kepryx/main/docs/diagrams/ingest-risk-flow.svg)
+
+*Technical diagram — This is the main operating path: observe, normalize, reconcile, enrich with
+authoritative vulnerability facts, calculate a transparent risk signal, and project the result into
+alerts, compliance evidence, reports, and operator workflows. AI is shown as an advisory branch,
+not as the source of truth.*
+
 ## Authoritative vulnerability facts, not invented answers
 
 Vulnerability data is one of the areas where an AI model should not be trusted as the source of
@@ -231,6 +257,12 @@ engineer also needs to know what produced it.
 *Figure 7 — The lineage view lets an engineer move from a control result to the assessment run,
 observed asset fields, rationale, timestamp, and evidence hash. The AI review is advisory and does
 not modify the deterministic result.*
+
+![Kepryx compliance evidence flow](https://raw.githubusercontent.com/AhmadAlmallah/kepryx/main/docs/diagrams/compliance-evidence-lineage.svg)
+
+*Technical diagram — The compliance flow makes the chain explicit: versioned control metadata is
+evaluated against asset observations, the result receives a status and hashed evidence snapshot,
+and the same lineage can be followed into a report. The AI review remains a separate advisory path.*
 
 For each asset/control pair, Kepryx stores the status, score, rationale, framework version,
 assessment run, observed values, and a SHA-256 hash of the canonical evidence object.
@@ -299,6 +331,12 @@ remaining work is real:
 This is the difference between a useful open-source preview and a product claiming enterprise
 assurance. I prefer to show the gap clearly.
 
+![Kepryx v0.9.0 release scorecard](https://raw.githubusercontent.com/AhmadAlmallah/kepryx/main/docs/images/release-scorecard-chart.svg)
+
+*Technical chart — The scorecard separates the areas already demonstrated in the preview from the
+evidence that still needs deeper production testing. It is a release-readiness view, not a claim
+that the platform is enterprise-certified.*
+
 ## Why open source?
 
 I could keep Kepryx as a private product, but I think the first step should be open source.
@@ -349,6 +387,13 @@ The demo is designed around one evidence chain rather than a list of disconnecte
 
 The purpose is to show how one observation becomes an operational decision, not only how a
 dashboard looks.
+
+![Kepryx breach-to-evidence loop](https://raw.githubusercontent.com/AhmadAlmallah/kepryx/main/docs/diagrams/kepryx-breach-to-evidence-loop.svg)
+
+*Technical diagram — This closes the story: phishing, exposed services, misconfiguration, and old
+infrastructure are common enabling conditions; inventory, authoritative intelligence, risk,
+compliance evidence, alerts, and operator action create the feedback loop that helps teams find and
+reduce the weak paths that follow.*
 
 ## Conclusion
 
