@@ -10,6 +10,10 @@ on:
 
 jobs:
   analyze:
+    # GitHub Advanced Security is unavailable for this private personal repository.
+    # Run CodeQL automatically when public, or explicitly enable it for an organization
+    # with the KEPRYX_CODEQL_ENABLED repository variable.
+    if: ${{ github.event.repository.visibility == 'public' || vars.KEPRYX_CODEQL_ENABLED == 'true' }}
     name: Analyze
     runs-on: ubuntu-latest
     permissions:

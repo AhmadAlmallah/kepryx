@@ -58,10 +58,11 @@ no-force-push/no-deletion rules are actively enforced on `main`.
 - Review `SECURITY.md` in the GitHub Security tab before making the repository public.
 
 On the current personal private repository, GitHub reports Code scanning alerts as unavailable
-because Advanced Security is organization-only. The CodeQL workflow is still included and may run
-as a check, while Bandit, pip-audit, secret detection, and the container gates run in CI. Move the
-repository to a Team or Enterprise organization and confirm CodeQL alert ingestion before claiming
-GitHub code-scanning coverage or enforcing those checks as a merge gate.
+because Advanced Security is organization-only. The CodeQL workflow is included but skips cleanly
+until the repository is public or the organization sets the `KEPRYX_CODEQL_ENABLED=true`
+repository variable. Bandit, pip-audit, secret detection, and the container gates remain active in
+CI. Move the repository to a Team or Enterprise organization and confirm CodeQL alert ingestion
+before claiming GitHub code-scanning coverage or enforcing it as a merge gate.
 
 ## 4. Release identity
 
