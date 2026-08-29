@@ -19,7 +19,7 @@ RUN apk add --no-cache git ca-certificates && \
     go mod tidy && \
     go build -trimpath -ldflags="-s -w" -o /out/caddy ./main.go
 
-FROM alpine@sha256:fd791d74b68913cbb027c6546007b3f0d3bc45125f797758156952bc2d6daf40
+FROM alpine@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
 
 LABEL org.opencontainers.image.title="Kepryx Edge" \
       org.opencontainers.image.authors="Ahmad Almallah <ahmad.almallah.consulting@hotmail.com>" \
