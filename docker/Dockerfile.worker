@@ -1,4 +1,4 @@
-FROM python@sha256:d09d15e60962ca365d1cd544a48773bac9d33f2fb1b00f2aa0deec78ade7dc31 AS builder
+FROM python:3.12-alpine@sha256:d09d15e60962ca365d1cd544a48773bac9d33f2fb1b00f2aa0deec78ade7dc31 AS builder
 
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1
@@ -9,7 +9,7 @@ WORKDIR /build
 COPY requirements.txt .
 RUN pip wheel --require-hashes --wheel-dir /wheels -r requirements.txt
 
-FROM python@sha256:d09d15e60962ca365d1cd544a48773bac9d33f2fb1b00f2aa0deec78ade7dc31 AS runtime
+FROM python:3.12-alpine@sha256:d09d15e60962ca365d1cd544a48773bac9d33f2fb1b00f2aa0deec78ade7dc31 AS runtime
 
 LABEL org.opencontainers.image.title="Kepryx Worker" \
       org.opencontainers.image.authors="Ahmad Almallah <ahmad.almallah.consulting@hotmail.com>" \

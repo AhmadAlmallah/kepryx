@@ -2,8 +2,10 @@
 
 import logging
 from datetime import UTC, datetime, timedelta
+from typing import Any, cast
 
 from sqlalchemy import delete, select
+from sqlalchemy.engine import CursorResult
 from sqlalchemy.orm import selectinload
 
 from app.connectors import get_connector
@@ -129,8 +131,11 @@ async def _cleanup_old_data():
     """Trim resolved alerts; audit retention is owned by retention_tasks."""
     async with SessionLocal() as db:
         alert_cutoff = datetime.now(UTC) - timedelta(days=ALERT_RETENTION_DAYS)
-        alert_deleted = await db.execute(
-            delete(Alert).where(Alert.status == "resolved", Alert.resolved_at < alert_cutoff)
+        alert_deleted = cast(
+            CursorResult[Any],
+            await db.execute(
+                delete(Alert).where(Alert.status == "resolved", Alert.resolved_at < alert_cutoff)
+            ),
         )
         await db.commit()
         return {"alerts_pruned": alert_deleted.rowcount}
