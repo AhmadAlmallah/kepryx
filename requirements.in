@@ -16,7 +16,7 @@ httpx>=0.27,<1
 pyjwt[crypto]>=2.10,<3
 argon2-cffi>=23.1,<26
 pyotp>=2.9,<3
-slowapi>=0.1.9,<1
+slowapi>=0.1.10,<1
 python-multipart==0.0.32
 ldap3>=2.9.1,<3
 boto3>=1.35,<2
