@@ -199,4 +199,3 @@ by [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.
 
 Apache-2.0 licensed. Maintained by Ahmad Almallah
 ([contact](mailto:ahmad.almallah.consulting@hotmail.com)).
-
