@@ -1,52 +1,35 @@
 # Kepryx actual-solution screenshots
 
-These assets are the product proof for the Medium article. They are screenshots of the running
-Kepryx operator console, not a UI concept or a generated mockup.
+The complete capture index is now maintained in the [Kepryx product gallery](PRODUCT-GALLERY.md).
+These are screenshots of the running Kepryx operator console, not a UI concept or a generated
+mockup.
 
-## Included captures
+The README hero set is intentionally limited to four strong views:
 
-| Screen | File | What it proves | Data note |
-|---|---|---|---|
-| Dashboard | `docs/images/dashboard-evidence.png` | Inventory posture, risk cards, shadow IT, open alerts, KEV records, relationship map, and recent activity | Local synthetic preview data; captured 27 August 2026 |
-| Compliance | `docs/images/compliance-evidence.png` | CIS/ISO/NIST summaries and the underlying control-evidence table | Local synthetic preview data; captured 27 August 2026 |
+- [Dashboard](../images/product/dashboard.png)
+- [Inventory](../images/product/inventory.png)
+- [Risk Assessment](../images/product/risk-assessment.png)
+- [Compliance](../images/product/compliance.png)
 
-The dashboard capture shows 34 assets, 5 critical assets, 7 high-risk assets, 10 shadow-IT assets,
-103 open alerts, 1,675 KEV records, and the interactive relationship map. The compliance capture
-shows CIS v8 at 72.02%, ISO 27001 at 89.29%, and NIST 800-53 at 75%. These are evidence snapshots,
-not current production guarantees; they can change after a new import, scan, enrichment run, or
-compliance audit.
+The gallery also indexes the remaining product views and workflow evidence, including Assistant,
+asset creation, risk context, compliance lineage, authorized scanning, API tokens, webhooks,
+privacy, and the interactive relationship map.
 
-## Branded annotation assets
+## What still needs capture or recapture
 
-- `docs/images/dashboard-focus.svg` adds amber focus boxes and numbered callouts for the posture
-  cards, 4D relationship map, alerts, and recent changes.
-- `docs/images/compliance-focus.svg` adds amber focus boxes and numbered callouts for framework
-  posture and the control-evidence table.
+- Login is not present in the supplied set.
+- Alert investigation and resolution is not present as a completed workflow.
+- Inventory and mail-asset captures show vendor-specific/sample context and should be recaptured
+  with the vendor-neutral fixture if the public article is positioned as vendor-neutral.
+- Compliance lineage and scan-network captures show private-looking RFC1918 values; use reserved
+  documentation ranges in the final public set.
+- Self-Security should be captured after the current dependency scan so its displayed package state
+  agrees with the exact release evidence.
+- My Security should use a synthetic publication identity and should not imply that MFA is disabled
+  in the maintained release account.
 
-The raw PNG should appear first in the article so readers see the real product. The annotated asset
-can follow when the text explains the specific workflow. If Medium does not render the SVG reliably,
-export the SVG to PNG without changing the screenshot, callout labels, or Kepryx color palette.
+## Image safety rule
 
-## Publication caption set
-
-### Dashboard
-
-**Actual Kepryx dashboard:** the operator starts with inventory posture, risk severity, shadow IT,
-open alerts, KEV coverage, the relationship map, and recent changes. The view is API-backed and uses
-synthetic local preview data.
-
-### Compliance
-
-**Actual Kepryx compliance screen:** the framework cards summarize the latest results, while the
-control-evidence table shows which asset and observed values produced each status. The screen is an
-assessment aid, not a certification claim.
-
-## Final image safety check
-
-Before publishing, inspect every image at 100% and confirm:
-
-- no password, token, API key, browser address containing sensitive data, or personal data is visible;
-- all assets and scan ranges are synthetic, reserved, or explicitly authorized;
-- the caption counts match the capture date;
-- the Kepryx wordmark and product context remain visible;
-- the tracked-file secret scan is clean after the images and article are finalized.
+Every image must be inspected at 100%. Do not publish passwords, tokens, API keys, private
+certificates, real customer data, unauthorized scan ranges, or an internal identity. Screenshots
+are evidence of a local preview state, not a permanent production guarantee.

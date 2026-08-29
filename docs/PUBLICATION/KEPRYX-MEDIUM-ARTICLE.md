@@ -66,23 +66,23 @@ The following are screenshots from the actual local Kepryx console, not mockups.
 from the verified preview build using synthetic test data. The values are point-in-time and will
 change when the seed data, scans, enrichment jobs, or compliance audits are run again.
 
-![Actual Kepryx dashboard showing inventory, risk, alerts, relationship map, and recent changes](../images/dashboard-evidence.png)
+![Actual Kepryx dashboard showing inventory, risk, alerts, relationship map, and recent changes](../images/product/dashboard.png)
 
 *Figure 1 — The actual Kepryx operator dashboard. The opening view puts asset count, critical and
 high-risk posture, shadow IT, open alerts, KEV coverage, the interactive relationship map, and recent
 audit activity in one place. This capture shows 34 assets, 5 critical assets, 7 high-risk assets,
-10 shadow-IT assets, 103 open alerts, and 1,675 KEV records from the local synthetic preview run.*
+10 shadow-IT assets, 120 open alerts, and 1,675 KEV records from the local synthetic preview run.*
 
-![Actual Kepryx compliance screen showing framework posture and control evidence](../images/compliance-evidence.png)
+![Actual Kepryx compliance screen showing framework posture and control evidence](../images/product/compliance.png)
 
 *Figure 2 — The actual Kepryx compliance view. The framework percentages are only the summary; the
 control-evidence table shows the asset, control, status, observed values, and assessment timing that
 an engineer needs to review the result. These numbers are local preview data, not a certification.*
 
 The screenshots are intentionally branded with the Kepryx dark operator-console style. In the
-publication version, I keep the raw product view visible first and use the annotated focus assets
-in the repository when I need to explain one area of the screen. That keeps the product recognizable
-while making the technical story easy to follow.
+publication version, I keep the raw product view visible first and use the [complete product
+gallery](PRODUCT-GALLERY.md) to select the workflow capture that supports each explanation. That
+keeps the product recognizable while making the technical story easy to follow.
 
 ## What Kepryx does
 

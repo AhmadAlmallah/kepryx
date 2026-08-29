@@ -46,7 +46,7 @@ not the security boundary.
 
 ### 0:45–1:45 — Login and operational posture
 
-**Show:** Dashboard and the [dashboard focus overlay](../images/dashboard-focus.svg).
+**Show:** [Dashboard screenshot](../images/product/dashboard.png).
 
 **Do:** Sign in with the disposable bootstrap account. Point to the API-connected indicator,
 asset totals, open alerts, latest scan, compliance summary, self-security status, recent changes,
@@ -56,8 +56,9 @@ and the relationship map.
 is not presented as completed. The map is a bounded inventory relationship view with three spatial
 dimensions and observed time as the fourth dimension.”
 
-**Focus square:** first the KPI strip, then the operational posture row, then the alert/recent
-change panels. Do not spend more than 60 seconds here.
+**Focus area:** first the KPI strip, then the operational posture row, then the alert/recent
+change panels. Do not spend more than 60 seconds here. The raw capture is supported by the
+operator-focused caption in the [product gallery](../PUBLICATION/PRODUCT-GALLERY.md).
 
 ### 1:45–2:45 — Import a deterministic inventory source
 
@@ -110,7 +111,8 @@ dense, use the node picker rather than zooming out until labels become unreadabl
 
 ### 4:45–6:00 — Turn observations into compliance evidence
 
-**Show:** Compliance and the [compliance focus overlay](../images/compliance-focus.svg).
+**Show:** [Compliance screenshot](../images/product/compliance.png) and the
+[evidence-lineage workflow](../images/workflows/compliance-evidence-lineage.png).
 
 **Do:** Show the three framework summary cards. Open a completed run, select a control, inspect
 its status and observed evidence, open lineage, and show the generated report action.
@@ -121,7 +123,7 @@ observed JSON is hashed, the source and timestamp are retained, and lineage conn
 back to the asset observation. The report is useful because it preserves the evidence trail, not
 because it replaces an auditor.”
 
-**Focus square:** summary percentages first, then one control result, then the evidence/lineage
+**Focus area:** summary percentages first, then one control result, then the evidence/lineage
 detail. Explain the difference between a posture percentage and assurance.
 
 ### 6:00–6:45 — Self-security and bounded AI assistance
