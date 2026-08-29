@@ -51,12 +51,12 @@ docker compose config --quiet
 - Local Ollama/Qwen3 compliance AI review returned a schema-valid suggestion with
   `review_only=true` and `authoritative=false`; the result status was verified unchanged after
   the call. No AI-generated text is persisted as assessment evidence.
-- Final exact-candidate gate rerun on 2026-08-28 after the evidence-compliance, SSRF/edge, and
+- Final exact-candidate gate rerun on 2026-08-29 after the evidence-compliance, SSRF/edge, and
   coverage remediations: 154 tests passed with 63.54% measured application coverage. Ruff
   lint/format, mypy, Bandit, strict pip-audit, and tracked-file secret detection passed. Fresh
-  sequential Trivy scans of all ten first-party release images, including the custom Caddy
+  sequential Trivy scans of all nine canonical first-party release images, including the custom Caddy
   binary and pinned Alpine Python runtime, found zero HIGH/CRITICAL findings with unfixed
-  advisories visible. Current CycloneDX SBOMs were regenerated for the ten primary release
+  advisories visible. Current CycloneDX SBOMs were regenerated for the nine primary release
   images outside the repository.
 - Final edge-route review verified `/health` and `/ready` return `200`, disabled documentation
   paths (`/docs`, `/redoc`, `/openapi.json`, and API variants) plus `/metrics` return `404`, all
@@ -98,4 +98,4 @@ authorization, CVE enrichment, reconciliation, connector contracts, and worker r
 Security-impacting defects must follow `SECURITY.md`, not a public issue.
 
 The latest checked evidence and residual findings are recorded in
-[REMEDIATION-EVIDENCE.md](REMEDIATION-EVIDENCE.md).
+[SECURITY-REMEDIATION-2026-08-29.md](SECURITY-REMEDIATION-2026-08-29.md).

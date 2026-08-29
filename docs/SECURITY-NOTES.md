@@ -78,7 +78,7 @@ The v0.9.0 posture is materially hardened but not production-certified.
 
 The release candidate uses pinned Python 3.12 Alpine bases with `apk upgrade` and a custom Caddy
 2.11.4 build using Go 1.26.6 plus explicit fixed `x/net`, `x/text`, and gRPC module versions.
-Sequential raw Trivy 0.67.2 scans on 2026-08-28 reported zero HIGH/CRITICAL findings for the
+Sequential raw Trivy 0.67.2 scans on 2026-08-29 reported zero HIGH/CRITICAL findings for the
 API, all workers, scanner, beat, Caddy, PostgreSQL, and Asset Source images. The former Caddy
 allowlist was removed so CI now fails on any newly reported finding.
 

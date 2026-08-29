@@ -114,9 +114,8 @@ dense, use the node picker rather than zooming out until labels become unreadabl
 **Show:** [Compliance screenshot](../images/product/compliance.png), the
 [evidence-lineage screenshot](../images/workflows/compliance-evidence-lineage.png), the
 [advisory AI review](../images/workflows/compliance-ai-review.png), and the
-[evidence-lineage diagram](../diagrams/compliance-evidence-lineage.svg). The supplied lineage
-capture is the documentation-range recapture; the remaining private captures are listed in the
-[product gallery](../PUBLICATION/PRODUCT-GALLERY.md) and must not be published.
+[evidence-lineage diagram](../diagrams/compliance-evidence-lineage.svg). Use only the synthetic
+captures listed in the [product gallery](../PUBLICATION/PRODUCT-GALLERY.md).
 
 **Do:** Show the three framework summary cards. Open a completed run, select a control, inspect
 its status and observed evidence, open lineage, and show the generated report action.

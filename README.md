@@ -74,21 +74,14 @@ evaluation, clean-host validation, private preview, and enterprise production re
 For the repeatable public-preview walkthrough, see the [demo runbook](docs/DEMO-RUNBOOK.md), the
 [professional demo evidence pack](docs/demo/README.md), and the [clean-host verification
 procedure](docs/CLEAN-HOST-TEST.md). The pack includes timed speaker notes, an evidence matrix,
-technical diagrams, the [complete product gallery](docs/PUBLICATION/PRODUCT-GALLERY.md), and a
+technical diagrams, the [product gallery](docs/PUBLICATION/PRODUCT-GALLERY.md), and a
 clearly labeled local benchmark.
 
 For the engineering review behind this preview, see the [technical architecture](docs/TECHNICAL-ARCHITECTURE.md),
-[QA report](docs/QA-REPORT-2026-08-28.md), [security review](docs/SECURITY-REVIEW-2026-08-28.md),
-[latest security remediation record](docs/SECURITY-REMEDIATION-2026-08-29.md),
-and [SAST/supply-chain report](docs/SAST-REPORT-2026-08-28.md). The [Medium article draft](docs/PUBLICATION/KEPRYX-MEDIUM-ARTICLE.md)
-and [publishing checklist](docs/PUBLICATION/MEDIUM-PUBLISHING-CHECKLIST.md) explain the project in
-plain language and identify which visuals need to be uploaded manually. The [GitHub repository setup
-runbook](docs/GITHUB-REPOSITORY-SETUP.md) covers the private-first push, security settings, branch
-protection, release signing, and public-readiness review.
-
-The exact image identities and external Trivy/SBOM checksums are recorded in the [release artifact
-manifest](docs/security-artifacts/RELEASE-ARTIFACT-MANIFEST-2026-08-28.md); verify them with
-`scripts/verify-release-artifacts.ps1` before attaching evidence to a release.
+[QA notes](docs/QA-NOTES.md), [current security remediation record](docs/SECURITY-REMEDIATION-2026-08-29.md),
+and [security notes](docs/SECURITY-NOTES.md). The [Medium article draft](docs/PUBLICATION/KEPRYX-MEDIUM-ARTICLE.md)
+and [product gallery](docs/PUBLICATION/PRODUCT-GALLERY.md) explain the project in plain language and
+provide the public-facing visual index.
 
 Open `https://kepryx.local:${HTTPS_PORT:-443}/` after bootstrap. On the current Windows Docker
 Desktop host, `.env` uses `HTTPS_PORT=8443`; real deployments should use the default 443 with a
@@ -111,17 +104,13 @@ local-only, and does not contact external vendors. It is not required for the ve
 CSV demo.
 
 Release-evidence screenshots from the locally verified build are available in the
-[complete product gallery](docs/PUBLICATION/PRODUCT-GALLERY.md). The four README views below are
+[public product gallery](docs/PUBLICATION/PRODUCT-GALLERY.md). The three README views below are
 actual operator-console captures from the local preview and use synthetic data. They are evidence
 of a tested preview state, not a substitute for deployment proof.
 
-| Dashboard | Kepryx Assistant |
-|---|---|
-| ![Kepryx dashboard](docs/images/product/dashboard.png) | ![Kepryx Assistant](docs/images/product/assistant.png) |
-
-| Risk Assessment | Compliance |
-|---|---|
-| ![Kepryx risk assessment](docs/images/product/risk-assessment.png) | ![Kepryx compliance](docs/images/product/compliance.png) |
+| Dashboard | Kepryx Assistant | Compliance |
+|---|---|---|
+| ![Kepryx dashboard](docs/images/product/dashboard.png) | ![Kepryx Assistant](docs/images/product/assistant.png) | ![Kepryx compliance](docs/images/product/compliance.png) |
 
 For local development when the internal HTTPS certificate is not trusted or available, start
 the localhost-only development edge instead of the standalone static file server:
@@ -149,7 +138,7 @@ quick start or run the Python gate inside WSL2. The application runtime remains 
 CI also upgrades an empty PostgreSQL database through every migration, checks for model drift,
 runs secret detection, builds all first-party runtime images, verifies privilege boundaries,
 and blocks fixable high or critical CVEs in default-profile images. Vendor-unfixed findings are
-reported as residual risk rather than hidden; see [Remediation Evidence](docs/REMEDIATION-EVIDENCE.md).
+reported as residual risk rather than hidden; see the [security remediation record](docs/SECURITY-REMEDIATION-2026-08-29.md).
 
 ## Optional profiles
 
@@ -178,7 +167,7 @@ accessible node picker/list fallback. It is not a Neo4j-backed BloodHound or att
   and Asset Source images reported zero HIGH/CRITICAL findings. Python services use pinned Alpine
   bases and Caddy is built with fixed Go/module pins. This is a point-in-time result, not a
   permanent CVE-free guarantee; the weekly rebuild/rescan workflow and pre-release scan remain
-  required. See [Security](SECURITY.md) and [Remediation Evidence](docs/REMEDIATION-EVIDENCE.md).
+  required. See [Security](SECURITY.md) and the [security remediation record](docs/SECURITY-REMEDIATION-2026-08-29.md).
 - Compliance mappings are evidence aids, not certification or legal advice.
 - The compliance catalog intentionally contains identifiers and short engineering objectives,
   not redistributed normative framework text. Assessment results are deterministic posture
@@ -195,11 +184,10 @@ accessible node picker/list fallback. It is not a Neo4j-backed BloodHound or att
 
 ## Project planning and release evidence
 
-- [Implementation plan](docs/NEXT-PHASE-IMPLEMENTATION-PLAN.md)
 - [Release scorecard](docs/RELEASE-SCORECARD.md)
-- [Open-source launch plan](docs/OPEN-SOURCE-LAUNCH-PLAN.md)
 - [Roadmap](docs/ROADMAP.md)
-- [Obsidian-compatible knowledge network](docs/knowledge/INDEX.md)
+- [Demo and evidence pack](docs/demo/README.md)
+- [Release announcement](docs/PUBLICATION/RELEASE-ANNOUNCEMENT.md)
 
 ## Security and contribution
 

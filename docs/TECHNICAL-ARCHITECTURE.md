@@ -1,6 +1,6 @@
 # Kepryx technical architecture
 
-Status: v0.9.0 community preview | Evidence date: 2026-08-28
+Status: v0.9.0 community preview | Evidence date: 2026-08-29
 
 This document explains what Kepryx does, where decisions are made, which evidence is retained,
 and where the current preview stops. It is written for engineers, security reviewers, and design
@@ -138,8 +138,7 @@ not hidden defects.
 
 ## Related evidence
 
-- [QA report](QA-REPORT-2026-08-28.md)
-- [Security review](SECURITY-REVIEW-2026-08-28.md)
-- [SAST and supply-chain report](SAST-REPORT-2026-08-28.md)
+- [QA notes](QA-NOTES.md)
+- [Security remediation record](SECURITY-REMEDIATION-2026-08-29.md)
 - [Browser mutation evidence](BROWSER-MUTATION-EVIDENCE.md)
 - [Release scorecard](RELEASE-SCORECARD.md)
