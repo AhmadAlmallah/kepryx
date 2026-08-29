@@ -58,9 +58,10 @@ Use these three images in the README and the first part of the Medium article:
 
 ## Branding assets
 
-These optional assets are the Kepryx wordmark and mark used for documentation and presentation
+These branding assets are safe to use in the public README, Medium article, and presentation
 materials. They do not contain environment data.
 
+- [Kepryx logo](../images/brand/kepryx-logo.png) — supplied project logo used for the public brand header
 - [Kepryx wordmark](../images/brand/kepryx-wordmark.png)
 - [Kepryx mark](../images/brand/kepryx-mark.png)
 
@@ -98,3 +99,4 @@ Before using any image in a public README, article, or social post:
 
 Only the synthetic images listed in this gallery belong in the public repository. Private working
 captures, focus overlays, recordings, and authoring files are intentionally excluded.
+

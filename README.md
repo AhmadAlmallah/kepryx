@@ -1,3 +1,9 @@
+<p align="center">
+  <img src="docs/images/brand/kepryx-logo.png" alt="Kepryx" width="760">
+</p>
+
+<p align="center"><strong>Open-source asset intelligence and risk operations</strong></p>
+
 # Kepryx
 
 Kepryx is an open-source asset intelligence and risk platform. This repository is a
@@ -196,3 +202,4 @@ by [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.
 
 Apache-2.0 licensed. Maintained by Ahmad Almallah
 ([contact](mailto:ahmad.almallah.consulting@hotmail.com)).
+
