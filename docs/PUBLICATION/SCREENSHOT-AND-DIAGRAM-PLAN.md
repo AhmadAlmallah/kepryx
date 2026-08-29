@@ -9,7 +9,7 @@ synthetic or explicitly authorized data.
 | Order | Asset | Focus area | Message |
 |---:|---|---|---|
 | 1 | `../images/product/dashboard.png` | Posture cards, map, alerts, recent changes | Kepryx connects inventory and daily risk operations. |
-| 2 | `../images/product/inventory.png` | Reconciled asset rows and source context | The operator can inspect the asset population behind the posture. |
+| 2 | `../images/product/assistant.png` | Bounded evidence explanation | The Assistant explains evidence without becoming an authority or write path. |
 | 3 | `../images/product/risk-assessment.png` | Score breakdown and remediation queue | The risk result is a transparent posture signal, not a probability of compromise. |
 | 4 | `../images/product/compliance.png` | Framework cards and control evidence | The percentage is a summary; evidence and lineage explain the result. |
 | 5 | `../images/workflows/relationship-map.png` | Filter, node focus, layout, depth, and time | The map is an interactive bounded topology tool, not a static hero graphic. |
@@ -39,8 +39,8 @@ synthetic or explicitly authorized data.
 5. Keep the Kepryx wordmark, navigation, API status, and product context visible.
 6. Capture Login and a completed alert-investigation/resolution workflow; both are still missing
    from the supplied set.
-7. Refresh Self-Security after the current dependency scan and recapture vendor-neutral Inventory
-   data if the article is making a vendor-neutral positioning claim.
+7. Refresh and recapture Self-Security after the current dependency scan, and recapture vendor-neutral
+   Inventory data if the article is making a vendor-neutral positioning claim.
 8. Inspect each image at 100% for secrets, internal identities, private ranges, stale counts, and
    browser chrome that exposes a local environment.
 9. Run the tracked-file secret scan after the final image set is selected.
