@@ -10,8 +10,10 @@ Run daily at 03:00 UTC via Celery beat.
 
 import logging
 from datetime import UTC, datetime, timedelta
+from typing import Any, cast
 
 from sqlalchemy import and_, delete, select, update
+from sqlalchemy.engine import CursorResult
 
 from app.core.config import settings
 from app.core.database import SessionLocal
@@ -79,7 +81,10 @@ async def _delete_expired_audit_logs() -> int:
 
     cutoff = datetime.now(UTC) - timedelta(days=AUDIT_LOG_RETENTION_DAYS)
     async with SessionLocal() as db:
-        result = await db.execute(delete(AuditLog).where(AuditLog.timestamp < cutoff))
+        result = cast(
+            CursorResult[Any],
+            await db.execute(delete(AuditLog).where(AuditLog.timestamp < cutoff)),
+        )
         await db.commit()
         if result.rowcount:
             logger.warning(
@@ -98,13 +103,16 @@ async def _delete_stale_assets() -> int:
     cutoff = datetime.now(UTC) - timedelta(days=INACTIVE_ASSET_DAYS)
     async with SessionLocal() as db:
         # Build query: stale AND not tier-1/critical
-        result = await db.execute(
-            delete(Asset).where(
-                and_(
-                    Asset.last_seen < cutoff,
-                    Asset.criticality.notin_(["tier-1", "critical"]),
+        result = cast(
+            CursorResult[Any],
+            await db.execute(
+                delete(Asset).where(
+                    and_(
+                        Asset.last_seen < cutoff,
+                        Asset.criticality.notin_(["tier-1", "critical"]),
+                    )
                 )
-            )
+            ),
         )
         await db.commit()
         if result.rowcount:
