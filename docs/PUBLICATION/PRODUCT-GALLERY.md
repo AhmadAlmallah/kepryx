@@ -9,7 +9,7 @@ design mockup. All values must remain synthetic before this repository becomes p
 Use these four images in the README and the first part of the Medium article:
 
 1. [Dashboard](../images/product/dashboard.png) — posture, alerts, activity, and relationship map.
-2. [Inventory](../images/product/inventory.png) — the reconciled asset view and source context.
+2. [Kepryx Assistant](../images/product/assistant.png) — bounded, read-only evidence explanation.
 3. [Risk Assessment](../images/product/risk-assessment.png) — transparent risk posture and remediation queue.
 4. [Compliance](../images/product/compliance.png) — framework summaries and control evidence.
 
@@ -20,12 +20,12 @@ Use these four images in the README and the first part of the Medium article:
 | Login | Not supplied | Authentication entry point | **Missing — capture before publication** |
 | Dashboard | [`dashboard.png`](../images/product/dashboard.png) | Operational posture, recent changes, alerts, and map | Review synthetic data, then publish |
 | Kepryx Assistant | [`assistant.png`](../images/product/assistant.png) | Bounded, read-only answer grounded in application evidence | Publish after final prompt/data review |
-| Inventory | [`inventory.png`](../images/product/inventory.png) | Reconciled asset inventory and source context | **Recapture vendor-neutral data before publication** |
+| Inventory | Not included | Reconciled asset inventory and source context | **Recapture vendor-neutral data before publication** |
 | Alerts | [`alerts.png`](../images/product/alerts.png) | Alert triage queue and severity context | Publish after final synthetic-data review |
 | Risk Assessment | [`risk-assessment.png`](../images/product/risk-assessment.png) | Risk posture and remediation prioritization | Publish after count/date verification |
 | Compliance | [`compliance.png`](../images/product/compliance.png) | CIS, ISO, and NIST posture summaries | Publish as an assessment aid, not certification |
 | Integrations | [`integrations.png`](../images/product/integrations.png) | Connector registration surface | Publish; keep the screen empty or synthetic |
-| Self-Security | [`self-security.png`](../images/product/self-security.png) | Dependency and application security posture | **Refresh against current scan before publication** |
+| Self-Security | Not included | Dependency and application security posture | **Refresh and recapture against current scan before publication** |
 | Scans | [`scans.png`](../images/product/scans.png) | Authorized network discovery status and failure history | Publish only with synthetic/authorized label |
 | Audit Log | [`audit-log.png`](../images/product/audit-log.png) | Operator actions and provenance | Publish after synthetic identity review |
 | Admin | [`admin.png`](../images/product/admin.png) | User and administration surface | Publish after synthetic identity review |
@@ -33,7 +33,7 @@ Use these four images in the README and the first part of the Medium article:
 | API Tokens | [`api-tokens.png`](../images/product/api-tokens.png) | Token lifecycle with prefixes only | Publish; never show a bearer token |
 | Webhooks | [`webhooks.png`](../images/product/webhooks.png) | Webhook delivery configuration | Publish with placeholder endpoint only |
 | Privacy & GDPR | [`privacy-gdpr.png`](../images/product/privacy-gdpr.png) | Export, erasure, and privacy controls | Publish after synthetic-data review |
-| My Security | [`my-security.png`](../images/product/my-security.png) | Current-user security posture | **Replace local-looking identity and MFA state before publication** |
+| My Security | Not included | Current-user security posture | **Recapture with synthetic identity and correct MFA state before publication** |
 
 ## Workflow evidence
 
@@ -41,16 +41,16 @@ Use these four images in the README and the first part of the Medium article:
 |---|---|---|---|
 | Relationship map | [`relationship-map.png`](../images/workflows/relationship-map.png) | Filter, focus, layout, and time exploration | Publish with interaction caveat |
 | Assistant authoritative response | [`assistant-authoritative-response.png`](../images/workflows/assistant-authoritative-response.png) | Read-only answer using bounded evidence | Publish with advisory/AI caveat |
-| Asset detail: mail | [`inventory-asset-detail-mail.png`](../images/workflows/inventory-asset-detail-mail.png) | Asset context and vulnerability evidence | **Recapture vendor-neutral data before publication** |
+| Asset detail: mail | Not included | Asset context and vulnerability evidence | **Recapture vendor-neutral data before publication** |
 | Asset detail: database | [`inventory-asset-detail-database.png`](../images/workflows/inventory-asset-detail-database.png) | Database asset context | Publish after synthetic-data review |
 | AI-assisted ingest | [`inventory-ai-ingest.png`](../images/workflows/inventory-ai-ingest.png) | Proposed normalization path | Publish as a proposal, not an automatic write |
 | Asset creation | [`inventory-create-asset.png`](../images/workflows/inventory-create-asset.png) | Create-asset form and validation surface | Publish as a form workflow, not completed evidence |
 | Compliance assessment run | [`compliance-assessment-run.png`](../images/workflows/compliance-assessment-run.png) | Deterministic assessment execution and status | Publish after run ID/date review |
-| Compliance evidence lineage | [`compliance-evidence-lineage.png`](../images/workflows/compliance-evidence-lineage.png) | Result → evidence → asset traceability | **Recapture private-looking IP with documentation range** |
+| Compliance evidence lineage | Not included | Result → evidence → asset traceability | **Recapture with documentation range before publication** |
 | Compliance AI review | [`compliance-ai-review.png`](../images/workflows/compliance-ai-review.png) | Advisory review of a control result | Publish with advisory caveat |
 | Add integration | [`integration-add.png`](../images/workflows/integration-add.png) | Connector configuration boundary | Publish only with placeholders |
 | Self-security settings | [`self-security-settings.png`](../images/workflows/self-security-settings.png) | Scan schedule and proposal policy | Publish after current-policy review |
-| Authorized scan network | [`scan-authorized-network.png`](../images/workflows/scan-authorized-network.png) | Allowlist and exclusions | **Recapture with reserved documentation CIDR** |
+| Authorized scan network | Not included | Allowlist and exclusions | **Recapture with reserved documentation CIDR** |
 | Add user | [`admin-add-user.png`](../images/workflows/admin-add-user.png) | Role and identity administration | Publish only with synthetic identity |
 | Create API token | [`api-token-create.png`](../images/workflows/api-token-create.png) | Token creation boundary | Publish only if no token value is shown |
 | Register webhook | [`webhook-register.png`](../images/workflows/webhook-register.png) | Event and severity filters | Publish only with placeholder endpoint |
@@ -80,6 +80,6 @@ Before using any image in a public README, article, or social post:
 - capture the missing Login and Alert investigation/resolution workflows;
 - inspect each PNG at 100% and run the tracked-file secret scan after the final recapture.
 
-The former focus-overlay SVGs are deliberately not part of the public repository. They were moved
-to `C:\Data\NextGenInve\private-publication-assets\kepryx\focus-overlays\` for private article
-editing only.
+The former focus-overlay SVGs and the six captures requiring recapture are deliberately not part of
+the public repository. They were moved to
+`C:\Data\NextGenInve\private-publication-assets\kepryx\` for private article editing only.

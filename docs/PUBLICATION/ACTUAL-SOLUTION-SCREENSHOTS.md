@@ -7,7 +7,7 @@ mockup.
 The README hero set is intentionally limited to four strong views:
 
 - [Dashboard](../images/product/dashboard.png)
-- [Inventory](../images/product/inventory.png)
+- [Kepryx Assistant](../images/product/assistant.png)
 - [Risk Assessment](../images/product/risk-assessment.png)
 - [Compliance](../images/product/compliance.png)
 
@@ -19,14 +19,14 @@ privacy, and the interactive relationship map.
 
 - Login is not present in the supplied set.
 - Alert investigation and resolution is not present as a completed workflow.
-- Inventory and mail-asset captures show vendor-specific/sample context and should be recaptured
-  with the vendor-neutral fixture if the public article is positioned as vendor-neutral.
+- Inventory and mail-asset captures show vendor-specific/sample context and were excluded from the
+  public candidate; recapture them with the vendor-neutral fixture if they are needed.
 - Compliance lineage and scan-network captures show private-looking RFC1918 values; use reserved
   documentation ranges in the final public set.
 - Self-Security should be captured after the current dependency scan so its displayed package state
   agrees with the exact release evidence.
 - My Security should use a synthetic publication identity and should not imply that MFA is disabled
-  in the maintained release account.
+  in the maintained release account; its current capture was excluded.
 
 ## Image safety rule
 

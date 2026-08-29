@@ -19,7 +19,7 @@ claims honest and the visuals professional.
 ## Visual upload order
 
 1. `../images/product/dashboard.png` — actual opening product view.
-2. `../images/product/inventory.png` — actual inventory and source-context view.
+2. `../images/product/assistant.png` — bounded Assistant evidence explanation.
 3. `../images/product/risk-assessment.png` — transparent risk posture and remediation view.
 4. `../images/product/compliance.png` — actual compliance view.
 5. `../diagrams/kepryx-breach-to-evidence-loop.svg` — problem framing.

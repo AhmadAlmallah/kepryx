@@ -114,9 +114,9 @@ Release-evidence screenshots from the locally verified build are available in th
 actual operator-console captures from the local preview and use synthetic data. They are evidence
 of a tested preview state, not a substitute for deployment proof.
 
-| Dashboard | Inventory |
+| Dashboard | Kepryx Assistant |
 |---|---|
-| ![Kepryx dashboard](docs/images/product/dashboard.png) | ![Kepryx inventory](docs/images/product/inventory.png) |
+| ![Kepryx dashboard](docs/images/product/dashboard.png) | ![Kepryx Assistant](docs/images/product/assistant.png) |
 
 | Risk Assessment | Compliance |
 |---|---|
