@@ -32,7 +32,7 @@ GitHub governance are deployment or release controls rather than claims proven b
 
 | Gate | Result |
 |---|---|
-| `pytest -q --cov=app --cov-fail-under=50` | 137 passed; 55.68% application coverage |
+| `pytest -q --cov=app --cov-fail-under=60` | 154 passed; 63.54% application coverage |
 | Ruff lint | Passed |
 | Ruff format check | Passed |
 | mypy | Passed across 69 application source files |

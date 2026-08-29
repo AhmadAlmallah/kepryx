@@ -52,11 +52,11 @@ docker compose config --quiet
   `review_only=true` and `authoritative=false`; the result status was verified unchanged after
   the call. No AI-generated text is persisted as assessment evidence.
 - Final exact-candidate gate rerun on 2026-08-28 after the evidence-compliance, SSRF/edge, and
-  coverage remediations: 120 tests passed with 54% measured application coverage. Ruff
+  coverage remediations: 154 tests passed with 63.54% measured application coverage. Ruff
   lint/format, mypy, Bandit, strict pip-audit, and tracked-file secret detection passed. Fresh
-  sequential Trivy scans of all nine first-party release images, including the custom Caddy
+  sequential Trivy scans of all ten first-party release images, including the custom Caddy
   binary and pinned Alpine Python runtime, found zero HIGH/CRITICAL findings with unfixed
-  advisories visible. Current CycloneDX SBOMs were regenerated for the nine primary release
+  advisories visible. Current CycloneDX SBOMs were regenerated for the ten primary release
   images outside the repository.
 - Final edge-route review verified `/health` and `/ready` return `200`, disabled documentation
   paths (`/docs`, `/redoc`, `/openapi.json`, and API variants) plus `/metrics` return `404`, all
@@ -88,7 +88,7 @@ docker compose config --quiet
 
 ## Remaining test debt
 
-The measured 54% application coverage is materially better than the previous 40% but is not a
+The measured 63.54% application coverage is materially better than the previous 40% but is not a
 production-tested claim. Remaining priorities are browser mutation E2E, connector contract tests
 against real providers, migration tests against representative legacy data, load and soak tests,
 and failure-injection exercises beyond the isolated backup/restore smoke test. The new executable

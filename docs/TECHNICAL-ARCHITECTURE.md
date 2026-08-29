@@ -131,7 +131,7 @@ Neo4j, and Vault are not part of the canonical current Compose release. The inve
 bounded API-backed projection with interactive X/Y movement, Alt-drag Z-depth, filters, pinning,
 timeline scrubbing, zoom, playback, and reset; it is not a Neo4j-backed BloodHound engine.
 
-The v0.9 preview has 120 passing tests and 53.63% measured application coverage. Deep browser
+The v0.9 preview has 154 passing tests and 63.54% measured application coverage. Deep browser
 mutation for every screen, real external-provider synchronization, load/soak, HA/failover, and
 customer-owned production restore remain follow-up evidence. These limits are release information,
 not hidden defects.

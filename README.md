@@ -172,7 +172,7 @@ accessible node picker/list fallback. It is not a Neo4j-backed BloodHound or att
   DOM text nodes, role-aware navigation, and the supported API contracts.
 - Contract, connector, scanner, reconciliation, CVE-enrichment, worker-policy, and API mutation
   coverage exists, and a local browser route/visualization smoke has passed. The exact candidate
-  currently records 120 tests and 54% measured application coverage. Deep browser mutation,
+  currently records 154 tests and 63.54% measured application coverage. Deep browser mutation,
   load, failover, and production restore tests remain outside the community-preview evidence.
 - Sequential raw Trivy 0.67.2 scans of the rebuilt API, workers, scanner, beat, Caddy, PostgreSQL,
   and Asset Source images reported zero HIGH/CRITICAL findings. Python services use pinned Alpine
