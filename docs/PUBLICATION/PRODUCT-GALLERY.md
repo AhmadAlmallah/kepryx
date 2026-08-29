@@ -46,7 +46,7 @@ Use these four images in the README and the first part of the Medium article:
 | AI-assisted ingest | [`inventory-ai-ingest.png`](../images/workflows/inventory-ai-ingest.png) | Proposed normalization path | Publish as a proposal, not an automatic write |
 | Asset creation | [`inventory-create-asset.png`](../images/workflows/inventory-create-asset.png) | Create-asset form and validation surface | Publish as a form workflow, not completed evidence |
 | Compliance assessment run | [`compliance-assessment-run.png`](../images/workflows/compliance-assessment-run.png) | Deterministic assessment execution and status | Publish after run ID/date review |
-| Compliance evidence lineage | Not included | Result → evidence → asset traceability | **Recapture with documentation range before publication** |
+| Compliance evidence lineage | [`compliance-evidence-lineage.png`](../images/workflows/compliance-evidence-lineage.png) | Result → evidence → asset traceability | Publish with synthetic documentation-range data |
 | Compliance AI review | [`compliance-ai-review.png`](../images/workflows/compliance-ai-review.png) | Advisory review of a control result | Publish with advisory caveat |
 | Add integration | [`integration-add.png`](../images/workflows/integration-add.png) | Connector configuration boundary | Publish only with placeholders |
 | Self-security settings | [`self-security-settings.png`](../images/workflows/self-security-settings.png) | Scan schedule and proposal policy | Publish after current-policy review |
@@ -80,6 +80,6 @@ Before using any image in a public README, article, or social post:
 - capture the missing Login and Alert investigation/resolution workflows;
 - inspect each PNG at 100% and run the tracked-file secret scan after the final recapture.
 
-The former focus-overlay SVGs and the six captures requiring recapture are deliberately not part of
+The former focus-overlay SVGs and the five captures requiring recapture are deliberately not part of
 the public repository. They were moved to
 `C:\Data\NextGenInve\private-publication-assets\kepryx\` for private article editing only.

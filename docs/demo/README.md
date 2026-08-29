@@ -15,6 +15,19 @@ configuration, Assistant, API tokens, webhooks, privacy, and administration.
 |---|---|---|
 | ![Kepryx dashboard](../images/product/dashboard.png) | ![Kepryx risk assessment](../images/product/risk-assessment.png) | ![Kepryx compliance](../images/product/compliance.png) |
 
+### Compliance evidence workflow
+
+These two workflow captures make the compliance story concrete: the first traces a control result
+back to the observed asset evidence, and the second shows the local AI review as advisory guidance.
+Both use synthetic preview data; the AI review does not change Kepryx data.
+
+| Evidence lineage | Advisory AI review |
+|---|---|
+| ![Kepryx compliance evidence lineage](../images/workflows/compliance-evidence-lineage.png) | ![Kepryx advisory AI compliance review](../images/workflows/compliance-ai-review.png) |
+
+*The lineage screenshot uses a reserved documentation address (`198.51.100.121`). The AI review
+shows the local Ollama/Qwen3 provider and is not an automated compliance decision.*
+
 The screenshots are point-in-time preview evidence. They do not prove production scale, enterprise
 SSO, high availability, certification, or a permanent CVE-free state.
 

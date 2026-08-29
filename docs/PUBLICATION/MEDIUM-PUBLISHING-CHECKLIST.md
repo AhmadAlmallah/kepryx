@@ -22,11 +22,13 @@ claims honest and the visuals professional.
 2. `../images/product/assistant.png` — bounded Assistant evidence explanation.
 3. `../images/product/risk-assessment.png` — transparent risk posture and remediation view.
 4. `../images/product/compliance.png` — actual compliance view.
-5. `../diagrams/kepryx-breach-to-evidence-loop.svg` — problem framing.
-6. `../diagrams/ingest-risk-flow.svg` — operational pipeline.
-7. `../diagrams/compliance-evidence-lineage.svg` — evidence explanation.
-8. `../diagrams/kepryx-deployment-security-boundaries.svg` — architecture and trust boundaries.
-9. `../images/release-scorecard-chart.svg` — honest release posture.
+5. `../images/workflows/compliance-evidence-lineage.png` — actual result-to-evidence trace.
+6. `../images/workflows/compliance-ai-review.png` — bounded local AI review.
+7. `../diagrams/kepryx-breach-to-evidence-loop.svg` — problem framing.
+8. `../diagrams/ingest-risk-flow.svg` — operational pipeline.
+9. `../diagrams/compliance-evidence-lineage.svg` — evidence explanation.
+10. `../diagrams/kepryx-deployment-security-boundaries.svg` — architecture and trust boundaries.
+11. `../images/release-scorecard-chart.svg` — honest release posture.
 
 Medium does not resolve repository-relative image paths reliably. Upload the local files directly,
 then paste the article text around the uploaded images. Preserve the captions and alt text from
