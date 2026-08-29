@@ -12,7 +12,7 @@ one frame.
 
 | Measure | Observed result | What it demonstrates | What it does not demonstrate |
 |---|---:|---|---|
-| Automated test suite | 137 passed; 55.68% application coverage | Core regressions plus API mutation, scanner, CVE, reconciliation, connector, worker-policy, and remediation contracts pass | Broad production coverage; browser mutation, load, and failover evidence remain limited. |
+| Automated test suite | 154 passed; 63.54% application coverage | Core regressions plus read-model, export, token, notification, retention, API mutation, scanner, CVE, reconciliation, connector, worker-policy, and remediation contracts pass | Broad production coverage; browser mutation, load, and failover evidence remain limited. |
 | Static typing | 69 application files, no mypy errors | Typed application surface is internally consistent | Runtime correctness for every path. |
 | Bandit | No medium/high findings across 10,008 lines | No gated SAST findings in the scanned scope | Complete vulnerability discovery; SAST is one control. |
 | Python dependency gate | `pip-audit --strict` clean for the hash-locked runtime set | Known runtime package CVEs are gated for this candidate | Base-image or future provider dependency risk. |
@@ -78,7 +78,7 @@ enterprise platform has identical behavior.
 
 ### Highest-value improvement after publication
 
-1. Raise coverage beyond 56% with browser mutation, DB-backed edge cases, and worker idempotency tests.
+1. Raise coverage beyond 63.54% with browser mutation, DB-backed edge cases, and worker idempotency tests.
 2. Add one independently reviewed provider connector with a documented failure contract.
 3. Produce load/soak and restore/upgrade evidence using a defined test dataset.
 4. Add real deployment HTTPS evidence and a signed release tag.

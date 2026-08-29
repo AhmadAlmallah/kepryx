@@ -205,15 +205,15 @@ I did not want to rely on “the containers are running” as the only QA result
 
 | Area | Result |
 |---|---|
-| Automated tests | 120 passing tests |
-| Measured application coverage | 53.63% |
+| Automated tests | 154 passing tests |
+| Measured application coverage | 63.54% |
 | Ruff and mypy | Passed |
-| Bandit | No medium/high findings in 9,845 scanned lines |
+| Bandit | No medium/high findings in 10,008 scanned lines |
 | pip-audit | No known vulnerabilities in the locked Python runtime set |
 | Secret detection | No findings in the staged tracked candidate |
 | Database | Migration head `0007_evidence_compliance`; no model drift |
-| Image security | Nine rebuilt first-party images; zero HIGH/CRITICAL Trivy findings |
-| SBOM | Nine CycloneDX image SBOMs generated |
+| Image security | Ten rebuilt first-party images; zero HIGH/CRITICAL Trivy findings |
+| SBOM | Ten CycloneDX image SBOMs generated |
 | Live acceptance | Auth, inventory, risk, enrichment, compliance, alerts, scans, self-security, Assistant, webhooks, and graph interactions tested locally |
 
 The live platform currently demonstrated 34 assets, 115 open alerts, 1,675 KEV-linked CVE records,
