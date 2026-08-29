@@ -28,6 +28,28 @@ Both use synthetic preview data; the AI review does not change Kepryx data.
 *The lineage screenshot uses a reserved documentation address (`198.51.100.121`). The AI review
 shows the local Ollama/Qwen3 provider and is not an automated compliance decision.*
 
+### Additional operator views
+
+The complete gallery now includes the other synthetic operator-console screens used to explain
+the v0.9.0 preview. These are screenshots from the same local build, not generated mockups.
+
+| Alerts | Risk assessment | Self-security | Scans |
+|---|---|---|---|
+| ![Kepryx alerts](../images/product/alerts.png) | ![Kepryx risk assessment](../images/product/risk-assessment.png) | ![Kepryx self-security](../images/product/self-security.png) | ![Kepryx scans](../images/product/scans.png) |
+
+| Audit log | Administration | Exports | API tokens |
+|---|---|---|---|
+| ![Kepryx audit log](../images/product/audit-log.png) | ![Kepryx administration](../images/product/admin.png) | ![Kepryx exports](../images/product/exports.png) | ![Kepryx API tokens](../images/product/api-tokens.png) |
+
+| Webhooks | Privacy and GDPR | My Security | Relationship map |
+|---|---|---|---|
+| ![Kepryx webhooks](../images/product/webhooks.png) | ![Kepryx privacy and GDPR](../images/product/privacy-gdpr.png) | ![Kepryx My Security](../images/product/my-security.png) | ![Kepryx relationship map](../images/workflows/relationship-map.png) |
+
+The Inventory page is intentionally not represented by the older captures because they show a
+vendor-specific fixture. A vendor-neutral inventory capture, login screen, and alert
+investigation/resolution sequence still need to be recaptured before they are advertised as
+complete workflows.
+
 The screenshots are point-in-time preview evidence. They do not prove production scale, enterprise
 SSO, high availability, certification, or a permanent CVE-free state.
 
