@@ -2,7 +2,7 @@
 # pip-compile --generate-hashes --resolver=backtracking --output-file=requirements.txt requirements.in
 pip==26.2
 fastapi==0.141.1
-uvicorn[standard]>=0.32,<1
+uvicorn[standard]>=0.52.4,<1
 gunicorn>=23,<24
 pydantic>=2.9,<3
 pydantic-settings>=2.5,<3
