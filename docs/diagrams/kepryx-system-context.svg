@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820" role="img" aria-labelledby="title desc">
+  <title id="title">Kepryx v0.9 system context and trust boundaries</title>
+  <desc id="desc">Browser traffic enters through Caddy, reaches the FastAPI API, and flows to PostgreSQL, Redis, Celery workers, approved feeds, and optional synthetic demo sources. A focus box highlights the API as the authorization and evidence boundary.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#09111f"/><stop offset="1" stop-color="#101b32"/></linearGradient>
+    <linearGradient id="api" x1="0" x2="1"><stop stop-color="#2563eb"/><stop offset="1" stop-color="#4f46e5"/></linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L10,3 L0,6 Z" fill="#8ba3c7"/></marker>
+    <style>
+      .title{font:500 28px Segoe UI,Arial,sans-serif;fill:#f8fafc}.sub{font:400 14px Segoe UI,Arial,sans-serif;fill:#a8b7cc}.head{font:500 17px Segoe UI,Arial,sans-serif;fill:#f8fafc}.body{font:400 13px Segoe UI,Arial,sans-serif;fill:#cbd5e1}.small{font:400 12px Segoe UI,Arial,sans-serif;fill:#94a3b8}.box{fill:#111c31;stroke:#334766;stroke-width:1.5}.accent{fill:#10254b;stroke:#4f8cff;stroke-width:2}.source{fill:#14221d;stroke:#3bb273;stroke-width:1.5}.external{fill:#211b33;stroke:#9b7bff;stroke-width:1.5}.line{fill:none;stroke:#8ba3c7;stroke-width:2;marker-end:url(#arrow)}.dashed{fill:none;stroke:#efb54a;stroke-width:2;stroke-dasharray:8 7}.focus{fill:none;stroke:#f5b84b;stroke-width:3;stroke-dasharray:10 7}.label{font:500 12px Segoe UI,Arial,sans-serif;fill:#f5b84b;letter-spacing:.08em;text-transform:uppercase}
+    </style>
+  </defs>
+  <rect width="1400" height="820" fill="url(#bg)"/>
+  <text x="60" y="60" class="title">Kepryx v0.9 · system context</text>
+  <text x="60" y="88" class="sub">Evidence-driven asset intelligence with explicit authorization and worker boundaries</text>
+
+  <rect x="60" y="160" width="180" height="100" rx="10" class="box"/>
+  <text x="84" y="198" class="head">Operator browser</text><text x="84" y="223" class="body">UI + bearer session</text><text x="84" y="244" class="small">same-origin console</text>
+  <rect x="310" y="160" width="200" height="100" rx="10" class="box"/>
+  <text x="335" y="198" class="head">Caddy edge</text><text x="335" y="223" class="body">TLS · headers · routing</text><text x="335" y="244" class="small">only published host port</text>
+  <line x1="240" y1="210" x2="310" y2="210" class="line"/>
+
+  <rect x="590" y="130" width="330" height="180" rx="12" class="accent"/>
+  <text x="620" y="174" class="head">FastAPI application boundary</text><text x="620" y="204" class="body">authentication · RBAC · audit</text><text x="620" y="228" class="body">assets · risk · compliance · alerts</text><text x="620" y="252" class="body">assistant · integrations · scans</text><text x="620" y="278" class="small">API is the authorization authority</text>
+  <line x1="510" y1="210" x2="590" y2="210" class="line"/>
+  <rect x="570" y="110" width="370" height="220" rx="16" class="focus"/>
+  <text x="960" y="128" class="label">focus: trust boundary</text><text x="960" y="151" class="small">Inputs are normalized and</text><text x="960" y="170" class="small">recorded before decisions.</text>
+
+  <rect x="590" y="410" width="220" height="110" rx="10" class="box"/>
+  <text x="618" y="448" class="head">PostgreSQL</text><text x="618" y="473" class="body">inventory · evidence</text><text x="618" y="495" class="small">audit · jobs · lineage</text>
+  <rect x="870" y="410" width="180" height="110" rx="10" class="box"/>
+  <text x="900" y="448" class="head">Redis</text><text x="900" y="473" class="body">queue + revocation</text><text x="900" y="495" class="small">internal network</text>
+  <line x1="700" y1="310" x2="700" y2="410" class="line"/>
+  <line x1="810" y1="260" x2="910" y2="410" class="line"/>
+
+  <rect x="1080" y="390" width="250" height="150" rx="10" class="box"/>
+  <text x="1110" y="428" class="head">Celery workers</text><text x="1110" y="454" class="body">reconcile · enrich</text><text x="1110" y="478" class="body">compliance · self-security</text><text x="1110" y="502" class="body">scan · notify</text>
+  <line x1="920" y1="260" x2="1150" y2="390" class="line"/>
+  <line x1="810" y1="465" x2="1080" y2="465" class="line"/>
+
+  <rect x="90" y="410" width="300" height="150" rx="10" class="source"/>
+  <text x="120" y="448" class="head">Approved observations</text><text x="120" y="474" class="body">CSV · LDAP · AWS · DHCP/DNS</text><text x="120" y="498" class="body">Nessus · nmap · Asset Source API</text><text x="120" y="530" class="small">source-labelled, bounded, testable</text>
+  <line x1="390" y1="480" x2="590" y2="270" class="line"/>
+
+  <rect x="90" y="650" width="300" height="90" rx="10" class="external"/>
+  <text x="120" y="687" class="head">Authoritative intelligence</text><text x="120" y="713" class="body">NVD · FIRST EPSS · CISA KEV · OSV</text>
+  <line x1="390" y1="690" x2="1080" y2="520" class="dashed"/>
+  <text x="510" y="676" class="small">worker egress is explicit; feed facts are retained with provenance</text>
+
+  <rect x="1080" y="650" width="250" height="90" rx="10" class="box"/>
+  <text x="1110" y="687" class="head">Operator outputs</text><text x="1110" y="713" class="body">UI · reports · webhooks · audit</text>
+  <line x1="1205" y1="540" x2="1205" y2="650" class="line"/>
+
+  <text x="60" y="790" class="small">Demo note: the Asset Source mock is synthetic and local-only; it is not vendor certification or production authorization.</text>
+</svg>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="820" viewBox="0 0 1500 820" role="img" aria-labelledby="title desc">
+  <title id="title">From infrastructure breach conditions to Kepryx evidence</title>
+  <desc id="desc">Common enabling conditions lead to initial access and lateral movement. Kepryx then connects inventory observations and authoritative intelligence to explainable risk, compliance evidence, alerts, and operator action.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1"><stop stop-color="#07101e"/><stop offset="1" stop-color="#14223a"/></linearGradient>
+    <marker id="arrow" markerWidth="11" markerHeight="11" refX="10" refY="3" orient="auto"><path d="M0,0 L11,3 L0,6 Z" fill="#9eb1c9"/></marker>
+    <style>.title{font:500 28px Segoe UI,Arial,sans-serif;fill:#f8fafc}.sub{font:400 14px Segoe UI,Arial,sans-serif;fill:#aebdd0}.head{font:500 16px Segoe UI,Arial,sans-serif;fill:#f8fafc}.body{font:400 13px Segoe UI,Arial,sans-serif;fill:#d2dbe8}.small{font:400 12px Segoe UI,Arial,sans-serif;fill:#9aabc0}.box{fill:#111d31;stroke:#415674;stroke-width:1.5}.risk{fill:#321e23;stroke:#e66b73;stroke-width:1.5}.kepryx{fill:#10284c;stroke:#4b8dff;stroke-width:1.5}.fact{fill:#142b24;stroke:#46bd83;stroke-width:1.5}.out{fill:#242039;stroke:#a58dff;stroke-width:1.5}.line{fill:none;stroke:#9eb1c9;stroke-width:2;marker-end:url(#arrow)}.focus{fill:none;stroke:#f3bf55;stroke-width:3;stroke-dasharray:10 7}.label{font:500 12px Segoe UI,Arial,sans-serif;fill:#f3bf55;letter-spacing:.08em}</style>
+  </defs>
+  <rect width="1500" height="820" fill="url(#bg)"/>
+  <text x="60" y="52" class="title">From breach conditions to an evidence loop</text>
+  <text x="60" y="80" class="sub">Visibility does not stop the first phish; it helps reduce the forgotten, exposed, and weak asset paths that follow.</text>
+  <text x="60" y="130" class="label">enabling conditions</text>
+  <rect x="60" y="150" width="220" height="106" rx="12" class="risk"/><text x="88" y="190" class="head">Phishing</text><text x="88" y="218" class="body">stolen identity or session</text>
+  <rect x="315" y="150" width="220" height="106" rx="12" class="risk"/><text x="343" y="190" class="head">Open port</text><text x="343" y="218" class="body">unintended reachability</text>
+  <rect x="570" y="150" width="220" height="106" rx="12" class="risk"/><text x="598" y="190" class="head">Misconfiguration</text><text x="598" y="218" class="body">weak server baseline</text>
+  <rect x="825" y="150" width="220" height="106" rx="12" class="risk"/><text x="853" y="190" class="head">Forgotten infra</text><text x="853" y="218" class="body">stale or shadow asset</text>
+  <line x1="280" y1="203" x2="315" y2="203" class="line"/><line x1="535" y1="203" x2="570" y2="203" class="line"/><line x1="790" y1="203" x2="825" y2="203" class="line"/>
+  <rect x="1090" y="150" width="330" height="106" rx="12" class="box"/><text x="1120" y="190" class="head">Weakest reachable asset</text><text x="1120" y="218" class="body">initial access → discovery → lateral movement</text><path d="M1045 203 C1060 203 1070 203 1090 203" class="line"/>
+  <rect x="210" y="340" width="350" height="132" rx="12" class="box"/><text x="242" y="380" class="head">The visibility gap</text><text x="242" y="408" class="body">An asset can be present in one source</text><text x="242" y="432" class="body">and absent, stale, or misclassified in another.</text>
+  <rect x="610" y="340" width="350" height="132" rx="12" class="kepryx"/><text x="642" y="380" class="head">Kepryx inventory view</text><text x="642" y="408" class="body">reconcile sources, mark shadow assets,</text><text x="642" y="432" class="body">and retain source-labelled observations.</text>
+  <rect x="1010" y="340" width="350" height="132" rx="12" class="kepryx"/><text x="1042" y="380" class="head">Explainable posture</text><text x="1042" y="408" class="body">score exposure, controls, CVEs, KEV,</text><text x="1042" y="432" class="body">criticality, access, and data class.</text>
+  <line x1="560" y1="406" x2="610" y2="406" class="line"/><line x1="960" y1="406" x2="1010" y2="406" class="line"/>
+  <rect x="595" y="315" width="790" height="182" rx="16" class="focus"/><text x="595" y="526" class="label">focus: connect the asset story</text><text x="595" y="550" class="small">The objective is not another isolated dashboard. It is a trace from observation to decision.</text>
+  <rect x="135" y="615" width="250" height="104" rx="12" class="fact"/><text x="165" y="654" class="head">Authoritative facts</text><text x="165" y="682" class="body">NVD · EPSS · CISA KEV · OSV</text>
+  <rect x="465" y="615" width="250" height="104" rx="12" class="out"/><text x="495" y="654" class="head">Risk and compliance</text><text x="495" y="682" class="body">score · controls · evidence hash</text>
+  <rect x="795" y="615" width="250" height="104" rx="12" class="out"/><text x="825" y="654" class="head">Response trail</text><text x="825" y="682" class="body">alerts · webhook · audit log</text>
+  <rect x="1125" y="615" width="250" height="104" rx="12" class="out"/><text x="1155" y="654" class="head">Operator action</text><text x="1155" y="682" class="body">investigate · resolve · improve</text>
+  <line x1="1185" y1="472" x2="260" y2="615" class="line"/><line x1="1185" y1="472" x2="590" y2="615" class="line"/><line x1="1185" y1="472" x2="920" y2="615" class="line"/><line x1="1185" y1="472" x2="1250" y2="615" class="line"/>
+  <text x="60" y="775" class="small">Public framing: many incidents are enabled by visibility and hygiene gaps; Kepryx is an evidence-backed preview, not a promise to prevent every breach.</text>
+</svg>

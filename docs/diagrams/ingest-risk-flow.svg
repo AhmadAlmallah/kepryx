@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="740" viewBox="0 0 1400 740" role="img" aria-labelledby="title desc">
+  <title id="title">Kepryx ingest to risk and response flow</title>
+  <desc id="desc">A source observation is normalized, reconciled, enriched by NVD EPSS and KEV, scored by a transparent risk engine, and projected into alerts, compliance, reports and the operator interface. A side branch shows AI as advisory only.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1"><stop stop-color="#08111f"/><stop offset="1" stop-color="#121d34"/></linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L10,3 L0,6 Z" fill="#94a8c4"/></marker>
+    <style>
+      .title{font:500 28px Segoe UI,Arial,sans-serif;fill:#f8fafc}.sub{font:400 14px Segoe UI,Arial,sans-serif;fill:#a8b7cc}.head{font:500 16px Segoe UI,Arial,sans-serif;fill:#f8fafc}.body{font:400 12px Segoe UI,Arial,sans-serif;fill:#cbd5e1}.small{font:400 12px Segoe UI,Arial,sans-serif;fill:#94a3b8}.box{fill:#111c31;stroke:#3a4d6b;stroke-width:1.5}.trust{fill:#10254b;stroke:#4f8cff;stroke-width:1.5}.fact{fill:#14221d;stroke:#3bb273;stroke-width:1.5}.advisory{fill:#281e14;stroke:#efb54a;stroke-width:1.5}.line{fill:none;stroke:#94a8c4;stroke-width:2;marker-end:url(#arrow)}.focus{fill:none;stroke:#f5b84b;stroke-width:3;stroke-dasharray:10 7}.label{font:500 12px Segoe UI,Arial,sans-serif;fill:#f5b84b;letter-spacing:.08em;text-transform:uppercase}
+    </style>
+  </defs>
+  <rect width="1400" height="740" fill="url(#bg)"/>
+  <text x="60" y="58" class="title">From observation to an explainable decision</text>
+  <text x="60" y="86" class="sub">The critical path separates source facts, Kepryx computation, and AI guidance</text>
+
+  <rect x="60" y="180" width="180" height="110" rx="10" class="box"/><text x="88" y="220" class="head">1 · Observe</text><text x="88" y="246" class="body">CSV or connector</text><text x="88" y="270" class="small">raw source record</text>
+  <rect x="300" y="180" width="180" height="110" rx="10" class="trust"/><text x="328" y="220" class="head">2 · Normalize</text><text x="328" y="246" class="body">schema + validation</text><text x="328" y="270" class="small">bounded fields</text>
+  <rect x="540" y="180" width="180" height="110" rx="10" class="trust"/><text x="568" y="220" class="head">3 · Reconcile</text><text x="568" y="246" class="body">source priority</text><text x="568" y="270" class="small">one asset view</text>
+  <rect x="780" y="180" width="180" height="110" rx="10" class="fact"/><text x="808" y="220" class="head">4 · Enrich</text><text x="808" y="246" class="body">NVD · EPSS · KEV</text><text x="808" y="270" class="small">recorded provenance</text>
+  <rect x="1020" y="180" width="180" height="110" rx="10" class="trust"/><text x="1048" y="220" class="head">5 · Score</text><text x="1048" y="246" class="body">weighted factors</text><text x="1048" y="270" class="small">posture signal</text>
+  <line x1="240" y1="235" x2="300" y2="235" class="line"/><line x1="480" y1="235" x2="540" y2="235" class="line"/><line x1="720" y1="235" x2="780" y2="235" class="line"/><line x1="960" y1="235" x2="1020" y2="235" class="line"/>
+  <rect x="1000" y="160" width="220" height="150" rx="14" class="focus"/><text x="1000" y="335" class="label">focus: explainability</text><text x="1000" y="358" class="small">Every decision can point</text><text x="1000" y="377" class="small">back to observed context.</text>
+
+  <rect x="330" y="430" width="250" height="120" rx="10" class="box"/><text x="360" y="470" class="head">6 · Operate</text><text x="360" y="496" class="body">alerts · audit · webhook</text><text x="360" y="520" class="small">resolve with evidence</text>
+  <rect x="650" y="430" width="250" height="120" rx="10" class="box"/><text x="680" y="470" class="head">7 · Assure</text><text x="680" y="496" class="body">compliance + reports</text><text x="680" y="520" class="small">hash + lineage + status</text>
+  <rect x="970" y="430" width="250" height="120" rx="10" class="box"/><text x="1000" y="470" class="head">8 · Explain</text><text x="1000" y="496" class="body">dashboard + Assistant</text><text x="1000" y="520" class="small">bounded operator view</text>
+  <line x1="1110" y1="290" x2="1110" y2="395" class="line"/><line x1="1110" y1="395" x2="1110" y2="430" class="line"/><line x1="1110" y1="395" x2="775" y2="430" class="line"/><line x1="1110" y1="395" x2="455" y2="430" class="line"/>
+  <rect x="60" y="430" width="210" height="120" rx="10" class="advisory"/><text x="88" y="470" class="head">AI side path</text><text x="88" y="496" class="body">normalize / summarize</text><text x="88" y="520" class="small">review-only guidance</text>
+  <path d="M630 290 C560 360 450 390 270 470" class="line"/>
+  <text x="60" y="625" class="small">Guardrail: AI never writes authoritative CVE, EPSS, KEV, risk, compliance, or action state.</text>
+  <text x="60" y="660" class="small">Guardrail: an alert or scan action is not “done” until the API/worker result confirms it.</text>
+</svg>

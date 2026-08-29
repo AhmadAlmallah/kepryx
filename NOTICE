@@ -1,0 +1,32 @@
+Kepryx — Asset Intelligence & Risk Platform
+Copyright 2026 Ahmad Almallah
+Maintainer contact: ahmad.almallah.consulting@hotmail.com
+
+This product includes software developed by Ahmad Almallah.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+
+This software incorporates the following third-party components,
+each governed by its own license:
+
+- FastAPI (MIT)
+- SQLAlchemy (MIT)
+- Celery (BSD-3-Clause)
+- PostgreSQL client libs (PostgreSQL License)
+- Redis-py (MIT)
+- httpx (BSD-3-Clause)
+- Pydantic (MIT)
+- python-jose (MIT)
+- argon2-cffi (MIT)
+- ldap3 (LGPL v3)
+- boto3 (Apache 2.0)
+- alembic (MIT)
+- tenacity (Apache 2.0)
+- prometheus-client (Apache 2.0)
+
+Data sources accessed at runtime:
+- NVD (National Vulnerability Database) — US Government, public domain
+- FIRST EPSS API — Forum of Incident Response and Security Teams
+- CISA Known Exploited Vulnerabilities catalog — US Government, public domain
+- OSV.dev — Open Source Vulnerabilities (Google + community), CC-BY-4.0

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1010" viewBox="0 0 1500 1010" role="img" aria-labelledby="title desc">
+  <title id="title">Annotated Kepryx dashboard screenshot</title>
+  <desc id="desc">The dashboard screenshot with focus boxes around the posture KPI strip, the relationship map controls, and the alert and recent-change evidence.</desc>
+  <defs>
+    <style>
+      .bg{fill:#08111f}.panel{fill:#111c31;stroke:#334766;stroke-width:1.5}.title{font:500 24px Segoe UI,Arial,sans-serif;fill:#f8fafc}.head{font:500 16px Segoe UI,Arial,sans-serif;fill:#f8fafc}.body{font:400 13px Segoe UI,Arial,sans-serif;fill:#cbd5e1}.small{font:400 12px Segoe UI,Arial,sans-serif;fill:#94a3b8}.focus{fill:none;stroke:#f5b84b;stroke-width:4;stroke-dasharray:12 8}.num{font:500 13px Consolas,monospace;fill:#f5b84b}.line{fill:none;stroke:#f5b84b;stroke-width:2}
+    </style>
+  </defs>
+  <rect width="1500" height="1010" class="bg"/>
+  <text x="40" y="42" class="title">Dashboard evidence · focus areas for the recording</text>
+  <text x="40" y="68" class="small">Illustrative local evidence from the verified preview build; values are point-in-time and may change after a fresh run.</text>
+  <rect x="40" y="90" width="690" height="900" rx="10" class="panel"/>
+  <image href="dashboard-evidence.png" x="50" y="100" width="620" height="884" preserveAspectRatio="none"/>
+  <rect x="160" y="138" width="500" height="48" rx="4" class="focus"/>
+  <rect x="160" y="350" width="500" height="360" rx="4" class="focus"/>
+  <rect x="160" y="720" width="242" height="190" rx="4" class="focus"/>
+  <rect x="418" y="720" width="242" height="190" rx="4" class="focus"/>
+  <text x="760" y="145" class="num">01 · POSTURE SIGNALS</text><text x="760" y="170" class="body">Asset, severity, shadow-IT, alert, and KEV counts establish the opening frame.</text>
+  <path d="M735 154 L705 154" class="line"/>
+  <text x="760" y="365" class="num">02 · OPERABLE 4D MAP</text><text x="760" y="390" class="body">Filter, reshape, focus, drag, pin, zoom, and scrub time. Use the node list when dense.</text>
+  <path d="M735 377 L705 377" class="line"/>
+  <text x="760" y="720" class="num">03 · OPEN ALERTS</text><text x="760" y="745" class="body">A risk signal becomes an operator queue. Resolve it only after inspecting evidence.</text>
+  <path d="M735 730 L705 730" class="line"/>
+  <text x="760" y="840" class="num">04 · RECENT CHANGES</text><text x="760" y="865" class="body">Audit-friendly activity makes the state change visible instead of hiding it behind the UI.</text>
+  <path d="M735 850 L705 850" class="line"/>
+  <text x="760" y="930" class="small">Narrative: “This is not a decorative dashboard; each focus area points to a live API-backed signal.”</text>
+</svg>

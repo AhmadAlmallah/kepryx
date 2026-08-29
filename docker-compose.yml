@@ -1,0 +1,308 @@
+x-common-env: &common-env
+  APP_NAME: ${APP_NAME:-KEPRYX}
+  DEBUG: ${DEBUG:-false}
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: 5432
+  POSTGRES_DB: ${POSTGRES_DB:-kepryx}
+  POSTGRES_USER: ${POSTGRES_USER:-kepryx}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?must_set}
+  DB_POOL_SIZE: ${DB_POOL_SIZE:-20}
+  DB_MAX_OVERFLOW: ${DB_MAX_OVERFLOW:-10}
+  REDIS_URL: redis://:${REDIS_PASSWORD:?must_set}@redis:6379/0
+  SECRET_KEY: ${SECRET_KEY:?must_set}
+  JWT_SECRET: ${JWT_SECRET:?must_set}
+  ENCRYPTION_KEY: ${ENCRYPTION_KEY:?must_set}
+  JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
+  JWT_ISSUER: ${JWT_ISSUER:-kepryx}
+  JWT_AUDIENCE: ${JWT_AUDIENCE:-kepryx-api}
+  JWT_ACCESS_TTL_MIN: ${JWT_ACCESS_TTL_MIN:-30}
+  JWT_REFRESH_TTL_DAYS: ${JWT_REFRESH_TTL_DAYS:-7}
+  PASSWORD_MIN_LEN: ${PASSWORD_MIN_LEN:-14}
+  MAX_LOGIN_ATTEMPTS: ${MAX_LOGIN_ATTEMPTS:-5}
+  LOCKOUT_DURATION_MIN: ${LOCKOUT_DURATION_MIN:-15}
+  SESSION_TIMEOUT_MIN: ${SESSION_TIMEOUT_MIN:-30}
+  ALLOW_INSECURE_CONNECTORS: ${ALLOW_INSECURE_CONNECTORS:-false}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+  ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-sonnet-4-20250514}
+  AI_PROVIDER: ${AI_PROVIDER:-disabled}
+  AI_BASE_URL: ${AI_BASE_URL:-http://host.docker.internal:11434}
+  AI_API_KEY: ${AI_API_KEY:-ollama}
+  AI_MODEL: ${AI_MODEL:-qwen3:14b}
+  AI_TIMEOUT_SEC: ${AI_TIMEOUT_SEC:-180}
+  AI_CONTEXT_LENGTH: ${AI_CONTEXT_LENGTH:-8192}
+  AI_THINKING: ${AI_THINKING:-false}
+  NVD_API_KEY: ${NVD_API_KEY:-}
+  NVD_BASE_URL: ${NVD_BASE_URL:-https://services.nvd.nist.gov/rest/json/cves/2.0}
+  EPSS_BASE_URL: ${EPSS_BASE_URL:-https://api.first.org/data/v1/epss}
+  KEV_FEED_URL: ${KEV_FEED_URL:-https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json}
+  OSV_BASE_URL: ${OSV_BASE_URL:-https://api.osv.dev/v1/query}
+  EOL_BASE_URL: ${EOL_BASE_URL:-https://endoflife.date/api}
+  ENVIRONMENT: ${ENVIRONMENT:-production}
+  CORS_ORIGINS: ${CORS_ORIGINS:-["https://kepryx.local"]}
+  ALLOWED_HOSTS: ${ALLOWED_HOSTS:-["kepryx.local","localhost","127.0.0.1"]}
+  TRUSTED_PROXY_CIDRS: ${TRUSTED_PROXY_CIDRS:-["172.29.0.2/32"]}
+  MANAGEMENT_CIDRS: ${MANAGEMENT_CIDRS:-["127.0.0.1/32","::1/128","172.29.0.0/24"]}
+  CONNECTOR_ALLOWED_CIDRS: ${CONNECTOR_ALLOWED_CIDRS:-[]}
+  SCAN_NETWORKS: ${SCAN_NETWORKS:-[]}
+  NMAP_TIMING: ${NMAP_TIMING:-4}
+  SCAN_TIMEOUT_SEC: ${SCAN_TIMEOUT_SEC:-3600}
+  MAX_SCAN_HOSTS: ${MAX_SCAN_HOSTS:-4096}
+  RETENTION_DELETE_ENABLED: ${RETENTION_DELETE_ENABLED:-false}
+  AUDIT_LOG_RETENTION_DAYS: ${AUDIT_LOG_RETENTION_DAYS:-2555}
+  AUDIT_LOG_ARCHIVE_DAYS: ${AUDIT_LOG_ARCHIVE_DAYS:-365}
+  INACTIVE_ASSET_DAYS: ${INACTIVE_ASSET_DAYS:-90}
+  INACTIVE_USER_FLAG_DAYS: ${INACTIVE_USER_FLAG_DAYS:-365}
+  SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL:-}
+  SMTP_HOST: ${SMTP_HOST:-}
+  SMTP_PORT: ${SMTP_PORT:-587}
+  SMTP_USER: ${SMTP_USER:-}
+  SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+  SMTP_FROM: ${SMTP_FROM:-kepryx@example.com}
+  PAGERDUTY_KEY: ${PAGERDUTY_KEY:-}
+
+x-api-image: &api-image
+  image: ${COMPOSE_PROJECT_NAME:-kepryx}-api:0.9.0
+  build: { context: ., dockerfile: docker/Dockerfile.api }
+
+networks:
+  kepryx-internal:
+    name: kepryx-v09-internal
+    driver: bridge
+    internal: true
+  kepryx-edge:
+    name: kepryx-v09-edge
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.29.0.0/24
+          ip_range: 172.29.0.128/25
+  kepryx-egress:
+    name: kepryx-v09-egress
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:
+  prometheus-data:
+  caddy-data:
+    name: ${COMPOSE_PROJECT_NAME:-kepryx}_caddy-data-v09
+  caddy-config:
+    name: ${COMPOSE_PROJECT_NAME:-kepryx}_caddy-config-v09
+
+services:
+  migrate:
+    <<: *api-image
+    command: alembic upgrade head
+    restart: "no"
+    environment: *common-env
+    networks: [kepryx-internal]
+    depends_on:
+      postgres: { condition: service_healthy }
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+
+  caddy:
+    build: { context: ., dockerfile: docker/Dockerfile.caddy }
+    restart: unless-stopped
+    ports:
+      - "${HTTPS_PORT:-443}:443"
+      - "${HTTPS_PORT:-443}:443/udp"
+      - "${HTTP_PORT:-80}:80"
+    environment:
+      CADDY_SKIP_INSTALL_TRUST: "1"
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      kepryx-edge:
+        ipv4_address: 172.29.0.2
+    depends_on:
+      api: { condition: service_healthy }
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    read_only: true
+    tmpfs: [/tmp]
+
+  caddy-dev:
+    build: { context: ., dockerfile: docker/Dockerfile.caddy }
+    profiles: ["dev-ui"]
+    restart: unless-stopped
+    ports: ["127.0.0.1:8080:8080"]
+    volumes:
+      - ./docker/Caddyfile.dev:/etc/caddy/Caddyfile:ro
+    networks: [kepryx-edge]
+    depends_on:
+      api: { condition: service_healthy }
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /data:uid=10001,gid=10001,mode=0700
+      - /config:uid=10001,gid=10001,mode=0700
+
+  asset-source-mock:
+    build: { context: ., dockerfile: docker/Dockerfile.asset-source-mock }
+    profiles: ["demo"]
+    restart: "no"
+    expose: ["8766"]
+    networks: [kepryx-egress]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs: [/tmp]
+
+  api:
+    <<: *api-image
+    expose: ["8000"]
+    restart: unless-stopped
+    environment:
+      <<: *common-env
+      WORKERS: 4
+    networks: [kepryx-internal, kepryx-edge, kepryx-egress]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+    security_opt: [no-new-privileges:true]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    deploy:
+      resources:
+        limits: { cpus: "2", memory: 2G }
+
+  worker-scanner:
+    build: { context: ., dockerfile: docker/Dockerfile.scanner }
+    restart: unless-stopped
+    user: "10001:10001"
+    command: celery -A app.workers.celery_app worker -Q scanner -c 2 -l info
+    environment: { <<: *common-env, WORKER_TYPE: scanner }
+    cap_add: [NET_RAW, NET_ADMIN]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    networks: [kepryx-internal, kepryx-egress]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+    read_only: true
+    tmpfs: [/tmp]
+
+  worker-enrich:
+    build: { context: ., dockerfile: docker/Dockerfile.worker }
+    restart: unless-stopped
+    command: celery -A app.workers.celery_app worker -Q enrichment -c 4 -l info
+    environment: { <<: *common-env, WORKER_TYPE: enrichment }
+    networks: [kepryx-internal, kepryx-egress]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs: [/tmp]
+
+  worker-recon:
+    build: { context: ., dockerfile: docker/Dockerfile.worker }
+    restart: unless-stopped
+    command: celery -A app.workers.celery_app worker -Q reconciler,notifications -c 2 -l info
+    environment: { <<: *common-env }
+    networks: [kepryx-internal, kepryx-egress]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs: [/tmp]
+
+  worker-selfsec:
+    build: { context: ., dockerfile: docker/Dockerfile.worker }
+    restart: unless-stopped
+    command: celery -A app.workers.celery_app worker -Q self_security -c 1 -l info
+    environment: { <<: *common-env }
+    # Self-security generates PR patches and never mutates host source.
+    volumes:
+      - ./requirements.in:/app/requirements.in:ro
+    networks: [kepryx-internal, kepryx-egress]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs: [/tmp]
+
+  beat:
+    build: { context: ., dockerfile: docker/Dockerfile.worker }
+    restart: unless-stopped
+    command: celery -A app.workers.celery_app beat -l info -s /tmp/celerybeat-schedule
+    environment: { <<: *common-env }
+    networks: [kepryx-internal]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs: [/tmp]
+
+  postgres:
+    build: { context: ., dockerfile: docker/Dockerfile.postgres }
+    restart: unless-stopped
+    user: "70:70"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-kepryx}
+      POSTGRES_USER: ${POSTGRES_USER:-kepryx}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?must_set}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks: [kepryx-internal]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-kepryx}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run/postgresql:uid=70,gid=70,mode=0775
+
+  redis:
+    image: redis:7-alpine@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf
+    restart: unless-stopped
+    user: "999:1000"
+    command: redis-server --requirepass ${REDIS_PASSWORD:?must_set} --appendonly yes --maxmemory 1gb --maxmemory-policy noeviction
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?must_set}
+    volumes: [redis-data:/data]
+    networks: [kepryx-internal]
+    healthcheck:
+      test: ["CMD-SHELL", "REDISCLI_AUTH=$$REDIS_PASSWORD redis-cli ping | grep PONG"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs: [/tmp]
+
+  prometheus:
+    image: prom/prometheus:v3.14.0@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0
+    restart: unless-stopped
+    profiles: ["observability"]
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    networks: [kepryx-internal]

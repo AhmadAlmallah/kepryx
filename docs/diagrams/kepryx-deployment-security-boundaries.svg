@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="860" viewBox="0 0 1500 860" role="img" aria-labelledby="title desc">
+  <title id="title">Kepryx deployment security boundaries</title>
+  <desc id="desc">Browser traffic reaches the Caddy edge, which proxies the API and WebSocket paths. The API and workers use PostgreSQL and Redis on an internal network, while only approved workers use egress to intelligence feeds and connectors. The scanner has only its required network capabilities.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1"><stop stop-color="#07101e"/><stop offset="1" stop-color="#14223a"/></linearGradient>
+    <marker id="arrow" markerWidth="11" markerHeight="11" refX="10" refY="3" orient="auto"><path d="M0,0 L11,3 L0,6 Z" fill="#9eb1c9"/></marker>
+    <style>.title{font:500 28px Segoe UI,Arial,sans-serif;fill:#f8fafc}.sub{font:400 14px Segoe UI,Arial,sans-serif;fill:#aebdd0}.head{font:500 16px Segoe UI,Arial,sans-serif;fill:#f8fafc}.body{font:400 13px Segoe UI,Arial,sans-serif;fill:#d2dbe8}.small{font:400 12px Segoe UI,Arial,sans-serif;fill:#9aabc0}.box{fill:#111d31;stroke:#415674;stroke-width:1.5}.edge{fill:#16284c;stroke:#4b8dff;stroke-width:1.5}.data{fill:#142b24;stroke:#46bd83;stroke-width:1.5}.external{fill:#2a2119;stroke:#e9af4f;stroke-width:1.5}.boundary{fill:none;stroke:#d4e0ef;stroke-width:2;stroke-dasharray:11 8}.line{fill:none;stroke:#9eb1c9;stroke-width:2;marker-end:url(#arrow)}.focus{fill:none;stroke:#f3bf55;stroke-width:3;stroke-dasharray:10 7}.label{font:500 12px Segoe UI,Arial,sans-serif;fill:#f3bf55;letter-spacing:.08em}</style>
+  </defs>
+  <rect width="1500" height="860" fill="url(#bg)"/>
+  <text x="60" y="52" class="title">Kepryx deployment and security boundaries</text>
+  <text x="60" y="80" class="sub">The public edge is narrow; durable state and task traffic stay on internal networks.</text>
+  <rect x="45" y="118" width="1410" height="330" rx="18" class="boundary"/><text x="70" y="148" class="label">operator / host boundary</text>
+  <rect x="90" y="205" width="220" height="112" rx="12" class="box"/><text x="125" y="245" class="head">Browser</text><text x="125" y="273" class="body">same-origin console</text><text x="125" y="296" class="small">bearer token in memory</text>
+  <rect x="390" y="205" width="240" height="112" rx="12" class="edge"/><text x="425" y="245" class="head">Caddy edge</text><text x="425" y="273" class="body">TLS · CSP · routing</text><text x="425" y="296" class="small">only published service</text>
+  <rect x="710" y="205" width="240" height="112" rx="12" class="edge"/><text x="745" y="245" class="head">FastAPI</text><text x="745" y="273" class="body">auth · scopes · API</text><text x="745" y="296" class="small">validation + audit</text>
+  <rect x="1030" y="205" width="300" height="112" rx="12" class="box"/><text x="1065" y="245" class="head">WebSocket ticket</text><text x="1065" y="273" class="body">short-lived, single-use</text><text x="1065" y="296" class="small">events after auth</text>
+  <line x1="310" y1="261" x2="390" y2="261" class="line"/><line x1="630" y1="261" x2="710" y2="261" class="line"/><line x1="950" y1="261" x2="1030" y2="261" class="line"/>
+  <rect x="625" y="175" width="350" height="172" rx="16" class="focus"/><text x="625" y="375" class="label">focus: edge trust boundary</text><text x="625" y="398" class="small">Host allowlist, headers, auth, scopes, and rate limits</text><text x="625" y="416" class="small">are applied before operator data is returned.</text>
+  <rect x="85" y="500" width="1340" height="255" rx="18" class="boundary"/><text x="110" y="530" class="label">internal Docker network</text>
+  <rect x="120" y="575" width="220" height="112" rx="12" class="data"/><text x="155" y="615" class="head">PostgreSQL</text><text x="155" y="643" class="body">assets · evidence</text><text x="155" y="666" class="small">audit · jobs · lineage</text>
+  <rect x="400" y="575" width="220" height="112" rx="12" class="data"/><text x="435" y="615" class="head">Redis</text><text x="435" y="643" class="body">Celery + revocation</text><text x="435" y="666" class="small">internal only</text>
+  <rect x="680" y="575" width="270" height="112" rx="12" class="box"/><text x="715" y="615" class="head">Workers</text><text x="715" y="643" class="body">enrich · reconcile · audit</text><text x="715" y="666" class="small">self-security · notify</text>
+  <rect x="1010" y="575" width="270" height="112" rx="12" class="box"/><text x="1045" y="615" class="head">Scanner</text><text x="1045" y="643" class="body">authorized CIDR only</text><text x="1045" y="666" class="small">NET_RAW + NET_ADMIN</text>
+  <line x1="830" y1="317" x2="790" y2="575" class="line"/><line x1="830" y1="317" x2="510" y2="575" class="line"/><line x1="830" y1="317" x2="230" y2="575" class="line"/><line x1="830" y1="317" x2="1145" y2="575" class="line"/>
+  <rect x="1220" y="500" width="210" height="54" rx="10" class="external"/><text x="1245" y="533" class="head">Approved egress</text><path d="M815 575 C970 470 1100 450 1220 527" class="line"/>
+  <text x="60" y="805" class="small">Egress destinations include NVD, EPSS, KEV, OSV, and configured connectors. Real deployments must add their own DNS, certificate, network, and authorization controls.</text>
+</svg>

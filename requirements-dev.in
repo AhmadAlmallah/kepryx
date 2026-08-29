@@ -1,0 +1,12 @@
+# Development and CI toolchain. Runtime dependencies are inherited from the
+# hash-locked production set.
+-r requirements.txt
+
+bandit==1.8.3
+detect-secrets==1.5.0
+mypy==1.15.0
+pip-audit==2.9.0
+pytest==9.0.3
+pytest-asyncio==1.4.0
+pytest-cov==6.0.0
+ruff==0.14.2

@@ -1,0 +1,11 @@
+name,type,os,ip,mac,segment,edr_status,control_coverage,network_exposure,auth_method,criticality,data_classification,last_patch,eol_status,software_stack,cpe,dependencies,tags
+FIN-DB-01,Server,Ubuntu 24.04,198.51.100.10,02:00:00:00:10:01,Finance,Managed,full,internal,mfa+pam,tier-1,Restricted,2026-08-01,false,PostgreSQL 16;Ubuntu 24.04,cpe:2.3:o:canonical:ubuntu_linux:24.04:*:*:*:*:*:*:*:*,PostgreSQL;Backup,authoritative;demo
+HR-APP-01,Server,Ubuntu 24.04,198.51.100.11,02:00:00:00:10:02,HR,Managed,partial,internal,password,tier-2,Confidential,2026-07-15,false,FastAPI;Python 3.12,cpe:2.3:a:python:python:3.12:*:*:*:*:*:*:*:*,HRIS;SMTP,authoritative;demo
+ENG-BUILD-01,Server,Ubuntu 22.04,198.51.100.12,02:00:00:00:10:03,Engineering,Managed,full,internal,mfa+pam,tier-2,Internal,2026-06-20,false,Docker;Ubuntu 22.04,cpe:2.3:o:canonical:ubuntu_linux:22.04:*:*:*:*:*:*:*:*,CI;ContainerRegistry,authoritative;demo
+VPN-GW-01,Firewall,Network Appliance,198.51.100.1,02:00:00:00:10:04,Perimeter,Managed,full,internet,mfa+pam,tier-1,Confidential,2026-08-05,false,VPN Gateway;Firewall,,,authoritative;demo
+FIN-LAPTOP-07,Endpoint,Windows 11,203.0.113.17,02:00:00:00:20:07,Finance,None,partial,internal,password,high,Confidential,2026-04-02,false,Windows 11;Office Suite,cpe:2.3:o:microsoft:windows_11:*:*:*:*:*:*:*:*,Finance;Identity,shadow-it;demo
+HR-LAPTOP-12,Endpoint,Windows 11,203.0.113.22,02:00:00:00:20:12,HR,None,none,internal,password,high,Sensitive,2026-02-10,false,Windows 11,cpe:2.3:o:microsoft:windows_11:*:*:*:*:*:*:*:*,HR;Identity,shadow-it;demo
+LAB-IOT-01,IoT,Embedded Linux,203.0.113.40,02:00:00:00:30:01,Lab,None,none,internal,password,medium,Internal,2025-01-05,false,Embedded Linux,,,unmanaged;demo
+PUBLIC-WEB-01,Server,Debian 12,203.0.113.80,02:00:00:00:40:01,DMZ,Managed,full,internet,mfa+pam,tier-1,Public,2026-07-28,false,nginx;Debian 12,cpe:2.3:a:nginx:nginx:*:*:*:*:*:*:*:*,HTTP;TLS,authoritative;demo
+BACKUP-01,Server,Ubuntu 22.04,198.51.100.30,02:00:00:00:50:01,Infrastructure,Managed,partial,internal,mfa+pam,tier-2,Confidential,2026-05-18,false,Restic;Ubuntu 22.04,cpe:2.3:o:canonical:ubuntu_linux:22.04:*:*:*:*:*:*:*:*,Backup;ObjectStorage,authoritative;demo
+UNKNOWN-SWITCH-01,Network,Network Appliance,203.0.113.90,02:00:00:00:60:01,Lab,None,none,internal,password,medium,Internal,2024-03-01,true,Network OS,,,shadow-it;demo

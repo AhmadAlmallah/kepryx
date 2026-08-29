@@ -1,0 +1,74 @@
+{
+	admin off
+}
+
+:8080 {
+	encode gzip zstd
+
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "geolocation=(), microphone=(), camera=()"
+		Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' ws:"
+		-Server
+	}
+
+	handle /api/* {
+		reverse_proxy api:8000 {
+			header_up Host localhost
+			header_up X-Real-IP {remote_host}
+		}
+	}
+
+	handle /health {
+		reverse_proxy api:8000 {
+			header_up Host localhost
+		}
+	}
+
+	handle /ready {
+		reverse_proxy api:8000 {
+			header_up Host localhost
+		}
+	}
+
+	handle /ws/* {
+		reverse_proxy api:8000 {
+			header_up Host localhost
+		}
+	}
+
+	handle /metrics {
+		respond 404
+	}
+
+	# Keep disabled API documentation from being masked by the SPA fallback.
+	handle /docs* {
+		respond 404
+	}
+
+	handle /redoc* {
+		respond 404
+	}
+
+	handle /openapi.json* {
+		respond 404
+	}
+
+	handle {
+		root * /srv/frontend
+		try_files {path} /index.html
+		file_server
+	}
+
+	log {
+		output stdout
+		format filter {
+			wrap json
+			fields {
+				request>uri delete
+			}
+		}
+	}
+}
