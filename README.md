@@ -74,7 +74,8 @@ evaluation, clean-host validation, private preview, and enterprise production re
 For the repeatable public-preview walkthrough, see the [demo runbook](docs/DEMO-RUNBOOK.md), the
 [professional demo evidence pack](docs/demo/README.md), and the [clean-host verification
 procedure](docs/CLEAN-HOST-TEST.md). The pack includes timed speaker notes, an evidence matrix,
-technical diagrams, focused screenshot overlays, and a clearly labeled local benchmark.
+technical diagrams, the [complete product gallery](docs/PUBLICATION/PRODUCT-GALLERY.md), and a
+clearly labeled local benchmark.
 
 For the engineering review behind this preview, see the [technical architecture](docs/TECHNICAL-ARCHITECTURE.md),
 [QA report](docs/QA-REPORT-2026-08-28.md), [security review](docs/SECURITY-REVIEW-2026-08-28.md),
@@ -108,11 +109,18 @@ The optional Asset Source API contract fixture under `demo/asset_source_mock/` i
 local-only, and does not contact external vendors. It is not required for the vendor-neutral
 CSV demo.
 
-Release-evidence screenshots from the locally verified build are available for the
-[dashboard](docs/images/dashboard-evidence.png) and [compliance view](docs/images/compliance-evidence.png).
-Focused callouts are available for the [dashboard](docs/images/dashboard-focus.svg) and
-[compliance view](docs/images/compliance-focus.svg). They are illustrative local evidence, not a
-substitute for the recorded demo or production deployment proof.
+Release-evidence screenshots from the locally verified build are available in the
+[complete product gallery](docs/PUBLICATION/PRODUCT-GALLERY.md). The four README views below are
+actual operator-console captures from the local preview and use synthetic data. They are evidence
+of a tested preview state, not a substitute for deployment proof.
+
+| Dashboard | Inventory |
+|---|---|
+| ![Kepryx dashboard](docs/images/product/dashboard.png) | ![Kepryx inventory](docs/images/product/inventory.png) |
+
+| Risk Assessment | Compliance |
+|---|---|
+| ![Kepryx risk assessment](docs/images/product/risk-assessment.png) | ![Kepryx compliance](docs/images/product/compliance.png) |
 
 For local development when the internal HTTPS certificate is not trusted or available, start
 the localhost-only development edge instead of the standalone static file server:

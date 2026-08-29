@@ -4,6 +4,20 @@ This directory is the presentation pack for the Kepryx v0.9.0 community preview.
 for a technical audience: every story is tied to an executable route, fixture, test, or release
 record, and every unproven production claim is called out.
 
+## Product preview
+
+These are actual operator-console captures from the local preview build using synthetic data. The
+[complete product gallery](../PUBLICATION/PRODUCT-GALLERY.md) contains every product view and
+workflow capture, including the interactive relationship map, evidence lineage, authorized scan
+configuration, Assistant, API tokens, webhooks, privacy, and administration.
+
+| Dashboard | Risk Assessment | Compliance |
+|---|---|---|
+| ![Kepryx dashboard](../images/product/dashboard.png) | ![Kepryx risk assessment](../images/product/risk-assessment.png) | ![Kepryx compliance](../images/product/compliance.png) |
+
+The screenshots are point-in-time preview evidence. They do not prove production scale, enterprise
+SSO, high availability, certification, or a permanent CVE-free state.
+
 ## Use this pack
 
 1. Start with [DEMO-SCRIPT.md](DEMO-SCRIPT.md) for the timed walkthrough and speaker notes.
@@ -12,19 +26,20 @@ record, and every unproven production claim is called out.
 3. Use [BENCHMARKS-AND-COMPARISON.md](BENCHMARKS-AND-COMPARISON.md) for measured local evidence
    and a capability-positioning comparison.
 4. Open the architecture and flow diagrams under `docs/diagrams/` while explaining the system.
-5. Use the focused screenshot callouts under `docs/images/` as slide or recording overlays.
+5. Use the complete [product gallery](../PUBLICATION/PRODUCT-GALLERY.md) to select the product
+   and workflow captures for the article or recording.
 
 ## Visual index
 
 - [System context](../diagrams/kepryx-system-context.svg)
 - [Ingest to risk flow](../diagrams/ingest-risk-flow.svg)
 - [Compliance evidence lineage](../diagrams/compliance-evidence-lineage.svg)
-- [Dashboard focus areas](../images/dashboard-focus.svg)
-- [Compliance focus areas](../images/compliance-focus.svg)
+- [Product gallery](../PUBLICATION/PRODUCT-GALLERY.md)
 - [Release scorecard chart](../images/release-scorecard-chart.svg)
 
-The diagrams use a consistent focus-box convention: the amber dashed square marks the one
-engineering boundary or operator action the audience should understand in that frame.
+The technical diagrams use a consistent focus-box convention: the amber dashed square marks the
+one engineering boundary or operator action the audience should understand in that frame. Product
+screenshots are raw captures; the caption identifies the operator action to explain.
 
 ## Evidence rules
 

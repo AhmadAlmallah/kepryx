@@ -18,22 +18,24 @@ claims honest and the visuals professional.
 
 ## Visual upload order
 
-1. `../images/dashboard-evidence.png` — actual opening product view. Pair with `dashboard-focus.svg`.
-2. `../images/compliance-evidence.png` — actual compliance view. Pair with `compliance-focus.svg`.
-3. `../diagrams/kepryx-breach-to-evidence-loop.svg` — problem framing.
-4. `../diagrams/ingest-risk-flow.svg` — operational pipeline.
-5. `../diagrams/compliance-evidence-lineage.svg` — evidence explanation.
-6. `../diagrams/kepryx-deployment-security-boundaries.svg` — architecture and trust boundaries.
-7. `../images/release-scorecard-chart.svg` — honest release posture.
+1. `../images/product/dashboard.png` — actual opening product view.
+2. `../images/product/inventory.png` — actual inventory and source-context view.
+3. `../images/product/risk-assessment.png` — transparent risk posture and remediation view.
+4. `../images/product/compliance.png` — actual compliance view.
+5. `../diagrams/kepryx-breach-to-evidence-loop.svg` — problem framing.
+6. `../diagrams/ingest-risk-flow.svg` — operational pipeline.
+7. `../diagrams/compliance-evidence-lineage.svg` — evidence explanation.
+8. `../diagrams/kepryx-deployment-security-boundaries.svg` — architecture and trust boundaries.
+9. `../images/release-scorecard-chart.svg` — honest release posture.
 
 Medium does not resolve repository-relative image paths reliably. Upload the local files directly,
 then paste the article text around the uploaded images. Preserve the captions and alt text from
 `SCREENSHOT-AND-DIAGRAM-PLAN.md`.
 
-The two PNGs are the actual solution screenshots. Upload them before the diagrams so the reader
-sees the product before the architecture. Keep the Kepryx wordmark, navigation, API status, and
-synthetic-data context visible. The SVG focus assets are optional explanation plates; export them to
-PNG before upload if Medium does not render SVG reliably.
+The product PNGs are actual solution screenshots. Upload the four hero views before the diagrams so
+the reader sees the product before the architecture. Keep the Kepryx wordmark, navigation, API
+status, and synthetic-data context visible. Use the [complete product gallery](PRODUCT-GALLERY.md)
+for the remaining views and workflow captures.
 
 ## Editorial pass
 

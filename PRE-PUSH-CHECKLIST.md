@@ -30,9 +30,10 @@
       API tokens, exports, multipart import, WebSocket tickets, and Caddy's `/metrics` block.
 - [ ] Backup and restore are exercised on a clean host.
 - [ ] The demo follows the production connector wire protocol without presenting mock data as real.
-- [ ] Use `docs/demo/DEMO-SCRIPT.md`, the focused screenshot overlays, and the diagrams for the
-      recording; verify the benchmark values against the exact candidate instead of copying an
-      older snapshot.
+- [ ] Use `docs/demo/DEMO-SCRIPT.md`, the product gallery, and the diagrams for the recording;
+      verify the benchmark values against the exact candidate instead of copying an older snapshot.
+- [ ] Complete the missing Login and alert-investigation/resolution captures and clear every
+      `recapture` item in `docs/PUBLICATION/PRODUCT-GALLERY.md` before public release.
 
 ## Honest scope review
 

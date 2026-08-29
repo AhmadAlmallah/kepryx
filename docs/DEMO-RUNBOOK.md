@@ -6,9 +6,9 @@ documentation IP ranges only. It does not require vendor credentials or access t
 
 For a polished recording, use the [demo evidence pack](demo/README.md), especially the
 [timed speaker notes](demo/DEMO-SCRIPT.md), [evidence matrix](demo/EVIDENCE-MATRIX.md),
-[benchmarks and comparison](demo/BENCHMARKS-AND-COMPARISON.md), and the focused dashboard and
-compliance screenshot overlays under `docs/images/`. The overlays use numbered focus squares so
-the audience can follow the evidence chain instead of watching an undirected screen tour.
+[benchmarks and comparison](demo/BENCHMARKS-AND-COMPARISON.md), and the complete [product gallery](PUBLICATION/PRODUCT-GALLERY.md).
+Use the gallery captions to keep the audience focused on one evidence chain instead of watching
+an undirected screen tour.
 
 ## Before recording
 
