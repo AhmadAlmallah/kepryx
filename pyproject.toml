@@ -1,0 +1,53 @@
+[project]
+name = "kepryx"
+version = "0.9.0"
+description = "Asset Intelligence & Risk Platform"
+readme = "README.md"
+authors = [{ name = "Ahmad Almallah", email = "ahmad.almallah.consulting@hotmail.com" }]
+license = { text = "Apache-2.0" }
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["alembic/versions"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "UP",   # pyupgrade
+    "S",    # flake8-bandit
+    "N",    # pep8-naming
+]
+ignore = [
+    "E501",  # line length handled by formatter
+    "S101",  # asserts ok in tests
+    "B008",  # FastAPI Depends pattern
+    "S104",  # gunicorn bind 0.0.0.0 by design
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S", "N"]
+"scripts/**/*.py" = ["S"]
+"alembic/**/*.py" = ["I"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+python_files = "test_*.py"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+[tool.mypy]
+python_version = "3.12"
+strict_optional = false
+ignore_missing_imports = true
+check_untyped_defs = true
+warn_unused_ignores = true
+exclude = ["alembic/", "tests/"]

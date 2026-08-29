@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="760" viewBox="0 0 1400 760" role="img" aria-labelledby="title desc">
+  <title id="title">Kepryx compliance evidence and lineage flow</title>
+  <desc id="desc">Framework metadata and control definitions are evaluated against asset observations. Each result receives a status and hashed evidence snapshot, which can be followed through lineage into a report. AI review is a separate advisory branch.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1"><stop stop-color="#08111f"/><stop offset="1" stop-color="#121d34"/></linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L10,3 L0,6 Z" fill="#94a8c4"/></marker>
+    <style>
+      .title{font:500 28px Segoe UI,Arial,sans-serif;fill:#f8fafc}.sub{font:400 14px Segoe UI,Arial,sans-serif;fill:#a8b7cc}.head{font:500 16px Segoe UI,Arial,sans-serif;fill:#f8fafc}.body{font:400 12px Segoe UI,Arial,sans-serif;fill:#cbd5e1}.small{font:400 12px Segoe UI,Arial,sans-serif;fill:#94a3b8}.box{fill:#111c31;stroke:#3a4d6b;stroke-width:1.5}.evidence{fill:#14221d;stroke:#3bb273;stroke-width:1.5}.result{fill:#10254b;stroke:#4f8cff;stroke-width:1.5}.advisory{fill:#281e14;stroke:#efb54a;stroke-width:1.5}.line{fill:none;stroke:#94a8c4;stroke-width:2;marker-end:url(#arrow)}.focus{fill:none;stroke:#f5b84b;stroke-width:3;stroke-dasharray:10 7}.label{font:500 12px Segoe UI,Arial,sans-serif;fill:#f5b84b;letter-spacing:.08em;text-transform:uppercase}
+    </style>
+  </defs>
+  <rect width="1400" height="760" fill="url(#bg)"/>
+  <text x="60" y="58" class="title">Compliance is a traceability workflow</text>
+  <text x="60" y="86" class="sub">A percentage is the summary; the evidence snapshot and lineage are the explanation</text>
+
+  <rect x="70" y="170" width="230" height="120" rx="10" class="box"/><text x="100" y="210" class="head">Framework catalog</text><text x="100" y="237" class="body">CIS · NIST · ISO subset</text><text x="100" y="262" class="small">versioned control metadata</text>
+  <rect x="380" y="170" width="230" height="120" rx="10" class="box"/><text x="410" y="210" class="head">Control definition</text><text x="410" y="237" class="body">objective + applicability</text><text x="410" y="262" class="small">licensed-safe summary</text>
+  <rect x="690" y="170" width="230" height="120" rx="10" class="evidence"/><text x="720" y="210" class="head">Asset observation</text><text x="720" y="237" class="body">current normalized fields</text><text x="720" y="262" class="small">source + observed time</text>
+  <rect x="1000" y="170" width="230" height="120" rx="10" class="evidence"/><text x="1030" y="210" class="head">Evidence snapshot</text><text x="1030" y="237" class="body">canonical observed JSON</text><text x="1030" y="262" class="small">SHA-256 identity</text>
+  <line x1="300" y1="230" x2="380" y2="230" class="line"/><line x1="610" y1="230" x2="690" y2="230" class="line"/><line x1="920" y1="230" x2="1000" y2="230" class="line"/>
+  <rect x="660" y="140" width="600" height="180" rx="16" class="focus"/><text x="660" y="345" class="label">focus: evidence boundary</text><text x="660" y="368" class="small">The result points to the observation;</text><text x="660" y="387" class="small">it is not just a manually entered percentage.</text>
+
+  <rect x="270" y="450" width="260" height="120" rx="10" class="result"/><text x="300" y="490" class="head">Assessment result</text><text x="300" y="517" class="body">compliant · partial · gap</text><text x="300" y="542" class="small">confidence + run identity</text>
+  <rect x="650" y="450" width="260" height="120" rx="10" class="box"/><text x="680" y="490" class="head">Lineage</text><text x="680" y="517" class="body">result → evidence → asset</text><text x="680" y="542" class="small">inspectable drill-down</text>
+  <rect x="1030" y="450" width="260" height="120" rx="10" class="box"/><text x="1060" y="490" class="head">Report</text><text x="1060" y="517" class="body">summary + traceability</text><text x="1060" y="542" class="small">PDF/export for review</text>
+  <line x1="1115" y1="290" x2="1115" y2="420" class="line"/><line x1="1115" y1="420" x2="780" y2="450" class="line"/><line x1="1115" y1="420" x2="400" y2="450" class="line"/><line x1="1115" y1="420" x2="1160" y2="450" class="line"/>
+
+  <rect x="70" y="450" width="150" height="120" rx="10" class="advisory"/><text x="92" y="490" class="head">AI review</text><text x="92" y="517" class="body">suggestion only</text><text x="92" y="542" class="small">no result mutation</text>
+  <path d="M805 290 C650 370 460 410 220 500" class="line"/>
+  <text x="70" y="650" class="small">Public wording: “evidence-backed posture aid,” never “certification engine” or “legal assurance.”</text>
+  <text x="70" y="682" class="small">Framework metadata is intentionally a subset; organizations must apply their approved procedures and exceptions.</text>
+</svg>

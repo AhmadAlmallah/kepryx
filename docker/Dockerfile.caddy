@@ -1,0 +1,45 @@
+FROM golang@sha256:3889b425f035be855a72fb4755265311293b6d414521f0a519d819df32222d83 AS builder
+
+ENV CGO_ENABLED=0 \
+    GOFLAGS=-mod=mod
+
+WORKDIR /build
+COPY docker/caddy-main.go ./main.go
+
+# Build the pinned Caddy release with the fixed Go/module versions reported by
+# the current Trivy database. The runtime image contains no compiler or Go
+# toolchain, and the module versions are explicit to make the security fix
+# auditable and repeatable.
+RUN apk add --no-cache git ca-certificates && \
+    go mod init github.com/kepryx/caddy && \
+    go get github.com/caddyserver/caddy/v2@v2.11.4 \
+      golang.org/x/net@v0.56.0 \
+      golang.org/x/text@v0.39.0 \
+      google.golang.org/grpc@v1.82.1 && \
+    go mod tidy && \
+    go build -trimpath -ldflags="-s -w" -o /out/caddy ./main.go
+
+FROM alpine@sha256:fd791d74b68913cbb027c6546007b3f0d3bc45125f797758156952bc2d6daf40
+
+LABEL org.opencontainers.image.title="Kepryx Edge" \
+      org.opencontainers.image.authors="Ahmad Almallah <ahmad.almallah.consulting@hotmail.com>" \
+      org.opencontainers.image.licenses="Apache-2.0"
+
+RUN apk upgrade --no-cache && \
+    apk add --no-cache ca-certificates libcap mailcap tzdata && \
+    addgroup -g 10001 -S caddy-kepryx && \
+    adduser -u 10001 -S -D -H -s /sbin/nologin -G caddy-kepryx caddy-kepryx && \
+    install -d -o caddy-kepryx -g caddy-kepryx /config /data /srv/frontend
+
+COPY --from=builder /out/caddy /usr/bin/caddy
+
+RUN setcap cap_net_bind_service=+ep /usr/bin/caddy
+COPY frontend/ /srv/frontend/
+
+ENV XDG_CONFIG_HOME=/config \
+    XDG_DATA_HOME=/data
+
+USER 10001:10001
+EXPOSE 80 443 443/udp
+ENTRYPOINT ["caddy"]
+CMD ["run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]

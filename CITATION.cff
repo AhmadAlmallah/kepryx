@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+title: Kepryx
+version: 0.9.0
+date-released: 2026-08-29
+abstract: >-
+  Open-source asset intelligence and risk platform for reconciling inventory observations,
+  enriching vulnerability context, explaining risk, and preserving compliance evidence.
+authors:
+  - family-names: Almallah
+    given-names: Ahmad
+    email: ahmad.almallah.consulting@hotmail.com
+license: Apache-2.0
+keywords:
+  - asset intelligence
+  - cybersecurity
+  - vulnerability management
+  - risk assessment
+  - compliance
+  - DevSecOps
+message: >-
+  If you use Kepryx in research, evaluation, or a public demonstration, please cite this release.

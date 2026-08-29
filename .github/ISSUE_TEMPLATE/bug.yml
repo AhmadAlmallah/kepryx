@@ -1,0 +1,70 @@
+name: Bug report
+description: Report a defect in Kepryx
+labels: [bug, triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. **Do not include security vulnerabilities here** — see `SECURITY.md`.
+
+  - type: input
+    id: version
+    attributes:
+      label: Kepryx version
+      placeholder: "1.0.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Docker version, deployment topology
+      placeholder: |
+        - OS: Ubuntu 22.04
+        - Docker: 24.0.7
+        - Topology: single-host docker compose
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Run `docker compose up -d`
+        2. Hit endpoint X with payload Y
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Output of `docker compose logs --tail 100 <service>`. **Redact secrets.**
+      render: shell
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Pre-flight
+      options:
+        - label: I've searched existing issues
+          required: true
+        - label: This is not a security vulnerability (those go to SECURITY.md)
+          required: true

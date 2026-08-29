@@ -1,0 +1,176 @@
+# Environment / secrets — CRITICAL
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+docker/certs/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.venv/
+venv/
+ENV/
+env/
+.python-version
+
+# Testing & coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+.cache/
+
+# Linting / type-checking
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.pytype/
+
+# IDEs
+.vscode/
+.idea/
+.obsidian/
+**/.obsidian/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Docker
+docker/data/
+*.log
+data/postgres/
+data/redis/
+data/neo4j/
+
+# Backups
+*.sql.gz
+*.dump
+requirements.txt.backup
+backups/
+
+# Build / deploy artifacts
+*.tar.gz
+*.zip
+.terraform/
+*.tfstate
+*.tfstate.backup
+ansible/inventory/
+
+# OS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+
+# JetBrains
+*.iml
+
+# Logs
+logs/
+*.log
+audit.log
+
+# Local dev
+local/
+scratch/
+TODO.local
+.envrc
+
+# Internal QA / dev artifacts (do not publish)
+qa-v2/
+v12-files/
+v11-files/
+extracted/
+files/
+remediation-backup-*/
+publishing/
+qa-fixes/
+*.tar.gz
+*.zip
+*.docx
+KEPRYX-QA-REPORT.md
+qa_container_report.json
+patcher_results.json
+install_websocket.py
+
+# Secrets and local config
+.env
+.env.local
+.env.production
+!.env.example
+.envrc
+secrets/
+
+# Local data / DB
+data/
+backups/
+*.sqlite
+*.db
+
+# The public demo fixture is synthetic and intentionally tracked.
+!demo/data/
+!demo/data/asset_inventory.csv
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Development scripts
+deploy-*.ps1
+fix-*.ps1
+Run-KepryxQA.ps1
+kepryx_qa_audit.py
+kepryx_patcher.py
+Run-KepryxRemediation.ps1
+kepryx-test.ps1
+kepryx-dashboard.html
+QA-FIXES.md

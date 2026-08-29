@@ -1,0 +1,11 @@
+FROM postgres:16-alpine@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685
+
+LABEL org.opencontainers.image.title="Kepryx PostgreSQL" \
+      org.opencontainers.image.authors="Ahmad Almallah <ahmad.almallah.consulting@hotmail.com>" \
+      org.opencontainers.image.licenses="Apache-2.0"
+
+# The official entrypoint only needs gosu when started as root. Kepryx starts
+# PostgreSQL as uid 70, so remove the vulnerable privilege-switching binary.
+USER root
+RUN apk upgrade --no-cache && rm -f /usr/local/bin/gosu
+USER 70:70

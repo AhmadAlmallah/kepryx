@@ -1,0 +1,65 @@
+{
+	admin off
+	skip_install_trust
+}
+
+https://kepryx.local:8444 {
+	tls internal
+	encode gzip zstd
+
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "geolocation=(), microphone=(), camera=()"
+		Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' wss:"
+		-Server
+	}
+
+	handle /api/* {
+		reverse_proxy api:8000 {
+			header_up Host kepryx.local
+			header_up X-Real-IP {remote_host}
+		}
+	}
+
+	handle /health {
+		reverse_proxy api:8000 {
+			header_up Host kepryx.local
+		}
+	}
+
+	handle /ready {
+		reverse_proxy api:8000 {
+			header_up Host kepryx.local
+		}
+	}
+
+	handle /ws/* {
+		reverse_proxy api:8000 {
+			header_up Host kepryx.local
+		}
+	}
+
+	handle /metrics {
+		respond 404
+	}
+
+	handle /docs* {
+		respond 404
+	}
+
+	handle /redoc* {
+		respond 404
+	}
+
+	handle /openapi.json* {
+		respond 404
+	}
+
+	handle {
+		root * /srv/frontend
+		try_files {path} /index.html
+		file_server
+	}
+}
