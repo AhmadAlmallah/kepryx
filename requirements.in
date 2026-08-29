@@ -14,7 +14,7 @@ redis>=5.1,<7
 celery>=5.4,<6
 httpx>=0.27,<1
 pyjwt[crypto]>=2.10,<3
-argon2-cffi>=23.1,<26
+argon2-cffi>=25.1.0,<26
 pyotp>=2.9,<3
 slowapi>=0.1.9,<1
 python-multipart==0.0.32
