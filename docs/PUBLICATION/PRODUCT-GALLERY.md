@@ -23,7 +23,7 @@ Use these three images in the README and the first part of the Medium article:
 | Alerts | [`alerts.png`](../images/product/alerts.png) | Alert triage queue, severity, status, and resolution entry point | Publish with synthetic-preview caption |
 | Risk Assessment | [`risk-assessment.png`](../images/product/risk-assessment.png) | Risk posture and remediation prioritization | Publish with synthetic-preview caption |
 | Compliance | [`compliance.png`](../images/product/compliance.png) | CIS, ISO, and NIST posture summaries | Publish as an assessment aid, not certification |
-| Integrations | Not included | Connector registration surface | Use the placeholder-only workflow capture below; avoid vendor-catalog claims |
+| Integrations | [`integrations.png`](../images/product/integrations.png) | Connector registration surface | Publish as a placeholder-only configuration view; avoid vendor-catalog claims |
 | Self-Security | [`self-security.png`](../images/product/self-security.png) | Dependency and application security posture | Publish with point-in-time scan caption |
 | Scans | [`scans.png`](../images/product/scans.png) | Authorized network discovery status and failure history | Publish as synthetic localhost/lab evidence only |
 | Audit Log | [`audit-log.png`](../images/product/audit-log.png) | Operator actions and provenance | Publish after synthetic identity review |
