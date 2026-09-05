@@ -6,16 +6,16 @@ ENV CGO_ENABLED=0 \
 WORKDIR /build
 COPY docker/caddy-main.go ./main.go
 
-# Build the pinned Caddy release with the fixed Go/module versions reported by
-# the current Trivy database. The runtime image contains no compiler or Go
-# toolchain, and the module versions are explicit to make the security fix
-# auditable and repeatable.
+# Build the pinned Caddy release with explicit fixed Go/module versions. The
+# runtime image contains no compiler or Go toolchain, and the module versions
+# are explicit to make the security fix auditable and repeatable.
 RUN apk add --no-cache git ca-certificates && \
     go mod init github.com/kepryx/caddy && \
     go get github.com/caddyserver/caddy/v2@v2.11.4 \
       golang.org/x/net@v0.56.0 \
       golang.org/x/text@v0.39.0 \
-      google.golang.org/grpc@v1.82.1 && \
+      golang.org/x/crypto@v0.56.0 \
+      google.golang.org/grpc@v1.83.2 && \
     go mod tidy && \
     go build -trimpath -ldflags="-s -w" -o /out/caddy ./main.go
 
