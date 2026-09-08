@@ -42,6 +42,65 @@ def synthetic_assets() -> list[dict]:
     return assets
 
 
+def synthetic_observations() -> list[dict]:
+    """Return three repeatable observations that reconcile with the CSV fixture.
+
+    These deliberately reuse identifiers already present in ``assets-full.csv``.
+    The point of this route is to demonstrate the real connector and reconciler
+    path enriching an existing record, not to manufacture a second inventory.
+    """
+    return [
+        {
+            "name": "HR-APP-01",
+            "ip": "198.51.100.11",
+            "mac": "02:00:00:00:10:02",
+            "type": "Server",
+            "os": "Ubuntu 24.04",
+            "segment": "HR",
+            "edr_status": "Source agent",
+            "control_coverage": "full",
+            "network_exposure": "internal",
+            "auth_method": "mfa+pam",
+            "criticality": "tier-2",
+            "data_classification": "Confidential",
+            "software_stack": ["FastAPI", "Python 3.12", "Source inventory agent"],
+            "attrs": {"source_record_id": "observation-hr-app-01"},
+        },
+        {
+            "name": "PUBLIC-WEB-02",
+            "ip": "203.0.113.81",
+            "mac": "02:00:00:40:00:51",
+            "type": "Web Server",
+            "os": "Debian 12",
+            "segment": "DMZ",
+            "edr_status": "Source agent",
+            "control_coverage": "full",
+            "network_exposure": "internet",
+            "auth_method": "mfa+pam",
+            "criticality": "tier-1",
+            "data_classification": "Public",
+            "software_stack": ["Apache HTTPD", "Source inventory agent"],
+            "attrs": {"source_record_id": "observation-public-web-02"},
+        },
+        {
+            "name": "UNKNOWN-SWITCH-01",
+            "ip": "203.0.113.90",
+            "mac": "02:00:00:00:60:01",
+            "type": "Network",
+            "os": "Network Appliance",
+            "segment": "Lab",
+            "edr_status": "Source agent",
+            "control_coverage": "partial",
+            "network_exposure": "internal",
+            "auth_method": "certificate",
+            "criticality": "medium",
+            "data_classification": "Internal",
+            "software_stack": ["Network OS", "Source inventory agent"],
+            "attrs": {"source_record_id": "observation-unknown-switch-01"},
+        },
+    ]
+
+
 class AssetSourceHandler(BaseHTTPRequestHandler):
     server_version = "KepryxAssetSourceMock/0.9"
     retry_attempts = 0
@@ -69,6 +128,12 @@ class AssetSourceHandler(BaseHTTPRequestHandler):
             return
         if parsed.path == "/v1/assets":
             self._send_json(200, {"source": "synthetic-asset-api", "assets": synthetic_assets()})
+            return
+        if parsed.path == "/v1/demo-observations":
+            self._send_json(
+                200,
+                {"source": "synthetic-asset-observations", "assets": synthetic_observations()},
+            )
             return
         if parsed.path == "/v1/assets-retry":
             AssetSourceHandler.retry_attempts += 1

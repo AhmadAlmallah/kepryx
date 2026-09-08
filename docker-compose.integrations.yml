@@ -1,0 +1,235 @@
+# Local-only FleetDM and NetBox integration lab.
+# Run with docker-compose.yml and one provider profile at a time. Secrets are
+# supplied by demo/integrations/.env, which is ignored by Git.
+
+networks:
+  kepryx-integration:
+    name: kepryx-v09-integration
+    driver: bridge
+
+volumes:
+  fleet-mysql-data:
+    name: kepryx-v09-fleet-mysql
+  fleet-redis-data:
+    name: kepryx-v09-fleet-redis
+  fleet-data:
+    name: kepryx-v09-fleet-data
+  fleet-logs:
+    name: kepryx-v09-fleet-logs
+  fleet-vulndb:
+    name: kepryx-v09-fleet-vulndb
+  netbox-postgres-data:
+    name: kepryx-v09-netbox-postgres
+  netbox-redis-data:
+    name: kepryx-v09-netbox-redis
+  netbox-redis-cache-data:
+    name: kepryx-v09-netbox-redis-cache
+  netbox-media-files:
+    name: kepryx-v09-netbox-media
+
+services:
+  api:
+    networks: [kepryx-internal, kepryx-edge, kepryx-egress, kepryx-integration]
+
+  worker-recon:
+    networks: [kepryx-internal, kepryx-egress, kepryx-integration]
+
+  fleet-mysql:
+    image: mysql:8.4.8
+    profiles: [endpoint]
+    platform: linux/amd64
+    environment:
+      MYSQL_ROOT_PASSWORD: ${FLEET_MYSQL_ROOT_PASSWORD:?set FLEET_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: fleet
+      MYSQL_USER: fleet
+      MYSQL_PASSWORD: ${FLEET_MYSQL_PASSWORD:?set FLEET_MYSQL_PASSWORD}
+    volumes: [fleet-mysql-data:/var/lib/mysql]
+    networks: [kepryx-integration]
+    healthcheck:
+      test: [CMD-SHELL, "mysqladmin ping -h 127.0.0.1 -u fleet -p$$MYSQL_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+    cap_add: [SYS_NICE]
+    deploy:
+      resources:
+        limits: { cpus: "1", memory: 1G }
+
+  fleet-redis:
+    image: redis:7.4-alpine
+    profiles: [endpoint]
+    command: [redis-server, --appendonly, "yes"]
+    volumes: [fleet-redis-data:/data]
+    networks: [kepryx-integration]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { cpus: "0.5", memory: 256M }
+
+  fleet-init:
+    image: alpine:3.22
+    profiles: [endpoint]
+    command: [sh, -c, "chown -R 100:101 /logs /data /vulndb"]
+    volumes:
+      - fleet-logs:/logs
+      - fleet-data:/data
+      - fleet-vulndb:/vulndb
+    restart: "no"
+
+  fleet:
+    image: ${FLEET_IMAGE:-fleetdm/fleet:v4.90.0}
+    profiles: [endpoint]
+    platform: linux/amd64
+    depends_on:
+      fleet-mysql: { condition: service_healthy }
+      fleet-redis: { condition: service_healthy }
+      fleet-init: { condition: service_completed_successfully }
+    command: [sh, -c, "/usr/bin/fleet prepare db --no-prompt && /usr/bin/fleet serve"]
+    environment:
+      FLEET_REDIS_ADDRESS: fleet-redis:6379
+      FLEET_MYSQL_ADDRESS: fleet-mysql:3306
+      FLEET_MYSQL_DATABASE: fleet
+      FLEET_MYSQL_USERNAME: fleet
+      FLEET_MYSQL_PASSWORD: ${FLEET_MYSQL_PASSWORD:?set FLEET_MYSQL_PASSWORD}
+      FLEET_SERVER_ADDRESS: 0.0.0.0:1337
+      FLEET_SERVER_TLS: "false"
+      FLEET_SERVER_PRIVATE_KEY: ${FLEET_SERVER_PRIVATE_KEY:?set FLEET_SERVER_PRIVATE_KEY}
+      FLEET_LICENSE_KEY: ""
+      FLEET_LOGGING_JSON: "false"
+      FLEET_SESSION_DURATION: 24h
+      FLEET_OSQUERY_STATUS_LOG_PLUGIN: filesystem
+      FLEET_FILESYSTEM_STATUS_LOG_FILE: /logs/osquery-status.log
+      FLEET_FILESYSTEM_RESULT_LOG_FILE: /logs/osquery-result.log
+      FLEET_VULNERABILITIES_DATABASES_PATH: /vulndb
+      FLEET_VULNERABILITIES_CURRENT_INSTANCE_CHECKS: "false"
+    ports: ["127.0.0.1:1337:1337"]
+    volumes:
+      - fleet-data:/fleet
+      - fleet-logs:/logs
+      - fleet-vulndb:/vulndb
+    networks: [kepryx-integration]
+    healthcheck:
+      test: [CMD-SHELL, wget -qO- http://127.0.0.1:1337/healthz]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 90s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { cpus: "1", memory: 1.5G }
+
+  netbox-postgres:
+    image: postgres:18-alpine
+    profiles: [network]
+    environment:
+      POSTGRES_DB: netbox
+      POSTGRES_USER: netbox
+      POSTGRES_PASSWORD: ${NETBOX_DB_PASSWORD:?set NETBOX_DB_PASSWORD}
+    volumes: [netbox-postgres-data:/var/lib/postgresql]
+    networks: [kepryx-integration]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -q -t 2 -d netbox -U netbox"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { cpus: "1", memory: 1G }
+
+  netbox-redis:
+    image: valkey/valkey:9.1-alpine
+    profiles: [network]
+    command: [sh, -c, "valkey-server --appendonly yes --requirepass $$REDIS_PASSWORD"]
+    environment:
+      REDIS_PASSWORD: ${NETBOX_REDIS_PASSWORD:?set NETBOX_REDIS_PASSWORD}
+    volumes: [netbox-redis-data:/data]
+    networks: [kepryx-integration]
+    healthcheck:
+      test: [CMD-SHELL, "valkey-cli --pass \"$$REDIS_PASSWORD\" ping | grep PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { cpus: "0.25", memory: 256M }
+
+  netbox-redis-cache:
+    image: valkey/valkey:9.1-alpine
+    profiles: [network]
+    command: [sh, -c, "valkey-server --requirepass $$REDIS_PASSWORD"]
+    environment:
+      REDIS_PASSWORD: ${NETBOX_REDIS_CACHE_PASSWORD:?set NETBOX_REDIS_CACHE_PASSWORD}
+    volumes: [netbox-redis-cache-data:/data]
+    networks: [kepryx-integration]
+    healthcheck:
+      test: [CMD-SHELL, "valkey-cli --pass \"$$REDIS_PASSWORD\" ping | grep PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { cpus: "0.25", memory: 256M }
+
+  netbox:
+    image: ${NETBOX_IMAGE:-docker.io/netboxcommunity/netbox:v4.6.9-5.0.2}
+    profiles: [network]
+    depends_on:
+      netbox-postgres: { condition: service_healthy }
+      netbox-redis: { condition: service_healthy }
+      netbox-redis-cache: { condition: service_healthy }
+    user: "netbox:root"
+    environment:
+      API_TOKEN_PEPPER_1: ${NETBOX_API_TOKEN_PEPPER:?set NETBOX_API_TOKEN_PEPPER}
+      CORS_ORIGIN_ALLOW_ALL: "False"
+      DB_HOST: netbox-postgres
+      DB_NAME: netbox
+      DB_PASSWORD: ${NETBOX_DB_PASSWORD:?set NETBOX_DB_PASSWORD}
+      DB_USER: netbox
+      EMAIL_FROM: netbox@kepryx.local
+      EMAIL_SERVER: localhost
+      EMAIL_PORT: "25"
+      EMAIL_USE_TLS: "false"
+      EMAIL_USE_SSL: "false"
+      GRAPHQL_ENABLED: "false"
+      MEDIA_ROOT: /opt/netbox/netbox/media
+      METRICS_ENABLED: "false"
+      REDIS_CACHE_DATABASE: "1"
+      REDIS_CACHE_HOST: netbox-redis-cache
+      REDIS_CACHE_PASSWORD: ${NETBOX_REDIS_CACHE_PASSWORD:?set NETBOX_REDIS_CACHE_PASSWORD}
+      REDIS_CACHE_SSL: "false"
+      REDIS_DATABASE: "0"
+      REDIS_HOST: netbox-redis
+      REDIS_PASSWORD: ${NETBOX_REDIS_PASSWORD:?set NETBOX_REDIS_PASSWORD}
+      REDIS_SSL: "false"
+      RELEASE_CHECK_URL: ""
+      SECRET_KEY: ${NETBOX_SECRET_KEY:?set NETBOX_SECRET_KEY}
+      SKIP_SUPERUSER: "false"
+      SUPERUSER_API_KEY: ${NETBOX_SUPERUSER_API_KEY:?set NETBOX_SUPERUSER_API_KEY}
+      SUPERUSER_API_TOKEN: ${NETBOX_SUPERUSER_API_TOKEN:?set NETBOX_SUPERUSER_API_TOKEN}
+      SUPERUSER_EMAIL: admin@kepryx.local
+      SUPERUSER_NAME: admin
+      SUPERUSER_PASSWORD: ${NETBOX_SUPERUSER_PASSWORD:?set NETBOX_SUPERUSER_PASSWORD}
+      WEBHOOKS_ENABLED: "false"
+    ports: ["127.0.0.1:8000:8080"]
+    volumes: [netbox-media-files:/opt/netbox/netbox/media]
+    networks: [kepryx-integration]
+    healthcheck:
+      test: [CMD-SHELL, curl -f http://localhost:8080/login/]
+      start_period: 120s
+      timeout: 5s
+      interval: 15s
+      retries: 12
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits: { cpus: "1.5", memory: 1.5G }

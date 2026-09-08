@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1420" viewBox="0 0 1600 1420" role="img" aria-labelledby="title desc">
+  <title id="title">Kepryx release-candidate verification results</title>
+  <desc id="desc">A branded table summarizing automated testing, coverage, static analysis, dependency auditing, secrets, database migrations, container security, SBOMs, and live acceptance testing.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#061225"/>
+      <stop offset="1" stop-color="#0a1930"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#000814" flood-opacity="0.38"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="1420" fill="url(#background)"/>
+
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <text x="90" y="78" fill="#37b9ff" font-size="24" font-weight="700" letter-spacing="6">KEPRYX</text>
+    <text x="90" y="134" fill="#f8fafc" font-size="46" font-weight="700">Release-Candidate Verification</text>
+    <text x="90" y="174" fill="#91a4c3" font-size="23">QA, security, supply-chain, and operational evidence for v0.9.0</text>
+
+    <g filter="url(#shadow)">
+      <rect x="80" y="220" width="1440" height="1110" rx="22" fill="#101d33" stroke="#263754" stroke-width="2"/>
+      <path d="M102 220h1396a22 22 0 0 1 22 22v72H80v-72a22 22 0 0 1 22-22z" fill="#162641"/>
+    </g>
+
+    <text x="120" y="279" fill="#91a4c3" font-size="19" font-weight="700" letter-spacing="2">AREA</text>
+    <text x="510" y="279" fill="#91a4c3" font-size="19" font-weight="700" letter-spacing="2">RELEASE-CANDIDATE RESULT</text>
+
+    <rect x="82" y="314" width="1436" height="90" fill="#0d192d"/>
+    <circle cx="474" cy="359" r="8" fill="#22c55e"/>
+    <text x="120" y="369" fill="#f8fafc" font-size="24" font-weight="600">Automated tests</text>
+    <text x="510" y="369" fill="#dce8f8" font-size="23">154 passing tests</text>
+
+    <line x1="104" y1="404" x2="1496" y2="404" stroke="#263754"/>
+    <circle cx="474" cy="449" r="8" fill="#22c55e"/>
+    <text x="120" y="459" fill="#f8fafc" font-size="24" font-weight="600">Application coverage</text>
+    <text x="510" y="459" fill="#dce8f8" font-size="23">63.54% measured coverage</text>
+
+    <line x1="104" y1="494" x2="1496" y2="494" stroke="#263754"/>
+    <rect x="82" y="494" width="1436" height="90" fill="#0d192d"/>
+    <circle cx="474" cy="539" r="8" fill="#22c55e"/>
+    <text x="120" y="549" fill="#f8fafc" font-size="24" font-weight="600">Ruff and mypy</text>
+    <text x="510" y="549" fill="#dce8f8" font-size="23">Passed</text>
+
+    <line x1="104" y1="584" x2="1496" y2="584" stroke="#263754"/>
+    <circle cx="474" cy="629" r="8" fill="#22c55e"/>
+    <text x="120" y="639" fill="#f8fafc" font-size="24" font-weight="600">Bandit</text>
+    <text x="510" y="639" fill="#dce8f8" font-size="23">No medium/high findings in 10,008 scanned lines</text>
+
+    <line x1="104" y1="674" x2="1496" y2="674" stroke="#263754"/>
+    <rect x="82" y="674" width="1436" height="90" fill="#0d192d"/>
+    <circle cx="474" cy="719" r="8" fill="#22c55e"/>
+    <text x="120" y="729" fill="#f8fafc" font-size="24" font-weight="600">pip-audit</text>
+    <text x="510" y="729" fill="#dce8f8" font-size="23">No known vulnerabilities in the locked Python runtime set</text>
+
+    <line x1="104" y1="764" x2="1496" y2="764" stroke="#263754"/>
+    <circle cx="474" cy="809" r="8" fill="#22c55e"/>
+    <text x="120" y="819" fill="#f8fafc" font-size="24" font-weight="600">Secret detection</text>
+    <text x="510" y="819" fill="#dce8f8" font-size="23">No findings in the staged tracked candidate</text>
+
+    <line x1="104" y1="854" x2="1496" y2="854" stroke="#263754"/>
+    <rect x="82" y="854" width="1436" height="90" fill="#0d192d"/>
+    <circle cx="474" cy="899" r="8" fill="#22c55e"/>
+    <text x="120" y="909" fill="#f8fafc" font-size="24" font-weight="600">Database</text>
+    <text x="510" y="909" fill="#dce8f8" font-size="23">Migration head 0007_evidence_compliance; no model drift</text>
+
+    <line x1="104" y1="944" x2="1496" y2="944" stroke="#263754"/>
+    <circle cx="474" cy="989" r="8" fill="#22c55e"/>
+    <text x="120" y="999" fill="#f8fafc" font-size="24" font-weight="600">Image security</text>
+    <text x="510" y="999" fill="#dce8f8" font-size="23">Zero HIGH/CRITICAL Trivy findings in rebuilt first-party images</text>
+
+    <line x1="104" y1="1034" x2="1496" y2="1034" stroke="#263754"/>
+    <rect x="82" y="1034" width="1436" height="90" fill="#0d192d"/>
+    <circle cx="474" cy="1079" r="8" fill="#22c55e"/>
+    <text x="120" y="1089" fill="#f8fafc" font-size="24" font-weight="600">SBOM</text>
+    <text x="510" y="1089" fill="#dce8f8" font-size="23">Nine local release-image CycloneDX SBOMs generated</text>
+
+    <line x1="104" y1="1124" x2="1496" y2="1124" stroke="#263754"/>
+    <rect x="82" y="1124" width="1436" height="204" rx="0 0 20 20" fill="#101d33"/>
+    <circle cx="474" cy="1218" r="8" fill="#22c55e"/>
+    <text x="120" y="1228" fill="#f8fafc" font-size="24" font-weight="600">Live acceptance</text>
+    <text x="510" y="1197" fill="#dce8f8" font-size="23">
+      <tspan x="510" dy="0">Auth, inventory, risk, enrichment, compliance, alerts, scans,</tspan>
+      <tspan x="510" dy="38">self-security, Assistant, webhooks, and graph interactions</tspan>
+      <tspan x="510" dy="38">tested locally</tspan>
+    </text>
+
+    <text x="80" y="1384" fill="#91a4c3" font-size="20">Point-in-time release-candidate evidence • Community preview, not enterprise certification.</text>
+    <text x="1520" y="1384" fill="#22c55e" font-size="22" font-weight="700" text-anchor="end">VERIFIED</text>
+  </g>
+</svg>

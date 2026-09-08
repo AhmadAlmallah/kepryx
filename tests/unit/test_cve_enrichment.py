@@ -101,3 +101,24 @@ async def test_feed_failures_are_fail_safe_and_empty_epss_is_cheap(monkeypatch):
         assert await enricher.load_kev_catalog(force=True) == {}
     finally:
         await enricher.close()
+
+
+@pytest.mark.asyncio
+async def test_feed_failures_can_be_strict_for_governed_scans(monkeypatch):
+    enricher = CVEEnricher()
+
+    async def epss_fail(_params):
+        raise httpx.TimeoutException("slow")
+
+    async def kev_fail(_url, **_kwargs):
+        raise httpx.ConnectError("offline")
+
+    monkeypatch.setattr(enricher, "_epss_get", epss_fail)
+    monkeypatch.setattr(enricher.client, "get", kev_fail)
+    try:
+        with pytest.raises(httpx.TimeoutException):
+            await enricher.get_epss_scores(["CVE-2026-0001"], raise_errors=True)
+        with pytest.raises(httpx.ConnectError):
+            await enricher.load_kev_catalog(force=True, raise_errors=True)
+    finally:
+        await enricher.close()

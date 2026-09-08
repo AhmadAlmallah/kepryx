@@ -5,8 +5,11 @@ contract used by the Kepryx `asset_api` connector:
 
 - `GET /health`
 - `GET /v1/assets`
+- `GET /v1/demo-observations`
 
-It returns 24 synthetic assets using reserved documentation IP space. It does not
+It returns 24 synthetic assets using reserved documentation IP space. The demo-observations
+route returns three records that match the full demo CSV by IP/MAC so the real Kepryx connector
+and reconciler can show source enrichment without creating duplicate assets. It does not
 contact external services, contain customer data, or represent a vendor product.
 Keep it restricted to local demo networks.
 

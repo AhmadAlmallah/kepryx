@@ -22,6 +22,11 @@ E2E, real-provider evidence, production backup/restore operations beyond the iso
 and the fact that the GitHub repository has not yet completed its private-first launch controls.
 The target is above 80 without pretending that v0.9 is enterprise production software.
 
+The integration lab now also has bounded connector pagination and asset limits, backend-provided
+connector metadata, redacted run error classification, and a local evidence-manifest collector.
+These improve operator safety and repeatability, but they do not replace live FleetDM acceptance,
+fresh image scanning, or production operational evidence.
+
 ## Scoring rules
 
 ### Security and supply chain — 25

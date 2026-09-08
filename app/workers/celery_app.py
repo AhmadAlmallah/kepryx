@@ -16,6 +16,7 @@ celery_app = Celery(
         "app.workers.notification_tasks",
         "app.workers.compliance_tasks",
         "app.workers.self_security_tasks",
+        "app.workers.software_tasks",
     ],
 )
 
@@ -32,6 +33,7 @@ celery_app.conf.update(
     worker_prefetch_multiplier=1,
     task_acks_late=True,
     task_reject_on_worker_lost=True,
+    broker_connection_retry_on_startup=True,
     task_routes={
         "app.workers.scan_tasks.*": {"queue": "scanner"},
         "app.workers.enrichment_tasks.*": {"queue": "enrichment"},
@@ -39,6 +41,7 @@ celery_app.conf.update(
         "app.workers.notification_tasks.*": {"queue": "notifications"},
         "app.workers.compliance_tasks.*": {"queue": "reconciler"},
         "app.workers.self_security_tasks.*": {"queue": "self_security"},
+        "app.workers.software_tasks.*": {"queue": "enrichment"},
     },
 )
 
@@ -62,6 +65,11 @@ celery_app.conf.beat_schedule = {
     "daily-cve-feeds-sync": {
         "task": "app.workers.enrichment_tasks.sync_cve_feeds",
         "schedule": crontab(hour=1, minute=0),
+    },
+    # Daily: recheck imported software components against advisory feeds and registries.
+    "daily-software-vulnerability-scan": {
+        "task": "app.workers.software_tasks.scan_software",
+        "schedule": crontab(hour=1, minute=45),
     },
     # Every 30 min: stale asset detection
     "stale-asset-detection": {

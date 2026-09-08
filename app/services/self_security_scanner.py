@@ -22,8 +22,6 @@ from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
-PYPI_API = "https://pypi.org/pypi"
-
 
 @dataclass
 class DepRecord:
@@ -198,7 +196,8 @@ class SelfSecurityScanner:
 
     async def get_latest_pypi_version(self, name: str) -> str | None:
         try:
-            r = await self.client.get(f"{PYPI_API}/{name}/json")
+            base_url = settings.PYPI_BASE_URL.rstrip("/")
+            r = await self.client.get(f"{base_url}/{name}/json")
             if r.status_code != 200:
                 return None
             return r.json().get("info", {}).get("version")

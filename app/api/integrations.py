@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import audit, require_admin, require_scope
-from app.connectors import get_connector, list_connectors
+from app.connectors import connector_metadata, get_connector, list_connectors
 from app.core.connector_secrets import (
     protect_connector_config,
     resolve_connector_config,
@@ -37,7 +37,14 @@ class IntegrationUpdate(BaseModel):
 
 @router.get("/types", dependencies=[Depends(require_scope("integrations:read", "admin"))])
 async def types():
-    return {"connectors": list_connectors()}
+    connectors = list_connectors()
+    return {
+        # Keep the string list for v0.9 API compatibility. Metadata is additive
+        # and lets clients render labels and boundaries without duplicating the
+        # backend registry.
+        "connectors": connectors,
+        "metadata": {name: connector_metadata(name) for name in connectors},
+    }
 
 
 @router.get("", dependencies=[Depends(require_scope("integrations:read", "admin"))])
@@ -54,6 +61,8 @@ async def list_integrations(db: AsyncSession = Depends(get_db)):
                 "schedule_cron": i.schedule_cron,
                 "last_run": i.last_run.isoformat() if i.last_run else None,
                 "last_status": i.last_status,
+                "last_error_code": i.last_error_code,
+                "last_duration_ms": i.last_duration_ms,
                 "assets_reported": i.assets_reported,
             }
             for i in result.scalars().all()

@@ -240,6 +240,8 @@ class Integration(Base):
     schedule_cron: Mapped[str] = mapped_column(String(64), default="0 */6 * * *")
     last_run: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     last_status: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    last_error_code: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    last_duration_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
     assets_reported: Mapped[int] = mapped_column(Integer, default=0)
     priority: Mapped[int] = mapped_column(Integer, default=5)  # higher = more authoritative
     failure_count: Mapped[int] = mapped_column(Integer, default=0)
@@ -454,4 +456,12 @@ from app.models.self_security import (  # noqa: E402, F401
     PlatformDependency,
     SelfSecuritySettings,
     UpdateProposal,
+)
+
+# Re-export software inventory models so Alembic discovers their tables.
+from app.models.software import (  # noqa: E402, F401
+    SoftwareComponent,
+    SoftwareFinding,
+    SoftwareScanRun,
+    SoftwareSolution,
 )

@@ -53,6 +53,32 @@ _SCHEMAS = {
         "secret": {"api_token"},
         "urls": {"base_url"},
     },
+    "fleetdm": {
+        "required": {"base_url", "api_token"},
+        "optional": {
+            "hosts_path",
+            "per_page",
+            "max_pages",
+            "max_assets",
+            "timeout_sec",
+            "verify_ssl",
+        },
+        "secret": {"api_token"},
+        "urls": {"base_url"},
+    },
+    "netbox": {
+        "required": {"base_url", "api_token"},
+        "optional": {
+            "devices_path",
+            "token_scheme",
+            "max_pages",
+            "max_assets",
+            "timeout_sec",
+            "verify_ssl",
+        },
+        "secret": {"api_token"},
+        "urls": {"base_url"},
+    },
 }
 
 _BLOCKED_HOSTS = {
@@ -134,6 +160,32 @@ def validate_connector_config(connector_type: str, config: dict[str, Any]) -> di
             config = {**config, "use_assume_role": False}
     if config.get("verify_ssl") is False and not settings.ALLOW_INSECURE_CONNECTORS:
         raise ValueError("verify_ssl=false requires ALLOW_INSECURE_CONNECTORS=true")
+    if "timeout_sec" in config:
+        timeout = config["timeout_sec"]
+        if (
+            isinstance(timeout, bool)
+            or not isinstance(timeout, (int, float))
+            or not 1 <= timeout <= 120
+        ):
+            raise ValueError("timeout_sec must be a number between 1 and 120 seconds")
+    if connector_type == "fleetdm":
+        path = str(config.get("hosts_path", "/api/v1/fleet/hosts"))
+        if not path.startswith("/") or "://" in path:
+            raise ValueError("hosts_path must be a relative API path")
+        per_page = config.get("per_page", 50)
+        if isinstance(per_page, bool) or not isinstance(per_page, int) or not 1 <= per_page <= 500:
+            raise ValueError("per_page must be an integer between 1 and 500")
+    if connector_type == "netbox":
+        path = str(config.get("devices_path", "/api/dcim/devices/"))
+        if not path.startswith("/") or "://" in path:
+            raise ValueError("devices_path must be a relative API path")
+        if str(config.get("token_scheme", "bearer")).lower() not in {"bearer", "token"}:
+            raise ValueError("token_scheme must be bearer or token")
+    if connector_type in {"fleetdm", "netbox"}:
+        for field, default, maximum in (("max_pages", 100, 1000), ("max_assets", 10000, 100000)):
+            value = config.get(field, default)
+            if isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= maximum:
+                raise ValueError(f"{field} must be an integer between 1 and {maximum}")
     if connector_type == "dhcp_dns":
         if config.get("provider") not in {"infoblox", "kea"}:
             raise ValueError("provider must be infoblox or kea")

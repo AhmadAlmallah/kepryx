@@ -70,7 +70,7 @@ materials. They do not contain environment data.
 The screenshots in this gallery were captured from a local QA environment. Values such as
 `admin@kepryx.local`, `127.0.0.1`, RFC1918 ranges, `QA-DEMO` identifiers, and placeholder URLs
 are synthetic fixtures. They are not customer data, real credentials, or authorization to scan a
-network. Captures that visibly contain the older Falcon fixture or vendor-specific inventory data
+network. Captures that visibly contain the older vendor-specific fixture or provider-specific inventory data
 are intentionally excluded from the public gallery. The connector catalog in the application is
 capability metadata; it is not proof of a configured provider.
 

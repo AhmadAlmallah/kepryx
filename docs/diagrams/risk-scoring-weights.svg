@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1050" viewBox="0 0 1600 1050" role="img" aria-labelledby="title desc">
+  <title id="title">Kepryx risk scoring factor weights</title>
+  <desc id="desc">A branded table showing seven risk factors and their percentage weights, totaling one hundred percent.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#061225"/>
+      <stop offset="1" stop-color="#0a1930"/>
+    </linearGradient>
+    <linearGradient id="bar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2f80ed"/>
+      <stop offset="1" stop-color="#00b7ff"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#000814" flood-opacity="0.38"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="1050" fill="url(#background)"/>
+
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <text x="90" y="78" fill="#37b9ff" font-size="24" font-weight="700" letter-spacing="6">KEPRYX</text>
+    <text x="90" y="134" fill="#f8fafc" font-size="46" font-weight="700">Risk Scoring Weights</text>
+    <text x="90" y="174" fill="#91a4c3" font-size="23">Transparent, bounded factors used by the additive risk model</text>
+
+    <g filter="url(#shadow)">
+      <rect x="80" y="220" width="1440" height="730" rx="22" fill="#101d33" stroke="#263754" stroke-width="2"/>
+      <path d="M102 220h1396a22 22 0 0 1 22 22v72H80v-72a22 22 0 0 1 22-22z" fill="#162641"/>
+    </g>
+
+    <text x="120" y="279" fill="#91a4c3" font-size="19" font-weight="700" letter-spacing="2">FACTOR</text>
+    <text x="900" y="279" fill="#91a4c3" font-size="19" font-weight="700" letter-spacing="2">RELATIVE CONTRIBUTION</text>
+    <text x="1430" y="279" fill="#91a4c3" font-size="19" font-weight="700" letter-spacing="2" text-anchor="end">WEIGHT</text>
+
+    <rect x="82" y="314" width="1436" height="90" fill="#0d192d"/>
+    <text x="120" y="371" fill="#f8fafc" font-size="25" font-weight="600">CVE severity and exploitability</text>
+    <rect x="900" y="346" width="410" height="16" rx="8" fill="#263754"/>
+    <rect x="900" y="346" width="410" height="16" rx="8" fill="url(#bar)"/>
+    <text x="1430" y="371" fill="#37b9ff" font-size="29" font-weight="700" text-anchor="end">23%</text>
+
+    <line x1="104" y1="404" x2="1496" y2="404" stroke="#263754"/>
+    <text x="120" y="461" fill="#f8fafc" font-size="25" font-weight="600">KEV presence</text>
+    <rect x="900" y="436" width="410" height="16" rx="8" fill="#263754"/>
+    <rect x="900" y="436" width="321" height="16" rx="8" fill="url(#bar)"/>
+    <text x="1430" y="461" fill="#37b9ff" font-size="29" font-weight="700" text-anchor="end">18%</text>
+
+    <line x1="104" y1="494" x2="1496" y2="494" stroke="#263754"/>
+    <rect x="82" y="494" width="1436" height="90" fill="#0d192d"/>
+    <text x="120" y="551" fill="#f8fafc" font-size="25" font-weight="600">Control coverage</text>
+    <rect x="900" y="526" width="410" height="16" rx="8" fill="#263754"/>
+    <rect x="900" y="526" width="321" height="16" rx="8" fill="url(#bar)"/>
+    <text x="1430" y="551" fill="#37b9ff" font-size="29" font-weight="700" text-anchor="end">18%</text>
+
+    <line x1="104" y1="584" x2="1496" y2="584" stroke="#263754"/>
+    <text x="120" y="641" fill="#f8fafc" font-size="25" font-weight="600">Network exposure</text>
+    <rect x="900" y="616" width="410" height="16" rx="8" fill="#263754"/>
+    <rect x="900" y="616" width="250" height="16" rx="8" fill="url(#bar)"/>
+    <text x="1430" y="641" fill="#37b9ff" font-size="29" font-weight="700" text-anchor="end">14%</text>
+
+    <line x1="104" y1="674" x2="1496" y2="674" stroke="#263754"/>
+    <rect x="82" y="674" width="1436" height="90" fill="#0d192d"/>
+    <text x="120" y="731" fill="#f8fafc" font-size="25" font-weight="600">Access method</text>
+    <rect x="900" y="706" width="410" height="16" rx="8" fill="#263754"/>
+    <rect x="900" y="706" width="160" height="16" rx="8" fill="url(#bar)"/>
+    <text x="1430" y="731" fill="#37b9ff" font-size="29" font-weight="700" text-anchor="end">9%</text>
+
+    <line x1="104" y1="764" x2="1496" y2="764" stroke="#263754"/>
+    <text x="120" y="821" fill="#f8fafc" font-size="25" font-weight="600">Business criticality</text>
+    <rect x="900" y="796" width="410" height="16" rx="8" fill="#263754"/>
+    <rect x="900" y="796" width="178" height="16" rx="8" fill="url(#bar)"/>
+    <text x="1430" y="821" fill="#37b9ff" font-size="29" font-weight="700" text-anchor="end">10%</text>
+
+    <line x1="104" y1="854" x2="1496" y2="854" stroke="#263754"/>
+    <rect x="82" y="854" width="1436" height="94" rx="0 0 20 20" fill="#0d192d"/>
+    <text x="120" y="911" fill="#f8fafc" font-size="25" font-weight="600">Data classification</text>
+    <rect x="900" y="886" width="410" height="16" rx="8" fill="#263754"/>
+    <rect x="900" y="886" width="143" height="16" rx="8" fill="url(#bar)"/>
+    <text x="1430" y="911" fill="#37b9ff" font-size="29" font-weight="700" text-anchor="end">8%</text>
+
+    <text x="80" y="1006" fill="#91a4c3" font-size="20">Weights sum to 100% • Risk output remains a posture signal, not a probability of breach.</text>
+    <text x="1520" y="1006" fill="#f59e0b" font-size="22" font-weight="700" text-anchor="end">TOTAL 100%</text>
+  </g>
+</svg>

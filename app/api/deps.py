@@ -29,6 +29,8 @@ MANAGEMENT_SCOPES = frozenset(
         "alerts:resolve",
         "audit:read",
         "integrations:read",
+        "software:write",
+        "software:scan",
         "*",
     }
 )

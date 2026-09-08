@@ -37,7 +37,11 @@ x-common-env: &common-env
   EPSS_BASE_URL: ${EPSS_BASE_URL:-https://api.first.org/data/v1/epss}
   KEV_FEED_URL: ${KEV_FEED_URL:-https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json}
   OSV_BASE_URL: ${OSV_BASE_URL:-https://api.osv.dev/v1/query}
+  PYPI_BASE_URL: ${PYPI_BASE_URL:-https://pypi.org/pypi}
+  NPM_BASE_URL: ${NPM_BASE_URL:-https://registry.npmjs.org}
   EOL_BASE_URL: ${EOL_BASE_URL:-https://endoflife.date/api}
+  SOFTWARE_HTTP_TIMEOUT_SEC: ${SOFTWARE_HTTP_TIMEOUT_SEC:-30}
+  SOFTWARE_SCAN_CONCURRENCY: ${SOFTWARE_SCAN_CONCURRENCY:-10}
   ENVIRONMENT: ${ENVIRONMENT:-production}
   CORS_ORIGINS: ${CORS_ORIGINS:-["https://kepryx.local"]}
   ALLOWED_HOSTS: ${ALLOWED_HOSTS:-["kepryx.local","localhost","127.0.0.1"]}

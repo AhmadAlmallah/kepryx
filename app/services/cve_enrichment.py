@@ -22,7 +22,7 @@ class CVEEnricher:
         self.kev_cached_at: datetime | None = None
         # Persistent HTTP client - reused across calls within one enricher instance
         self.client = httpx.AsyncClient(
-            timeout=30.0,
+            timeout=settings.SOFTWARE_HTTP_TIMEOUT_SEC,
             limits=httpx.Limits(max_keepalive_connections=20, max_connections=100),
         )
 
@@ -46,7 +46,7 @@ class CVEEnricher:
         r.raise_for_status()
         return r.json()
 
-    async def get_cves_for_cpe(self, cpe: str) -> list[dict]:
+    async def get_cves_for_cpe(self, cpe: str, *, raise_errors: bool = False) -> list[dict]:
         headers = {"apiKey": settings.NVD_API_KEY} if settings.NVD_API_KEY else {}
         params = {"cpeName": cpe, "resultsPerPage": 100}
         try:
@@ -55,6 +55,8 @@ class CVEEnricher:
                 return []
         except Exception as e:
             logger.error(f"NVD query failed for {cpe}: {e}")
+            if raise_errors:
+                raise
             return []
 
         cves = []
@@ -102,7 +104,9 @@ class CVEEnricher:
         r.raise_for_status()
         return r.json()
 
-    async def get_epss_scores(self, cve_ids: list[str]) -> dict[str, dict]:
+    async def get_epss_scores(
+        self, cve_ids: list[str], *, raise_errors: bool = False
+    ) -> dict[str, dict]:
         if not cve_ids:
             return {}
         results = {}
@@ -119,9 +123,13 @@ class CVEEnricher:
                     }
             except Exception as e:
                 logger.error(f"EPSS batch failed: {e}")
+                if raise_errors:
+                    raise
         return results
 
-    async def load_kev_catalog(self, force: bool = False) -> dict[str, dict]:
+    async def load_kev_catalog(
+        self, force: bool = False, *, raise_errors: bool = False
+    ) -> dict[str, dict]:
         if (
             not force
             and self.kev_cached_at
@@ -145,8 +153,10 @@ class CVEEnricher:
             }
             self.kev_cached_at = datetime.now(UTC)
             logger.info(f"Loaded {len(self.kev_cache)} KEV entries")
-        except httpx.HTTPError as e:
+        except Exception as e:
             logger.error(f"KEV catalog fetch failed: {e}")
+            if raise_errors:
+                raise
         return self.kev_cache
 
     async def enrich_asset(self, cpes: list[str]) -> list[dict]:

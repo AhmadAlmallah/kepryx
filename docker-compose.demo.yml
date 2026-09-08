@@ -1,0 +1,123 @@
+# Bounded local demo profile.
+# Use with: docker compose -p kepryx-demo -f docker-compose.yml -f docker-compose.demo.yml --profile demo up -d --build
+# This overlay is for presentations and local validation, not production.
+
+networks:
+  kepryx-internal:
+    name: kepryx-demo-internal
+  kepryx-edge:
+    name: kepryx-demo-edge
+    ipam:
+      config:
+        - subnet: 172.31.0.0/24
+          ip_range: 172.31.0.128/25
+  kepryx-egress:
+    name: kepryx-demo-egress
+  kepryx-demo-scan:
+    name: kepryx-demo-scan
+    internal: true
+    ipam:
+      config:
+        - subnet: 198.51.100.240/28
+          ip_range: 198.51.100.244/30
+
+volumes:
+  demo-caddy-data:
+  demo-caddy-config:
+
+services:
+  caddy:
+    ports: !override
+      - "127.0.0.1:8444:8444"
+      - "127.0.0.1:8081:80"
+    volumes: !override
+      - ./docker/Caddyfile.clean-test:/etc/caddy/Caddyfile:ro
+      - demo-caddy-data:/data
+      - demo-caddy-config:/config
+    networks:
+      kepryx-edge:
+        ipv4_address: 172.31.0.2
+
+  api:
+    environment:
+      ALLOWED_HOSTS: "kepryx.local,localhost,127.0.0.1"
+      CORS_ORIGINS: '["https://kepryx.local:8444"]'
+      TRUSTED_PROXY_CIDRS: '["172.31.0.2/32"]'
+      MANAGEMENT_CIDRS: '["127.0.0.1/32","::1/128","172.31.0.0/24"]'
+      ALLOW_INSECURE_CONNECTORS: "true"
+      NVD_BASE_URL: "http://vulnerability-source-mock:8787/rest/json/cves/2.0"
+      EPSS_BASE_URL: "http://vulnerability-source-mock:8787/data/v1/epss"
+      KEV_FEED_URL: "http://vulnerability-source-mock:8787/feeds/known_exploited_vulnerabilities.json"
+      OSV_BASE_URL: "http://vulnerability-source-mock:8787/v1/query"
+      PYPI_BASE_URL: "http://vulnerability-source-mock:8787/pypi"
+      NPM_BASE_URL: "http://vulnerability-source-mock:8787/npm"
+      SCAN_NETWORKS: '["198.51.100.240/28"]'
+
+  worker-scanner:
+    environment:
+      SCAN_NETWORKS: '["198.51.100.240/28"]'
+    networks: !override
+      - kepryx-internal
+      - kepryx-egress
+      - kepryx-demo-scan
+
+  worker-enrich:
+    environment:
+      NVD_BASE_URL: "http://vulnerability-source-mock:8787/rest/json/cves/2.0"
+      EPSS_BASE_URL: "http://vulnerability-source-mock:8787/data/v1/epss"
+      KEV_FEED_URL: "http://vulnerability-source-mock:8787/feeds/known_exploited_vulnerabilities.json"
+      OSV_BASE_URL: "http://vulnerability-source-mock:8787/v1/query"
+      PYPI_BASE_URL: "http://vulnerability-source-mock:8787/pypi"
+      NPM_BASE_URL: "http://vulnerability-source-mock:8787/npm"
+    depends_on:
+      vulnerability-source-mock: { condition: service_healthy }
+
+  worker-selfsec:
+    environment:
+      OSV_BASE_URL: "http://vulnerability-source-mock:8787/v1/query"
+      PYPI_BASE_URL: "http://vulnerability-source-mock:8787/pypi"
+    depends_on:
+      vulnerability-source-mock: { condition: service_healthy }
+
+  asset-source-mock:
+    networks:
+      - kepryx-egress
+
+  vulnerability-source-mock:
+    build: { context: ., dockerfile: docker/Dockerfile.vulnerability-source-mock }
+    profiles: ["demo"]
+    restart: "no"
+    expose: ["8787"]
+    networks: [kepryx-egress]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs: [/tmp]
+
+  virtual-target-web:
+    build: { context: ., dockerfile: docker/Dockerfile.demo-virtual-target }
+    profiles: ["demo"]
+    restart: "no"
+    environment:
+      DEMO_TARGET_NAME: "virtual-web"
+    networks:
+      kepryx-demo-scan:
+        ipv4_address: 198.51.100.242
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs: [/tmp]
+
+  virtual-target-admin:
+    build: { context: ., dockerfile: docker/Dockerfile.demo-virtual-target }
+    profiles: ["demo"]
+    restart: "no"
+    environment:
+      DEMO_TARGET_NAME: "virtual-admin"
+    networks:
+      kepryx-demo-scan:
+        ipv4_address: 198.51.100.243
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs: [/tmp]

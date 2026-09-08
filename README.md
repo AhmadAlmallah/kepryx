@@ -15,6 +15,10 @@ feedback, but not yet certified or proven for unsupervised production use.
 - Reconciles asset observations from a vendor-neutral Asset Source API, Nessus, LDAP, AWS,
   DHCP/DNS, and nmap. Additional EDR connectors are optional integrations.
 - Enriches findings from NVD, FIRST EPSS, and the CISA KEV catalog.
+- Imports software inventories from bounded CSV/XLSX files, groups components under parent
+  solutions, checks OSV/NVD advisories, records EPSS/KEV context, and reports registry freshness
+  without making automatic changes. Imports expose unresolved asset references, support strict
+  asset matching, preserve analyst finding state, and retain provider/scan provenance.
 - Produces transparent weighted risk scores and shadow-IT indicators.
 - Runs versioned, evidence-backed compliance assessments for a licensed-safe subset of CIS,
   NIST SP 800-53, and ISO/IEC 27001 controls, including assessment history, evidence hashes,
@@ -89,6 +93,9 @@ and [security notes](docs/SECURITY-NOTES.md). The [Medium article draft](docs/PU
 and [product gallery](docs/PUBLICATION/PRODUCT-GALLERY.md) explain the project in plain language and
 provide the public-facing visual index.
 
+The [enterprise readiness review](docs/ENTERPRISE-READINESS.md) separates implemented controls,
+verified controls, and capabilities that still require organization-specific deployment work.
+
 Open `https://kepryx.local:${HTTPS_PORT:-443}/` after bootstrap. On the current Windows Docker
 Desktop host, `.env` uses `HTTPS_PORT=8443`; real deployments should use the default 443 with a
 public DNS name and ACME or an approved managed certificate. The browser session uses in-memory
@@ -108,6 +115,12 @@ curl -X POST -H "Authorization: Bearer $TOKEN" \
 The optional Asset Source API contract fixture under `demo/asset_source_mock/` is synthetic,
 local-only, and does not contact external vendors. It is not required for the vendor-neutral
 CSV demo.
+
+To demonstrate software composition analysis locally, open **Software → Import software**, select
+`demo/data/software-inventory.csv`, run the dry-run validation, and then process it. The `Future`
+solution contains npm, Python, generic/CPE, and PostgreSQL examples. The demo overlay routes OSV,
+NVD, EPSS, KEV, PyPI, and npm-shaped requests to a local synthetic snapshot; the resulting
+findings are fixture-backed evidence, not current upstream feed results.
 
 Release-evidence screenshots from the locally verified build are available in the
 [public product gallery](docs/PUBLICATION/PRODUCT-GALLERY.md). The three README views below are
@@ -166,14 +179,13 @@ accessible node picker/list fallback. It is not a Neo4j-backed BloodHound or att
   current frontend keeps the dark operator-console baseline while using same-origin routing,
   DOM text nodes, role-aware navigation, and the supported API contracts.
 - Contract, connector, scanner, reconciliation, CVE-enrichment, worker-policy, and API mutation
-  coverage exists, and a local browser route/visualization smoke has passed. The exact candidate
-  currently records 154 tests and 63.54% measured application coverage. Deep browser mutation,
-  load, failover, and production restore tests remain outside the community-preview evidence.
-- Sequential raw Trivy 0.67.2 scans of the rebuilt API, workers, scanner, beat, Caddy, PostgreSQL,
-  and Asset Source images reported zero HIGH/CRITICAL findings. Python services use pinned Alpine
-  bases and Caddy is built with fixed Go/module pins. This is a point-in-time result, not a
-  permanent CVE-free guarantee; the weekly rebuild/rescan workflow and pre-release scan remain
-  required. See [Security](SECURITY.md) and the [security remediation record](docs/SECURITY-REMEDIATION-2026-08-29.md).
+  coverage exists, and a local browser route/visualization smoke has passed. Historical candidate
+  metrics are retained in the demo benchmark, but every release must rerun the current test,
+  coverage, image, load, failover, and restore gates.
+- Historical Trivy results are point-in-time evidence only. Images must be rebuilt and rescanned
+  for the current commit; the edge-image Go dependency remediation is not considered verified
+  until the resolved image passes the container-security workflow. See [Security](SECURITY.md)
+  and the [security remediation record](docs/SECURITY-REMEDIATION-2026-08-29.md).
 - Compliance mappings are evidence aids, not certification or legal advice.
 - The compliance catalog intentionally contains identifiers and short engineering objectives,
   not redistributed normative framework text. Assessment results are deterministic posture

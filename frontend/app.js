@@ -25,6 +25,7 @@ const PAGES = [
   ["risk", "Risk Assessment"],
   ["compliance", "Compliance"],
   ["integrations", "Integrations"],
+  ["software", "Software"],
   ["self-security", "Self-Security"],
   ["scans", "Scans"],
   ["audit", "Audit Log"],
@@ -44,6 +45,7 @@ const ROLE_ACCESS = {
   risk: ["viewer", "analyst", "admin"],
   compliance: ["viewer", "analyst", "admin"],
   integrations: ["admin"],
+  software: ["viewer", "analyst", "admin"],
   "self-security": ["viewer", "analyst", "admin"],
   scans: ["analyst", "admin"],
   audit: ["admin"],
@@ -150,8 +152,13 @@ function inputField(label, id, options = {}) {
 
 function selectField(label, id, values, selected) {
   const select = el("select", { id });
-  values.forEach((value) => {
-    select.append(el("option", { text: value, value, attrs: { value, ...(value === selected ? { selected: "selected" } : {}) } }));
+  values.forEach((item) => {
+    const option = typeof item === "string" ? { value: item, label: item } : item;
+    select.append(el("option", {
+      text: option.label,
+      value: option.value,
+      attrs: { value: option.value, ...(option.value === selected ? { selected: "selected" } : {}) },
+    }));
   });
   return el("div", { className: "form-group" }, [
     el("label", { className: "field-label", text: label, attrs: { for: id } }),
@@ -401,6 +408,7 @@ async function loadView() {
       case "risk": await renderRisk(); break;
       case "compliance": await renderCompliance(); break;
       case "integrations": await renderIntegrations(); break;
+      case "software": await renderSoftware(); break;
       case "self-security": await renderSelfSecurity(); break;
       case "scans": await renderScans(); break;
       case "audit": await renderAudit(); break;
@@ -1455,37 +1463,49 @@ async function renderIntegrations() {
   const rows = (data.items || []).map((integration) => el("tr", {}, [
     el("td", { text: integration.name }), el("td", {}, [badge(integration.connector_type)]),
     el("td", {}, [integration.enabled ? badge("ON", "low") : badge("OFF", "critical")]), el("td", { text: integration.schedule_cron }),
-    el("td", { text: relativeTime(integration.last_run) }), el("td", {}, [statusBadge(integration.last_status)]), el("td", { text: integration.assets_reported || 0 }),
+    el("td", { text: relativeTime(integration.last_run) }),
+    el("td", {}, [statusBadge(integration.last_status), integration.last_error_code ? el("div", { className: "faint mono", text: integration.last_error_code }) : null]),
+    el("td", { className: "mono", text: integration.last_duration_ms == null ? "--" : `${integration.last_duration_ms} ms` }),
+    el("td", { text: integration.assets_reported || 0 }),
     el("td", { className: "flex" }, [button("Test", () => testIntegration(integration.id), "btn ghost small"), button("Sync", () => runIntegration(integration.id), "btn ghost small"), button("Edit", () => showEditIntegrationModal(integration), "btn ghost small")]),
   ]));
   setViewContent(el("div", {}, [
-    el("div", { className: "toolbar" }, [el("span", { className: "faint mono", text: `Connectors: ${(types.connectors || []).join(", ")}` }), button("+ Add Integration", showAddIntegrationModal)]),
-    card(null, [table(["Name", "Type", "Enabled", "Schedule", "Last run", "Status", "Assets", "Actions"], rows, "No integrations")]),
+    el("div", { className: "toolbar" }, [el("span", { className: "faint mono", text: `Connectors: ${(types.connectors || []).join(", ")}` }), button("+ Add Integration", () => showAddIntegrationModal(types.connectors || [], types.metadata || {}))]),
+    card(null, [table(["Name", "Type", "Enabled", "Schedule", "Last run", "Status", "Duration", "Assets", "Actions"], rows, "No integrations")]),
     el("div", { className: "notice mt", text: "Connector secrets are accepted only by the API, encrypted at rest, and never returned in list responses. Use HTTPS for any non-local deployment." }),
   ]));
 }
 
-function showAddIntegrationModal() {
+const CONNECTOR_CONFIG_DEFAULTS = {
+  asset_api: '{\n  "base_url": "https://inventory.example",\n  "api_token": ""\n}',
+  edr_crowdstrike: '{\n  "base_url": "https://api.example",\n  "client_id": "",\n  "client_secret": ""\n}',
+  ad_ldap: '{\n  "server": "ldaps://dc.example.local:636",\n  "base_dn": "DC=example,DC=local",\n  "bind_dn": "",\n  "bind_password": ""\n}',
+  vuln_nessus: '{\n  "base_url": "https://nessus.example.local:8834",\n  "access_key": "",\n  "secret_key": ""\n}',
+  cloud_aws: '{\n  "regions": ["us-east-1"]\n}',
+  dhcp_dns: '{\n  "provider": "infoblox",\n  "base_url": "https://infoblox.example.local"\n}',
+  fleetdm: '{\n  "base_url": "http://fleet:1337",\n  "api_token": "",\n  "max_pages": 100,\n  "max_assets": 10000\n}',
+  netbox: '{\n  "base_url": "http://netbox:8080",\n  "api_token": "",\n  "token_scheme": "bearer",\n  "devices_path": "/api/dcim/devices/",\n  "max_pages": 100,\n  "max_assets": 10000\n}',
+};
+
+function showAddIntegrationModal(connectorTypes, metadata) {
+  const availableTypes = connectorTypes.length ? connectorTypes : Object.keys(CONNECTOR_CONFIG_DEFAULTS);
+  const typeOptions = availableTypes.map((type) => {
+    const item = metadata[type] || {};
+    return { value: type, label: item.label ? `${item.label} (${type})` : type };
+  });
+  const firstType = availableTypes[0] || "asset_api";
   const form = el("form", {}, [
     inputField("Name", "integration-name", { placeholder: "asset-source-lab" }),
-    selectField("Connector type", "integration-type", ["asset_api", "ad_ldap", "vuln_nessus", "cloud_aws", "dhcp_dns", "edr_crowdstrike"], "asset_api"),
+    selectField("Connector type", "integration-type", typeOptions, firstType),
     inputField("Schedule (cron)", "integration-cron", { value: "0 */6 * * *" }),
     inputField("Priority (1-10)", "integration-priority", { type: "number", value: "8", attrs: { min: 1, max: 10 } }),
-    inputField("Config JSON", "integration-config", { tag: "textarea", className: "form-group", value: '{\n  "base_url": "https://api.example",\n  "client_id": "",\n  "client_secret": ""\n}' }),
-    el("div", { className: "notice mb", text: "The JSON is sent to the authenticated API over the current origin. Do not paste credentials into screenshots, issue reports, or chat." }),
+    inputField("Config JSON", "integration-config", { tag: "textarea", className: "form-group", value: CONNECTOR_CONFIG_DEFAULTS[firstType] || "{}" }),
+    el("div", { className: "notice mb", text: "Connector reads are treated as read-only inventory collection. Credentials are sent only to the authenticated API, encrypted at rest, and must never appear in screenshots or recordings." }),
     el("div", { className: "flex" }, [button("Cancel", closeModal, "btn ghost"), el("button", { className: "btn", type: "submit", text: "Register" })]),
   ]);
   form.querySelector("#integration-type").addEventListener("change", () => {
     const type = formValue(form, "integration-type");
-    const defaults = {
-      asset_api: '{\n  "base_url": "https://inventory.example",\n  "api_token": ""\n}',
-      edr_crowdstrike: '{\n  "base_url": "https://api.example",\n  "client_id": "",\n  "client_secret": ""\n}',
-      ad_ldap: '{\n  "server": "ldaps://dc.example.local:636",\n  "base_dn": "DC=example,DC=local",\n  "bind_dn": "",\n  "bind_password": ""\n}',
-      vuln_nessus: '{\n  "base_url": "https://nessus.example.local:8834",\n  "access_key": "",\n  "secret_key": ""\n}',
-      cloud_aws: '{\n  "regions": ["us-east-1"]\n}',
-      dhcp_dns: '{\n  "provider": "infoblox",\n  "base_url": "https://infoblox.example.local"\n}',
-    };
-    form.querySelector("#integration-config").value = defaults[type];
+    form.querySelector("#integration-config").value = CONNECTOR_CONFIG_DEFAULTS[type] || "{}";
   });
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -1529,6 +1549,109 @@ async function testIntegration(id) {
 async function runIntegration(id) {
   try { await api(`/api/v1/integrations/${id}/run`, { method: "POST" }); showToast("Integration sync queued"); await loadView(); }
   catch (error) { showToast(error.message, "error"); }
+}
+
+async function renderSoftware() {
+  setViewContent(loading());
+  const [summary, solutionsData, componentsData, findingsData] = await Promise.all([
+    api("/api/v1/software/summary"), api("/api/v1/software/solutions?limit=1000"),
+    api("/api/v1/software/components?limit=1000"), api("/api/v1/software/findings?status=open&limit=1000"),
+  ]);
+  const solutions = asArray(solutionsData);
+  const components = asArray(componentsData);
+  const findings = asArray(findingsData);
+  const search = el("input", { className: "search", placeholder: "Search solutions or packages" });
+  const componentBody = el("tbody");
+  const refreshComponents = () => {
+    const query = search.value.trim().toLowerCase();
+    componentBody.replaceChildren();
+    const items = components.filter((item) => `${item.solution || ""} ${item.package || ""} ${item.ecosystem || ""} ${item.asset || ""}`.toLowerCase().includes(query));
+    if (!items.length) componentBody.append(el("tr", {}, [el("td", { className: "empty", text: "No matching software components", attrs: { colspan: 9 } })]));
+    else items.forEach((item) => componentBody.append(el("tr", {}, [
+      el("td", { text: item.solution || "--" }), el("td", { className: "mono", text: item.package }), el("td", { text: item.ecosystem }),
+      el("td", { className: "mono", text: item.version }), el("td", { className: "mono", text: item.latest_version || "--" }),
+      el("td", {}, [badge(item.status, item.status === "vulnerable" ? "critical" : item.status === "outdated" ? "high" : item.status === "current" ? "low" : "info")]),
+      el("td", { text: `${item.cve_count || 0}${item.kev_count ? ` · ${item.kev_count} KEV` : ""}` }), el("td", { text: item.asset || "solution-level" }),
+      el("td", {}, [button("Findings", () => showSoftwareComponent(item.id), "btn ghost small")]),
+    ])));
+  };
+  search.addEventListener("input", refreshComponents);
+  refreshComponents();
+  const solutionRows = solutions.map((item) => el("tr", {}, [
+    el("td", { className: "mono", text: item.name }), el("td", { text: item.component_count || 0 }), el("td", { text: item.vulnerable_component_count || 0 }),
+    el("td", { text: item.finding_count || 0 }), el("td", {}, [statusBadge(item.status)]), el("td", { text: relativeTime(item.last_successful_scan_at || item.last_scan_at) }),
+    el("td", {}, [button("Open", () => showSoftwareSolution(item.id), "btn ghost small")]),
+  ]));
+  const findingRows = findings.slice(0, 100).map((item) => el("tr", {}, [
+    el("td", {}, [badge(item.severity, riskKind(item.severity))]), el("td", { className: "mono", text: item.cve_id || item.advisory_id }),
+    el("td", { text: `${item.package || "--"} ${item.version || ""}` }), el("td", { text: item.solution || "--" }),
+    el("td", {}, [item.kev ? badge("KEV", "critical") : badge("No", "info")]), el("td", { className: "mono", text: item.fixed_version || "--" }), el("td", { text: item.source || "--" }),
+  ]));
+  const lastScan = summary.last_scan ? `${summary.last_scan.status} · ${relativeTime(summary.last_scan.completed_at)}` : "never";
+  setViewContent(el("div", {}, [
+    el("div", { className: "toolbar" }, [el("div", { className: "flex wrap" }, [search, el("span", { className: "faint mono", text: `${summary.components || components.length} components · last scan ${lastScan}${summary.scan_errors ? ` · ${summary.scan_errors} provider errors` : ""}` })]), state.user.role !== "viewer" ? button("Import software", showSoftwareImportModal) : null, state.user.role !== "viewer" ? button("Scan now", () => postAction("/api/v1/software/scan", "Software scan queued", loadView), "btn ghost") : null]),
+    el("div", { className: "grid grid-3" }, [stat("Solutions", summary.solutions, "blue"), stat("Components", summary.components, "blue"), stat("Vulnerable components", summary.vulnerable_components, "critical"), stat("Open findings", summary.open_findings, "high"), stat("KEV findings", summary.kev_findings, "critical"), stat("Last scan", lastScan, "info")]),
+    card("Parent solutions", [table(["Solution", "Components", "Vulnerable", "Findings", "Scan status", "Last checked", "Actions"], solutionRows, "No software solutions imported")]),
+    card("Software components", [el("div", { className: "notice mb", text: "Current means the latest known registry version matches. Unknown means freshness was not verifiable; it is not a clean security result." }), el("div", { className: "table-wrap" }, [el("table", {}, [el("thead", {}, [el("tr", {}, ["Solution", "Package", "Ecosystem", "Installed", "Latest", "Status", "Findings", "Asset", "Actions"].map((header) => el("th", { text: header })))]), componentBody])])]),
+    card("Open software vulnerabilities", [table(["Severity", "Advisory", "Component", "Solution", "KEV", "Fixed version", "Source"], findingRows, "No open software findings")]),
+    el("div", { className: "notice", text: "Advisory evidence is recorded per component. The scanner reports and alerts; it never patches software automatically." }),
+  ]));
+}
+
+function showSoftwareImportModal() {
+  const fileInput = el("input", { id: "software-file", type: "file", attrs: { accept: ".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", required: "required" } });
+  const dryRun = el("input", { id: "software-dry-run", type: "checkbox" });
+  const strictAssets = el("input", { id: "software-strict-assets", type: "checkbox" });
+  const form = el("form", {}, [el("div", { className: "form-group" }, [el("label", { className: "field-label", text: "CSV or XLSX inventory", attrs: { for: "software-file" } }), fileInput]), el("label", { className: "flex mb", attrs: { for: "software-dry-run" } }, [dryRun, el("span", { text: "Validate only (dry run)" })]), el("label", { className: "flex mb", attrs: { for: "software-strict-assets" } }, [strictAssets, el("span", { text: "Reject rows with unknown assets" })]), el("div", { className: "notice mb", text: "Required: solution, ecosystem, package, version. Optional: asset, environment, purl, cpe, direct. Maximum 20 MB and 10,000 rows. XLSX formulas/macros are rejected." }), el("div", { className: "flex" }, [button("Cancel", closeModal, "btn ghost"), el("button", { className: "btn", type: "submit", text: "Process inventory" })])]);
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const file = fileInput.files?.[0];
+    if (!file) { showToast("Choose a CSV or XLSX file", "error"); return; }
+    const formData = new FormData(); formData.append("file", file, file.name);
+    try {
+      const result = await api(`/api/v1/software/import?dry_run=${dryRun.checked ? "true" : "false"}&strict_assets=${strictAssets.checked ? "true" : "false"}`, { method: "POST", body: formData });
+      closeModal();
+      if (dryRun.checked) openModal("Software inventory validation", el("div", {}, [el("div", { className: "notice mb", text: `${result.accepted || 0} rows accepted; ${result.rejected || 0} rejected.` }), el("pre", { className: "mono code-block", text: JSON.stringify(result, null, 2) }), button("Close", closeModal, "btn")]));
+      else { showToast(`${result.accepted || 0} software rows imported; vulnerability scan queued${result.unresolved_assets?.length ? ` · ${result.unresolved_assets.length} unresolved assets` : ""}`); await loadView(); }
+    } catch (error) { showToast(error.message, "error"); }
+  });
+  openModal("Import software inventory", form);
+}
+
+async function showSoftwareSolution(id) {
+  const body = el("div", {}, [loading("Loading software solution...")]); openModal("Software solution", body);
+  try {
+    const solution = await api(`/api/v1/software/solutions/${id}`);
+    const componentRows = (solution.components || []).map((item) => el("tr", {}, [el("td", { className: "mono", text: item.package }), el("td", { text: item.ecosystem }), el("td", { className: "mono", text: item.version }), el("td", { className: "mono", text: item.latest_version || "--" }), el("td", {}, [statusBadge(item.status)]), el("td", { text: item.asset || "solution-level" })]));
+    const findingRows = (solution.findings || []).map((item) => el("tr", {}, [el("td", { className: "mono", text: item.cve_id || item.advisory_id }), el("td", { text: item.package }), el("td", {}, [badge(item.severity, riskKind(item.severity))]), el("td", {}, [item.kev ? badge("KEV", "critical") : badge("No")]), el("td", { className: "mono", text: item.fixed_version || "--" }), el("td", { text: item.source })]));
+    body.replaceChildren(el("div", { className: "between mb" }, [el("div", {}, [el("h3", { text: solution.name }), el("div", { className: "muted", text: `${solution.component_count} components · ${solution.finding_count} open findings` })]), statusBadge(solution.status)]), el("div", { className: "notice mb", text: `Source: ${solution.source || "--"}. Last successful scan: ${solution.last_successful_scan_at ? new Date(solution.last_successful_scan_at).toLocaleString() : "never"}.` }), card("Components", [table(["Package", "Ecosystem", "Installed", "Latest", "Status", "Asset"], componentRows, "No components")]), card("Open findings", [table(["Advisory", "Package", "Severity", "KEV", "Fixed version", "Source"], findingRows, "No open findings")]), button("Close", closeModal, "btn"));
+  } catch (error) { body.replaceChildren(errorPanel(error.message)); }
+}
+
+async function showSoftwareComponent(id) {
+  const body = el("div", {}, [loading("Loading component findings...")]); openModal("Software component findings", body);
+  try {
+    const data = await api(`/api/v1/software/components/${id}/findings`);
+    const rows = (data.items || []).map((item) => {
+      const statusControl = state.user.role === "viewer"
+        ? badge(item.status, item.status === "open" ? "critical" : "info")
+        : el("select", { value: item.status, on: { change: (event) => updateSoftwareFinding(item.id, event.target.value, id) } }, [
+          ...["open", "acknowledged", "mitigated", "accepted", "resolved"].map((value) => el("option", { value, text: value, attrs: { value, ...(value === item.status ? { selected: "selected" } : {}) } })),
+        ]);
+      return el("tr", {}, [el("td", { className: "mono", text: item.cve_id || item.advisory_id }), el("td", {}, [badge(item.severity, riskKind(item.severity))]), el("td", { text: item.cvss == null ? "--" : item.cvss }), el("td", { text: item.epss == null ? "--" : `${Math.round(item.epss * 100)}%` }), el("td", {}, [item.kev ? badge("KEV", "critical") : badge("No")]), el("td", { text: item.fixed_version || "--" }), el("td", { text: item.summary || "No summary" }), el("td", {}, [statusControl])]);
+    });
+    body.replaceChildren(el("div", { className: "notice mb", text: `${data.component.package} ${data.component.version} · ${data.component.ecosystem} · status ${data.component.status}` }), table(["Advisory", "Severity", "CVSS", "EPSS", "KEV", "Fixed", "Summary", "Status"], rows, "No findings"), button("Close", closeModal, "btn"));
+  } catch (error) { body.replaceChildren(errorPanel(error.message)); }
+}
+
+async function updateSoftwareFinding(id, findingStatus, componentId) {
+  try {
+    await api(`/api/v1/software/findings/${id}`, { method: "PATCH", body: JSON.stringify({ status: findingStatus }) });
+    showToast(`Software finding marked ${findingStatus}`);
+    await showSoftwareComponent(componentId);
+  } catch (error) {
+    showToast(error.message, "error");
+  }
 }
 
 async function renderSelfSecurity() {
@@ -1779,7 +1902,7 @@ async function renderExports() {
 }
 
 function showCreateTokenModal() {
-  const scopes = ["assets:read", "assets:write", "alerts:read", "alerts:resolve", "scans:trigger", "scans:read", "compliance:read", "integrations:read", "self_security:read", "audit:read", "exports:read"];
+  const scopes = ["assets:read", "assets:write", "alerts:read", "alerts:resolve", "scans:trigger", "scans:read", "compliance:read", "integrations:read", "self_security:read", "software:read", "software:write", "software:scan", "audit:read", "exports:read"];
   const form = el("form", {}, [
     inputField("Token name", "token-name", { placeholder: "ci-compliance-export" }),
     inputField("Scopes (comma separated)", "token-scopes", { value: "exports:read" }),

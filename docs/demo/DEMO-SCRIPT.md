@@ -17,10 +17,11 @@ path engine”. The release is an open-source v0.9.0 community preview.
 
 | Item | Value |
 |---|---|
-| Local URL | `https://kepryx.local:8443` |
-| Demo source | `demo/data/asset_inventory.csv` |
-| Optional source | local Asset Source mock under `demo/asset_source_mock/` |
-| Scan proof range | `198.51.100.0/28` in the isolated clean-test network only |
+| Local URL | `https://kepryx.local:8444` |
+| Demo source | `demo/data/assets-full.csv` (37 synthetic assets, five shadow candidates) |
+| Optional source | local vendor-neutral Asset Source mock under `demo/asset_source_mock/` |
+| Vulnerability mode | local response-shape snapshot; not a current NVD/EPSS/KEV/OSV feed |
+| Scan proof range | `198.51.100.240/28` in the isolated demo network only |
 | Data classification | synthetic/reserved documentation data |
 | Starting state | disposable admin, seeded demo data, API banner reads **API connected** |
 | Screen layout | browser at 1280px or wider; zoom 100%; hide terminal and credentials |
@@ -64,7 +65,7 @@ operator-focused caption in the [product gallery](../PUBLICATION/PRODUCT-GALLERY
 
 **Show:** Inventory → Import CSV.
 
-**Do:** Select `demo/data/asset_inventory.csv`. Run **Validate only (dry run)** first; show the
+**Do:** Select `demo/data/assets-full.csv`. Run **Validate only (dry run)** first; show the
 actual valid-row and error counts. Process the file only in the disposable demo environment.
 
 **Say:** “This fixture contains synthetic assets and reserved documentation IPs. The same import
@@ -77,8 +78,9 @@ shadow-IT state. Never hard-code a count that was not observed in this run.
 
 **Show:** Risk Assessment, then the asset detail view.
 
-**Do:** Open one high-risk synthetic asset. Expand the scoring breakdown and CVE evidence. If the
-fixture includes the vulnerable Apache test asset, show the NVD/EPSS/KEV provenance and timestamp.
+**Do:** Open `PUBLIC-WEB-02`. Expand the scoring breakdown and CVE evidence. Show the local
+response-shape snapshot for NVD/EPSS/KEV, its snapshot label and timestamp, and state clearly that
+the values are repeatable demo evidence rather than a fresh feed lookup.
 
 **Say:** “The score is a transparent weighted posture signal. It combines exposure, vulnerability
 context, asset criticality, data classification, and confidence. A score is not a probability of
@@ -135,7 +137,7 @@ change the stored result.
 
 **Show:** Self-Security and Kepryx Assistant.
 
-**Do:** Show the dependency scan summary and one finding/proposal if present. Ask the Assistant:
+**Do:** Show the dependency scan summary and its local OSV snapshot status. Ask the Assistant:
 “Which assets have open security alerts, and what evidence supports that?” Then ask a prompt that
 requests a write action or secrets to demonstrate refusal.
 
@@ -146,11 +148,12 @@ become the authority for CVE, EPSS, KEV, risk, or compliance facts.”
 
 ### 6:45–7:30 — Prove authorization and operations
 
-**Show:** Scans, Alerts, Audit Log, and optionally a local webhook receiver.
+**Show:** Scans, Alerts, and Audit Log.
 
 **Do:** Show the authorized synthetic CIDR record, queue a scan if the isolated demo profile is
 running, then show the resulting status. Resolve one generated alert and show the audit entry.
-Optionally demonstrate a locally received signed webhook event.
+Run `demo/Verify-HmacWebhook.ps1` to demonstrate the local signature contract; do not present it
+as outbound delivery to a private receiver.
 
 **Say:** “Scanning is fail-closed. An empty allowlist blocks execution, and the worker rechecks
 the boundary. The CIDR on screen is documentation-only TEST-NET-2 inside an isolated Docker
@@ -172,7 +175,8 @@ onboarding, connector usefulness, evidence explainability, and operational recov
 |---|---|
 | A queued card remains pending | “This is the honest state boundary; refresh after the worker completes.” |
 | No CVE result is available | Use the evidence already present; do not imply that no CVE exists. |
-| The mock source is unavailable | Continue with the CSV fixture and state that the mock is optional. |
+| The mock source is unavailable | Continue with the CSV fixture and state that the source adapter is optional. |
+| A local snapshot is questioned | Open `/meta` from inside the fixture service and state that it is not fresh authoritative feed data. |
 | The graph is visually dense | Apply a filter, use direct-neighbor focus, or open the accessible node list. |
 | HTTPS certificate warning appears | Explain that this is the local test CA; production requires real DNS/ACME or an approved managed certificate. |
 | Assistant provider is disabled | Show the bounded UI and state that AI is optional and fails closed when disabled. |

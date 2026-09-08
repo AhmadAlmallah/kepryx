@@ -1,13 +1,13 @@
 [CmdletBinding()]
 param(
-    [string]$BaseUrl = "https://kepryx.local:8443",
+    [string]$BaseUrl = "https://kepryx.local:8444",
     [ValidateRange(1, 20)]
     [int]$Iterations = 5
 )
 
 $ErrorActionPreference = "Stop"
 $base = $BaseUrl.TrimEnd("/")
-$fixturePath = Join-Path $PSScriptRoot "data\asset_inventory.csv"
+$fixturePath = Join-Path $PSScriptRoot "data\assets-full.csv"
 
 if (-not (Test-Path -LiteralPath $fixturePath -PathType Leaf)) {
     throw "Demo fixture not found: $fixturePath"

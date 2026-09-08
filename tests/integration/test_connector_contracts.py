@@ -2,10 +2,22 @@
 
 import pytest
 
+from app.connectors import connector_metadata, list_connectors
 from app.connectors.cloud_aws import AWSConnector
 from app.connectors.dhcp_dns import DHCPDNSConnector
 from app.connectors.edr_crowdstrike import CrowdStrikeConnector
+from app.connectors.fleetdm import FleetDMConnector
+from app.connectors.netbox import NetBoxConnector
 from app.connectors.vuln_nessus import NessusConnector
+
+
+def test_connector_catalog_is_registered_and_safe_for_operator_display():
+    names = list_connectors()
+    assert {"fleetdm", "netbox"}.issubset(names)
+    for name in names:
+        metadata = connector_metadata(name)
+        assert metadata["name"] == name
+        assert metadata["read_only"] is True
 
 
 class FakeResponse:
@@ -168,6 +180,99 @@ async def test_crowdstrike_connector_batches_device_ids_and_filters_unnamed(monk
     assert assets[0]["name"] == "endpoint-1"
     assert assets[0]["control_coverage"] == "full"
     assert await connector.test_connection() is True
+
+
+@pytest.mark.asyncio
+async def test_fleetdm_connector_reads_enrolled_hosts_without_calling_them_edr(monkeypatch):
+    monkeypatch.setattr("app.connectors.fleetdm.httpx.AsyncClient", FakeHttpClient)
+    base = "http://fleet.example"
+    FakeHttpClient.responses = {
+        ("GET", f"{base}/api/v1/fleet/hosts"): FakeResponse(
+            {
+                "hosts": [
+                    {
+                        "id": 7,
+                        "hostname": "demo-linux.local",
+                        "display_name": "Demo Linux",
+                        "uuid": "host-uuid",
+                        "platform": "ubuntu",
+                        "os_name": "Ubuntu",
+                        "os_version": "24.04 LTS",
+                        "primary_ip": "198.51.100.50",
+                        "primary_mac": "00:11:22:33:44:55",
+                        "status": "online",
+                        "software": [{"name": "curl", "version": "8.5.0"}],
+                    }
+                ],
+                "meta": {"has_next_results": False},
+            }
+        )
+    }
+    connector = FleetDMConnector({"base_url": base, "api_token": "fleet-token"})
+    assets = await connector.fetch_inventory()
+    assert len(assets) == 1
+    assert assets[0]["name"] == "Demo Linux"
+    assert assets[0]["os"] == "Ubuntu 24.04 LTS"
+    assert assets[0]["edr_status"] == "N/A (FleetDM)"
+    assert assets[0]["attrs"]["edr_coverage_observed"] is False
+    assert assets[0]["software_stack"] == ["curl 8.5.0"]
+    assert await connector.test_connection() is True
+
+
+@pytest.mark.asyncio
+async def test_netbox_connector_reads_paginated_devices_and_strips_ip_cidr(monkeypatch):
+    monkeypatch.setattr("app.connectors.netbox.httpx.AsyncClient", FakeHttpClient)
+    base = "http://netbox.example"
+    FakeHttpClient.responses = {
+        ("GET", f"{base}/api/dcim/devices/"): FakeResponse(
+            {
+                "count": 1,
+                "next": None,
+                "results": [
+                    {
+                        "id": 12,
+                        "url": f"{base}/api/dcim/devices/12/",
+                        "name": "LAB-SW-01",
+                        "device_type": {"model": "Open vSwitch"},
+                        "role": {"name": "Access switch"},
+                        "platform": {"name": "Open vSwitch"},
+                        "site": {"name": "Lab"},
+                        "primary_ip4": {"address": "198.51.100.60/24"},
+                        "status": {"value": "active"},
+                    }
+                ],
+            }
+        )
+    }
+    connector = NetBoxConnector(
+        {"base_url": base, "api_token": "nbt_demo.token", "token_scheme": "bearer"}
+    )
+    assets = await connector.fetch_inventory()
+    assert len(assets) == 1
+    assert assets[0]["name"] == "LAB-SW-01"
+    assert assets[0]["type"] == "Network Device"
+    assert assets[0]["ip"] == "198.51.100.60"
+    assert assets[0]["segment"] == "Lab"
+    assert assets[0]["attrs"]["inventory_evidence"] == "NetBox device record"
+    assert await connector.test_connection() is True
+
+
+@pytest.mark.asyncio
+async def test_fleetdm_connector_rejects_repeated_pagination_page(monkeypatch):
+    monkeypatch.setattr("app.connectors.fleetdm.httpx.AsyncClient", FakeHttpClient)
+    base = "http://fleet.example"
+    path = f"{base}/api/v1/fleet/hosts"
+    FakeHttpClient.responses = {
+        ("GET", path): FakeResponse(
+            {
+                "hosts": [],
+                "meta": {"next": path, "has_next_results": True},
+            }
+        )
+    }
+    connector = FleetDMConnector({"base_url": base, "api_token": "fleet-token"})
+    with pytest.raises(ValueError, match="repeated"):
+        await connector.fetch_inventory()
 
 
 class _Paginator:

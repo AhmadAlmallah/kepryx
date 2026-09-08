@@ -1,0 +1,5 @@
+solution,ecosystem,package,version,asset,environment,component_type,direct,purl,cpe,source
+Future,npm,express,4.18.2,virtual-web,production,library,true,pkg:npm/express@4.18.2,,future-demo
+Future,pypi,requests,2.31.0,virtual-web,production,library,true,pkg:pypi/requests@2.31.0,,future-demo
+Future,generic,Apache Log4j,2.14.1,virtual-web,production,library,true,,cpe:2.3:a:apache:log4j:2.14.1:*:*:*:*:*:*:*,future-demo
+Future,postgresql,PostgreSQL,15.4,db-demo,production,database,true,,,future-demo

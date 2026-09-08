@@ -133,7 +133,11 @@ class Settings(BaseSettings):
         "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
     )
     OSV_BASE_URL: str = "https://api.osv.dev/v1/query"
+    PYPI_BASE_URL: str = "https://pypi.org/pypi"
+    NPM_BASE_URL: str = "https://registry.npmjs.org"
     EOL_BASE_URL: str = "https://endoflife.date/api"
+    SOFTWARE_HTTP_TIMEOUT_SEC: int = Field(default=30, ge=5, le=300)
+    SOFTWARE_SCAN_CONCURRENCY: int = Field(default=10, ge=1, le=64)
 
     # Scanning
     SCAN_NETWORKS: list[str] = []  # Explicit authorization boundary; empty disables scanning

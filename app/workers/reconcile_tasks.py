@@ -1,6 +1,7 @@
 """Reconciliation tasks — sync integrations, detect gaps, rescore, cleanup."""
 
 import logging
+import time
 from datetime import UTC, datetime, timedelta
 from typing import Any, cast
 
@@ -36,10 +37,16 @@ async def _sync_all(integration_id: str | None = None):
         integrations = result.scalars().all()
         results = {}
         for integ in integrations:
+            started = time.perf_counter()
             try:
                 connector_class = get_connector(integ.connector_type)
                 if not connector_class:
-                    logger.warning(f"No connector for {integ.connector_type}")
+                    integ.last_run = datetime.now(UTC)
+                    integ.last_status = "failed"
+                    integ.last_error_code = "connector_unavailable"
+                    integ.last_duration_ms = int((time.perf_counter() - started) * 1000)
+                    await db.commit()
+                    logger.warning("No connector for %s", integ.connector_type)
                     continue
                 connector = connector_class(
                     resolve_connector_config(integ.connector_type, integ.config)
@@ -50,14 +57,21 @@ async def _sync_all(integration_id: str | None = None):
                     await reconciler.reconcile_host(integ.connector_type, host)
                 integ.last_run = datetime.now(UTC)
                 integ.last_status = "success"
+                integ.last_error_code = None
+                integ.last_duration_ms = int((time.perf_counter() - started) * 1000)
                 integ.assets_reported = len(hosts)
                 integ.failure_count = 0
                 await db.commit()
                 results[integ.name] = len(hosts)
                 logger.info(f"Integration {integ.name}: {len(hosts)} assets")
-            except Exception:
+            except Exception as exc:
                 integ.failure_count = (integ.failure_count or 0) + 1
+                integ.last_run = datetime.now(UTC)
                 integ.last_status = "failed"
+                # Store only a bounded exception class, never a provider URL,
+                # response body, token, or connector configuration value.
+                integ.last_error_code = type(exc).__name__[:64]
+                integ.last_duration_ms = int((time.perf_counter() - started) * 1000)
                 # Auto-disable after 5 consecutive failures
                 if integ.failure_count >= 5:
                     integ.enabled = False

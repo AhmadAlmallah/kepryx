@@ -29,6 +29,7 @@ from app.api import (
     integrations,
     scans,
     self_security,
+    software,
     webhooks,
     websocket,
 )
@@ -139,6 +140,7 @@ app.include_router(scans.router, prefix=f"{prefix}/scans", tags=["scans"])
 app.include_router(compliance.router, prefix=f"{prefix}/compliance", tags=["compliance"])
 app.include_router(dashboard.router, prefix=f"{prefix}/dashboard", tags=["dashboard"])
 app.include_router(self_security.router, prefix=f"{prefix}/self-security", tags=["self-security"])
+app.include_router(software.router, prefix=f"{prefix}/software", tags=["software"])
 app.include_router(admin.router, prefix=f"{prefix}/admin", tags=["admin"])
 
 app.include_router(api_tokens.router, prefix=f"{prefix}/api-tokens", tags=["api-tokens"])

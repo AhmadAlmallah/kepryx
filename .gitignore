@@ -144,6 +144,8 @@ backups/
 # The public demo fixture is synthetic and intentionally tracked.
 !demo/data/
 !demo/data/asset_inventory.csv
+!demo/integrations/integration.env.example
+demo/evidence-manifest.local.json
 
 # Python
 __pycache__/

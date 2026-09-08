@@ -26,10 +26,10 @@ one frame.
 
 ### Current smoke observation
 
-The repeatable benchmark was run against `https://kepryx.local:8443` on 2026-08-28 with five
-iterations per endpoint. It returned `200` for both endpoints. Median `/health` was **4.85 ms**
-and median `/ready` was **5.87 ms**; the maximum `/health` sample was **120.63 ms** and the
-maximum `/ready` sample was **7.07 ms**. The CSV fixture contained **10 rows**, all using reserved
+The repeatable benchmark was rerun against `https://kepryx.local:8444` on 2026-08-31 with five
+iterations per endpoint. It returned `200` for both endpoints. Median `/health` was **5.34 ms**
+and median `/ready` was **6.40 ms**; the maximum `/health` sample was **135.14 ms** and the
+maximum `/ready` sample was **34.72 ms**. The CSV fixture contained **37 rows**, all using reserved
 documentation addresses. These numbers describe one local machine and are included to show how
 to collect evidence, not to promise latency or capacity.
 
@@ -40,7 +40,7 @@ health/readiness request latency and fixture size; it does not require credentia
 mutate the database.
 
 ```powershell
-pwsh -File demo/Run-DemoBenchmark.ps1 -BaseUrl https://kepryx.local:8443 -Iterations 5
+pwsh -File demo/Run-DemoBenchmark.ps1 -BaseUrl https://kepryx.local:8444 -Iterations 5
 ```
 
 The script reports median and maximum request time in milliseconds, HTTP status, fixture row

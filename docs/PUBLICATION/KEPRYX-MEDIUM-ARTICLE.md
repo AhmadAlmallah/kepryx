@@ -1,4 +1,4 @@
-![Kepryx logo](https://raw.githubusercontent.com/AhmadAlmallah/kepryx/main/docs/images/brand/kepryx-logo.png)
+![Kepryx Medium cover](../images/brand/kepryx-medium-cover.png)
 
 # Your Security Stack Is Only as Good as Your Asset Inventory
 
@@ -106,51 +106,70 @@ security, QA, SAST, and operational testing to reach a useful starting point.
 It may not be perfect. I am not presenting it as a finished enterprise product. I am presenting it
 as a serious v0.9.0 community preview that people can inspect, run, test, challenge, and improve.
 
+## The architecture behind the idea
+
+Kepryx is designed as an evidence layer between the systems that already exist. The API is the
+authorization and evidence boundary. The workers process scans, reconciliation, enrichment, and
+notifications. The data services stay behind the internal network, while external feeds and
+connectors are limited to approved outbound paths.
+
+![Kepryx system context and trust boundaries](../images/diagrams/kepryx-system-context.png)
+
+*Technical diagram — The system context shows how browser traffic reaches the protected API, how
+the API connects to state and workers, and where external intelligence sources and synthetic demo
+sources enter the platform.*
+
+![Kepryx deployment security boundaries](../images/diagrams/kepryx-deployment-security-boundaries.png)
+
+*Technical diagram — The deployment view shows the narrow public edge, the internal PostgreSQL and
+Redis services, the isolated worker paths, and the scanner capability boundary. This is a hardened
+single-host baseline for the community preview, not a claim of high availability.*
+
 ## What the running solution looks like
 
 These are screenshots from the actual local Kepryx console, not design mockups. They were captured
 from the verified preview build with synthetic test data. The values are point-in-time preview
 data and will change when seed data, scans, enrichment jobs, or compliance audits are run again.
 
-![Kepryx dashboard showing posture, alerts, activity, and relationship map](https://raw.githubusercontent.com/AhmadAlmallah/kepryx/main/docs/images/product/dashboard.png)
+![Kepryx dashboard showing posture, alerts, activity, and relationship map](../images/product/dashboard.png)
 
 *Figure 1 — The dashboard brings the operational picture into one view: asset count, critical and
 high-risk posture, shadow IT, open alerts, KEV coverage, recent changes, and the interactive
 relationship map. The capture shows 34 assets, 5 critical assets, 7 high-risk assets, 10 shadow-IT
 assets, 120 open alerts, and 1,675 KEV-linked records from the local synthetic preview run.*
 
-![Kepryx alert triage queue](https://raw.githubusercontent.com/AhmadAlmallah/kepryx/main/docs/images/product/alerts.png)
+![Kepryx alert triage queue](../images/product/alerts.png)
 
 *Figure 2 — Alerts connect a generated finding to severity, status, asset context, and operator
 resolution. This is where the inventory becomes operational: the team can see what needs attention,
 why it matters, and what action was taken.*
 
-![Kepryx risk assessment and remediation queue](https://raw.githubusercontent.com/AhmadAlmallah/kepryx/main/docs/images/product/risk-assessment.png)
+![Kepryx risk assessment and remediation queue](../images/product/risk-assessment.png)
 
 *Figure 3 — Risk Assessment shows the weighted evidence formula and the remediation queue. The
 score is a bounded posture signal with visible inputs. It is not a probability of breach and it
 does not replace analyst judgment.*
 
-![Kepryx compliance view with framework posture and control evidence](https://raw.githubusercontent.com/AhmadAlmallah/kepryx/main/docs/images/product/compliance.png)
+![Kepryx compliance view with framework posture and control evidence](../images/product/compliance.png)
 
 *Figure 4 — Compliance shows the framework summaries and the control-evidence table. The
 percentage is only the summary; the useful part for an engineer is the path from the control to
 the observed asset evidence.*
 
-![Kepryx Assistant with a bounded evidence-based response](https://raw.githubusercontent.com/AhmadAlmallah/kepryx/main/docs/images/product/assistant.png)
+![Kepryx Assistant with a bounded evidence-based response](../images/product/assistant.png)
 
 *Figure 5 — The Assistant is read-only and evidence-bound. It can summarize the current inventory,
 alerts, scans, compliance, self-security, and vulnerability posture, but it cannot execute actions,
 change records, or create vulnerability truth.*
 
-![Kepryx interactive relationship map](https://raw.githubusercontent.com/AhmadAlmallah/kepryx/main/docs/images/workflows/relationship-map.png)
+![Kepryx interactive relationship map](../images/workflows/relationship-map.png)
 
 *Figure 6 — The relationship map is an operator tool, not a static picture. Engineers can filter
 relationships, select a node, focus its neighborhood, move nodes in X/Y, adjust Z-depth, pin useful
 nodes, zoom, reset the layout, and scrub the captured timeline.*
 
 Every screenshot in this article uses synthetic local QA data. Accounts, email addresses, IPs,
-identifiers, counts, and placeholder URLs are fixtures. The [complete product gallery](PRODUCT-GALLERY.md)
+identifiers, counts, and placeholder URLs are fixtures. The [complete product gallery](https://github.com/AhmadAlmallah/kepryx/blob/main/docs/PUBLICATION/PRODUCT-GALLERY.md)
 contains the rest of the safe operator and workflow views.
 
 ## From scattered observations to one asset record
@@ -179,6 +198,13 @@ The important point is that Kepryx does not treat every incoming value as truth.
 observation remain visible. Conflicts can be reviewed. The resulting record is useful because the
 engineer can understand where it came from.
 
+![Kepryx ingest to risk and response flow](../images/diagrams/ingest-risk-flow.png)
+
+*Technical diagram — This is the main operating path: observe, normalize, reconcile, enrich with
+authoritative vulnerability facts, calculate a transparent risk signal, and project the result into
+alerts, compliance evidence, reports, and operator workflows. AI is shown as an advisory branch,
+not as the source of truth.*
+
 ## Authoritative vulnerability facts, not invented answers
 
 Vulnerability data is one of the areas where an AI model should not be trusted as the source of
@@ -201,15 +227,10 @@ remain authoritative.
 The risk engine uses a bounded additive model. I chose this approach because the engineer should
 be able to read the inputs and reproduce why an asset moved from one tier to another.
 
-| Factor | Weight |
-|---|---:|
-| CVE severity and exploitability | 23% |
-| KEV presence | 18% |
-| Control coverage | 18% |
-| Network exposure | 14% |
-| Access method | 9% |
-| Business criticality | 10% |
-| Data classification | 8% |
+![Kepryx risk scoring factor weights](../images/diagrams/risk-scoring-weights.png)
+
+*Figure — Kepryx uses seven transparent, bounded risk factors. The weights total 100%, and the
+result remains a posture signal rather than a probability of breach.*
 
 CVSS and EPSS are normalized into the same bounded 1–5 scale. A vulnerability in the KEV catalog
 receives a bounded boost. The final value produces a tier and a recommended action/SLA.
@@ -226,11 +247,17 @@ vulnerability, weak controls, and sensitive data—not only a label copied from 
 Compliance dashboards often show a percentage and stop there. The percentage is useful, but the
 engineer also needs to know what produced it.
 
-![Kepryx compliance evidence lineage](https://raw.githubusercontent.com/AhmadAlmallah/kepryx/main/docs/images/workflows/compliance-evidence-lineage.png)
+![Kepryx compliance evidence lineage](../images/workflows/compliance-evidence-lineage.png)
 
 *Figure 7 — The lineage view lets an engineer move from a control result to the assessment run,
 observed asset fields, rationale, timestamp, and evidence hash. The AI review is advisory and does
 not modify the deterministic result.*
+
+![Kepryx compliance evidence flow](../images/diagrams/compliance-evidence-lineage.png)
+
+*Technical diagram — The compliance flow makes the chain explicit: versioned control metadata is
+evaluated against asset observations, the result receives a status and hashed evidence snapshot,
+and the same lineage can be followed into a report. The AI review remains a separate advisory path.*
 
 For each asset/control pair, Kepryx stores the status, score, rationale, framework version,
 assessment run, observed values, and a SHA-256 hash of the canonical evidence object.
@@ -267,18 +294,10 @@ current evidence faster while keeping decisions under human and system control.
 
 I did not want to rely on “the containers are running” as the only QA result.
 
-| Area | Release-candidate result |
-|---|---|
-| Automated tests | 154 passing tests |
-| Measured application coverage | 63.54% |
-| Ruff and mypy | Passed |
-| Bandit | No medium/high findings in 10,008 scanned lines |
-| pip-audit | No known vulnerabilities in the locked Python runtime set |
-| Secret detection | No findings in the staged tracked candidate |
-| Database | Migration head `0007_evidence_compliance`; no model drift |
-| Image security | Rebuilt first-party images reported zero HIGH/CRITICAL Trivy findings |
-| SBOM | Nine local release-image CycloneDX SBOMs generated |
-| Live acceptance | Auth, inventory, risk, enrichment, compliance, alerts, scans, self-security, Assistant, webhooks, and graph interactions tested locally |
+![Kepryx release-candidate verification results](../images/diagrams/release-candidate-verification.png)
+
+*Figure — Point-in-time QA, security, supply-chain, database, container, and live operational
+evidence captured for the v0.9.0 release candidate.*
 
 The live platform demonstrated 34 assets, 120 open alerts, 1,675 KEV-linked CVE records, 76
 dependency packages scanned, 185 graph nodes, and 218 relationships. These are local preview data
@@ -298,6 +317,12 @@ remaining work is real:
 
 This is the difference between a useful open-source preview and a product claiming enterprise
 assurance. I prefer to show the gap clearly.
+
+![Kepryx v0.9.0 release scorecard](../images/diagrams/release-scorecard-chart.png)
+
+*Technical chart — The scorecard separates the areas already demonstrated in the preview from the
+evidence that still needs deeper production testing. It is a release-readiness view, not a claim
+that the platform is enterprise-certified.*
 
 ## Why open source?
 
@@ -349,6 +374,13 @@ The demo is designed around one evidence chain rather than a list of disconnecte
 
 The purpose is to show how one observation becomes an operational decision, not only how a
 dashboard looks.
+
+![Kepryx breach-to-evidence loop](../images/diagrams/kepryx-breach-to-evidence-loop.png)
+
+*Technical diagram — This closes the story: phishing, exposed services, misconfiguration, and old
+infrastructure are common enabling conditions; inventory, authoritative intelligence, risk,
+compliance evidence, alerts, and operator action create the feedback loop that helps teams find and
+reduce the weak paths that follow.*
 
 ## Conclusion
 

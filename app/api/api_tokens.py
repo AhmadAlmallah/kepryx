@@ -57,6 +57,9 @@ ALLOWED_SCOPES = {
     "compliance:read",
     "integrations:read",
     "self_security:read",
+    "software:read",
+    "software:write",
+    "software:scan",
     "audit:read",
     "exports:read",
     "*",  # admin-only - full access

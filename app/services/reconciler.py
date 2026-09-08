@@ -41,6 +41,8 @@ SOURCE_PRIORITY = {
     "cloud_aws": 8,
     "cloud_azure": 8,
     "cloud_gcp": 8,
+    "fleetdm": 9,
+    "netbox": 7,
     "nmap_scan": 4,
     "manual": 3,
     "asset_api": 7,
@@ -195,6 +197,8 @@ class Reconciler:
             "cloud_aws",
             "cloud_azure",
             "cloud_gcp",
+            "fleetdm",
+            "netbox",
             "asset_api",
         }
         return not any(s in authoritative for s in sources)

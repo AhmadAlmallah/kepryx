@@ -109,6 +109,44 @@ def test_connector_validation_allows_explicit_private_cidr(monkeypatch):
     assert config["base_url"] == "https://10.20.0.10"
 
 
+def test_local_integration_connector_configs_require_explicit_demo_authorization(monkeypatch):
+    monkeypatch.setattr(settings, "ALLOW_INSECURE_CONNECTORS", True)
+    monkeypatch.setattr(settings, "CONNECTOR_ALLOWED_CIDRS", ["127.0.0.0/8"])
+    fleet = validate_connector_config(
+        "fleetdm",
+        {"base_url": "http://127.0.0.1:1337", "api_token": "fleet-token"},
+    )
+    netbox = validate_connector_config(
+        "netbox",
+        {
+            "base_url": "http://127.0.0.1:8000",
+            "api_token": "nbt_demo.token",
+            "token_scheme": "bearer",
+        },
+    )
+    assert fleet["base_url"] == "http://127.0.0.1:1337"
+    assert netbox["token_scheme"] == "bearer"
+
+
+@pytest.mark.parametrize(
+    "connector_type,field,value",
+    [
+        ("fleetdm", "timeout_sec", 0),
+        ("fleetdm", "timeout_sec", 121),
+        ("fleetdm", "max_pages", 0),
+        ("netbox", "max_assets", 100001),
+    ],
+)
+def test_connector_limits_are_bounded(connector_type, field, value):
+    config = {
+        "fleetdm": {"base_url": "https://fleet.example", "api_token": "token"},
+        "netbox": {"base_url": "https://netbox.example", "api_token": "token"},
+    }[connector_type]
+    config[field] = value
+    with pytest.raises(ValueError, match=field):
+        validate_connector_config(connector_type, config)
+
+
 def test_management_network_blocks_unapproved_client(monkeypatch):
     monkeypatch.setattr(settings, "MANAGEMENT_CIDRS", ["10.20.0.0/24"])
     with pytest.raises(HTTPException) as exc_info:
