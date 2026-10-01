@@ -38,4 +38,8 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    groups:
+      codeql-actions:
+        patterns:
+          - "github/codeql-action/*"
     labels: [dependencies, ci]
