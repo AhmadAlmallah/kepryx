@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import os
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
@@ -26,8 +27,12 @@ class TargetHandler(BaseHTTPRequestHandler):
         return
 
 
-def main() -> None:
-    server = ThreadingHTTPServer(("0.0.0.0", 8080), TargetHandler)
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(description="Isolated synthetic discovery target")
+    parser.add_argument("--host", default="127.0.0.1")
+    parser.add_argument("--port", type=int, default=8080)
+    args = parser.parse_args(argv)
+    server = ThreadingHTTPServer((args.host, args.port), TargetHandler)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

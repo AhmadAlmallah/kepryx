@@ -23,6 +23,9 @@ if TYPE_CHECKING:
 
 class SoftwareSolution(Base):
     __tablename__ = "software_solutions"
+    # Migration 0009 created both this constraint and the unique name index.
+    # Preserve the deployed uniqueness boundary instead of proposing its removal.
+    __table_args__ = (UniqueConstraint("name", name="software_solutions_name_key"),)
 
     id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
     name: Mapped[str] = mapped_column(String(255), unique=True, index=True)

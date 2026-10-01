@@ -17,4 +17,5 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
   CMD ["python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/', timeout=2).read()"]
 
-CMD ["python", "-m", "demo.virtual_target.server"]
+# Explicit container-network listener; Compose publishes no host ports for this target.
+CMD ["python", "-m", "demo.virtual_target.server", "--host", "0.0.0.0"]

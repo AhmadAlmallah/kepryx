@@ -82,3 +82,31 @@ or pushing this candidate. Merge only after the required review and checks;
 then rebuild/redeploy the affected containers. The existing v0.9.0 release/tag
 is unchanged. This is point-in-time evidence, not a claim that the product is
 free of all vulnerabilities or production-certified.
+
+## Software-inventory branch follow-up
+
+The same dependency and workflow fixes are also applied to
+`feature/software-inventory`. Its additional release gates exposed schema drift
+and an unnecessarily broad default listener in the synthetic discovery target.
+These corrections stay separate from the focused default-branch security PR:
+
+- Migration `0011_software_status_indexes` adds the three ORM-declared status
+  indexes. Model metadata explicitly preserves the deployed solution-name
+  unique constraint; no uniqueness protection or application data is removed.
+- The virtual target now defaults to loopback. Its container command explicitly
+  requests a container-network listener; the demo Compose services publish no
+  host ports. A regression test covers both modes and server cleanup.
+- Remove an unnecessary Bandit suppression on an HTTP authorization scheme.
+
+Executed branch validation: **199 tests passed**, application coverage **62.55%**,
+Ruff lint/format and mypy passed, Bandit reported **no medium/high findings**
+in 12,880 lines (two low findings remain), and Alembic upgraded to
+`0011_software_status_indexes` with no model drift. The rebuilt virtual target
+answered on the isolated test container network and passed the HIGH/CRITICAL
+Trivy gate. Existing running application containers remain unchanged.
+
+The focused security candidate is [PR #32](https://github.com/AhmadAlmallah/kepryx/pull/32).
+GitHub verifies its SSH signature using the account-linked noreply identity.
+It replaces the identical tested tree in PR #31, whose committer email was not
+linked to the GitHub account. No branch protection was disabled and no remote
+history was force-pushed.

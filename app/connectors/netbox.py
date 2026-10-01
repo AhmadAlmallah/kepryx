@@ -61,7 +61,7 @@ class NetBoxConnector(BaseConnector):
         reraise=True,
     )
     async def _get(self, path: str, params: dict[str, Any] | None = None) -> httpx.Response:
-        scheme = "Token" if self.token_scheme == "token" else "Bearer"  # noqa: S105  # nosec B105 - auth scheme name, not a credential
+        scheme = "Token" if self.token_scheme == "token" else "Bearer"  # noqa: S105 - HTTP scheme, not a credential
         request_url = (
             path if urlparse(path).scheme else f"{self.base_url.rstrip('/')}/{path.lstrip('/')}"
         )
