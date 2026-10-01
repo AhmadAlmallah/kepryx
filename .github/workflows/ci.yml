@@ -106,61 +106,67 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Buildx
-        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
       - name: Build API image
-        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
           file: docker/Dockerfile.api
           push: false
           load: true
           tags: kepryx-api:ci
+          no-cache: true
 
       - name: Build worker image
-        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
           file: docker/Dockerfile.worker
           push: false
           load: true
           tags: kepryx-worker:ci
+          no-cache: true
 
       - name: Build scanner image
-        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
           file: docker/Dockerfile.scanner
           push: false
           load: true
           tags: kepryx-scanner:ci
+          no-cache: true
 
       - name: Build hardened edge image
-        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
           file: docker/Dockerfile.caddy
           push: false
           load: true
           tags: kepryx-caddy:ci
+          no-cache: true
 
       - name: Build hardened database image
-        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
           file: docker/Dockerfile.postgres
           push: false
           load: true
           tags: kepryx-postgres:ci
+          no-cache: true
 
       - name: Build synthetic Asset Source fixture
-        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
           file: docker/Dockerfile.asset-source-mock
           push: false
           load: true
           tags: kepryx-asset-source-mock:ci
+          no-cache: true
 
       - name: Verify runtime boundary
         run: |
@@ -205,6 +211,7 @@ jobs:
           if-no-files-found: error
 
       - name: Scan API image
+        if: ${{ !cancelled() }}
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # 0.36.0
         with:
           image-ref: kepryx-api:ci
@@ -215,6 +222,7 @@ jobs:
           scanners: vuln
 
       - name: Scan worker image
+        if: ${{ !cancelled() }}
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # 0.36.0
         with:
           image-ref: kepryx-worker:ci
@@ -225,6 +233,7 @@ jobs:
           scanners: vuln
 
       - name: Scan scanner image
+        if: ${{ !cancelled() }}
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # 0.36.0
         with:
           image-ref: kepryx-scanner:ci
@@ -235,6 +244,7 @@ jobs:
           scanners: vuln
 
       - name: Scan edge image
+        if: ${{ !cancelled() }}
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # 0.36.0
         with:
           image-ref: kepryx-caddy:ci
@@ -245,6 +255,7 @@ jobs:
           scanners: vuln
 
       - name: Scan database image
+        if: ${{ !cancelled() }}
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # 0.36.0
         with:
           image-ref: kepryx-postgres:ci
@@ -255,6 +266,7 @@ jobs:
           scanners: vuln
 
       - name: Scan synthetic Asset Source fixture
+        if: ${{ !cancelled() }}
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # 0.36.0
         with:
           image-ref: kepryx-asset-source-mock:ci
